@@ -1,0 +1,218 @@
+[
+  {
+    "jurisdiction":   "Citywide",
+    "agency_type":    "National",
+    "facility_name":  "National Emergency Hotline",
+    "phone_display":  "911",
+    "phone_dialable": "911",
+    "is_placeholder": false,
+    "sort_order":     1
+  },
+  {
+    "jurisdiction":   "Citywide",
+    "agency_type":    "BFP",
+    "facility_name":  "BFP Batangas City Fire Station",
+    "phone_display":  "REPLACE-ME-BFP-BTG",
+    "phone_dialable": "REPLACE-ME-BFP-BTG",
+    "is_placeholder": true,
+    "sort_order":     2
+  },
+  {
+    "jurisdiction":   "Citywide",
+    "agency_type":    "Police",
+    "facility_name":  "Batangas City Police Station",
+    "phone_display":  "REPLACE-ME-BCPO",
+    "phone_dialable": "REPLACE-ME-BCPO",
+    "is_placeholder": true,
+    "sort_order":     3
+  },
+  {
+    "jurisdiction":   "Citywide",
+    "agency_type":    "Hospital",
+    "facility_name":  "Batangas Medical Center",
+    "phone_display":  "REPLACE-ME-BMC",
+    "phone_dialable": "REPLACE-ME-BMC",
+    "is_placeholder": true,
+    "sort_order":     4
+  },
+  {
+    "jurisdiction":   "Citywide",
+    "agency_type":    "Hospital",
+    "facility_name":  "Batangas Regional Hospital",
+    "phone_display":  "REPLACE-ME-BRH",
+    "phone_dialable": "REPLACE-ME-BRH",
+    "is_placeholder": true,
+    "sort_order":     5
+  },
+  {
+    "jurisdiction":   "Brgy. 1 (Poblacion)",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Brgy. 1",
+    "phone_display":  "REPLACE-ME-BRGY1",
+    "phone_dialable": "REPLACE-ME-BRGY1",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Brgy. 3 (Poblacion)",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Brgy. 3",
+    "phone_display":  "REPLACE-ME-BRGY3",
+    "phone_dialable": "REPLACE-ME-BRGY3",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Brgy. 7 (Poblacion)",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Brgy. 7",
+    "phone_display":  "REPLACE-ME-BRGY7",
+    "phone_dialable": "REPLACE-ME-BRGY7",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Brgy. 12 (Poblacion)",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Brgy. 12",
+    "phone_display":  "REPLACE-ME-BRGY12",
+    "phone_dialable": "REPLACE-ME-BRGY12",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Brgy. 18 (Poblacion)",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Brgy. 18",
+    "phone_display":  "REPLACE-ME-BRGY18",
+    "phone_dialable": "REPLACE-ME-BRGY18",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Alangilan",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Alangilan",
+    "phone_display":  "REPLACE-ME-ALANGILAN",
+    "phone_dialable": "REPLACE-ME-ALANGILAN",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Kumintang Ibaba",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Kumintang Ibaba",
+    "phone_display":  "REPLACE-ME-KUMIBABA",
+    "phone_dialable": "REPLACE-ME-KUMIBABA",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Kumintang Ilaya",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Kumintang Ilaya",
+    "phone_display":  "REPLACE-ME-KUMILAYA",
+    "phone_dialable": "REPLACE-ME-KUMILAYA",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Pallocan West",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Pallocan West",
+    "phone_display":  "REPLACE-ME-PALW",
+    "phone_dialable": "REPLACE-ME-PALW",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Pallocan East",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Pallocan East",
+    "phone_display":  "REPLACE-ME-PALE",
+    "phone_dialable": "REPLACE-ME-PALE",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Santa Clara",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Santa Clara",
+    "phone_display":  "REPLACE-ME-SANTACLARA",
+    "phone_dialable": "REPLACE-ME-SANTACLARA",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Wawa",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Wawa",
+    "phone_display":  "REPLACE-ME-WAWA",
+    "phone_dialable": "REPLACE-ME-WAWA",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Calicanto",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Calicanto",
+    "phone_display":  "REPLACE-ME-CALICANTO",
+    "phone_dialable": "REPLACE-ME-CALICANTO",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Bolbok",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Bolbok",
+    "phone_display":  "REPLACE-ME-BOLBOK",
+    "phone_dialable": "REPLACE-ME-BOLBOK",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Tabangao",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Tabangao",
+    "phone_display":  "REPLACE-ME-TABANGAO",
+    "phone_dialable": "REPLACE-ME-TABANGAO",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Ilijan",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Ilijan",
+    "phone_display":  "REPLACE-ME-ILIJAN",
+    "phone_dialable": "REPLACE-ME-ILIJAN",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Sorosoro Ibaba",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Sorosoro Ibaba",
+    "phone_display":  "REPLACE-ME-SORIBABA",
+    "phone_dialable": "REPLACE-ME-SORIBABA",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Tinga Labac",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Tinga Labac",
+    "phone_display":  "REPLACE-ME-TINGALABAC",
+    "phone_dialable": "REPLACE-ME-TINGALABAC",
+    "is_placeholder": true,
+    "sort_order":     10
+  },
+  {
+    "jurisdiction":   "Dumantay",
+    "agency_type":    "Barangay",
+    "facility_name":  "Barangay Hall / Tanod — Dumantay",
+    "phone_display":  "REPLACE-ME-DUMANTAY",
+    "phone_dialable": "REPLACE-ME-DUMANTAY",
+    "is_placeholder": true,
+    "sort_order":     10
+  }
+]

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#18191B">
+    <meta name="description" content="EmbeReady — Community fire hazard and risk map for Batangas City, Philippines. No login, 100% local, BFP-aligned field intelligence.">
+    <title>EmbeReady — Batangas City Fire Hazard & Risk Map</title>
+
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Application Design System -->
+    <link rel="stylesheet" href="./css/tokens.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/animations.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ══════════════════════════════════════════════════════════════════════
+             VIEW 1: LANDING & SEARCH (Hero Dispatch)
+        ══════════════════════════════════════════════════════════════════════ -->
+        <main id="view-landing" class="view is-active" aria-label="EmbeReady Landing">
+            <!-- Telemetry Topbar -->
+            <header class="landing-topbar">
+                <div class="topbar-wordmark">
+                    <span class="wordmark-dot" aria-hidden="true"></span>
+                    <span>EmbeReady</span>
+                </div>
+                <div class="topbar-meta">
+                    <span>BATANGAS CITY, PH</span>
+                    <span>13.7565°N 121.0583°E</span>
+                    <span class="offline-badge" id="landing-offline-badge">OFFLINE MODE</span>
+                </div>
+            </header>
+
+            <!-- Hero Section -->
+            <section class="landing-hero">
+                <div class="landing-content">
+                    <div class="landing-eyebrow">Batangas City Fire Hazard Watch</div>
+                    <h1 class="landing-title">Find fire hazards
+in your area.</h1>
+                    <p class="landing-subtitle">
+                        Search a barangay, street, or landmark in Batangas City to inspect community fire risks, live emergency dispatches, and AI-built preparedness plans.
+                    </p>
+
+                    <!-- Search Form with Autocomplete -->
+                    <form id="landing-search-form" class="landing-search-form" role="search">
+                        <div class="search-input-wrap">
+                            <input type="text"
+                                   id="landing-search-input"
+                                   class="landing-search-input"
+                                   placeholder="Search barangay, street, landmark…"
+                                   autocomplete="off"
+                                   aria-label="Search location in Batangas City" />
+                            <div id="landing-autocomplete" class="search-autocomplete" role="listbox"></div>
+                        </div>
+                        <button type="submit" class="search-btn">Search</button>
+                    </form>
+
+                    <!-- Quick Jump Chips -->
+                    <div class="landing-quickjump">
+                        <span class="quickjump-label">Quick jump:</span>
+                        <div id="landing-quickjump-list" style="display:contents;"></div>
+                    </div>
+
+                    <!-- Direct Explore Button -->
+                    <div>
+                        <button id="landing-explore-btn" class="landing-explore-btn">
+                            View full city map &rarr;
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dispatch Footer Strip -->
+            <footer class="landing-footer">
+                <div class="landing-footer-text">
+                    BFP BATANGAS CITY PROTOCOL &bull; 100% LOCAL &bull; NO LOGIN REQUIRED
+                </div>
+                <div class="landing-footer-text" style="color:var(--risk-heavy);font-weight:600;">
+                    EMERGENCY DISPATCH: 911
+                </div>
+            </footer>
+        </main>
+
+        <!-- ══════════════════════════════════════════════════════════════════════
+             VIEW 2: INTERACTIVE MAP & FIELD SHELL
+        ══════════════════════════════════════════════════════════════════════ -->
+        <main id="view-map" class="view" aria-label="Interactive Map Shell">
+            <!-- Global Map Header -->
+            <header class="map-header">
+                <div id="map-wordmark" class="map-header-wordmark" title="Back to home">
+                    <span class="wm-dot"></span>
+                    <span>EmbeReady</span>
+                </div>
+
+                <!-- Header Search -->
+                <form id="map-search-form" style="position:relative; flex:1; max-width:380px; margin:0 var(--space-4);" role="search">
+                    <input type="text"
+                           id="map-search-input"
+                           class="landing-search-input"
+                           style="height:36px; font-size:var(--text-sm); padding:0 var(--space-3);"
+                           placeholder="Jump to barangay / landmark…"
+                           autocomplete="off" />
+                    <div id="map-autocomplete" class="search-autocomplete" role="listbox"></div>
+                </form>
+
+                <div style="display:flex; align-items:center; gap:var(--space-3);">
+                    <!-- Live Fire Counter -->
+                    <div id="live-fire-counter" class="live-counter is-hidden" title="Filter to active fires">
+                        <span class="live-dot"></span>
+                        <span id="live-counter-text">0 ACTIVE FIRES</span>
+                    </div>
+
+                    <!-- Header Report Trigger -->
+                    <button id="map-report-btn" class="filter-chip" style="border-color:var(--color-green-500);color:var(--color-green-400);background:rgba(5,150,105,0.1);">
+                        + REPORT HAZARD
+                    </button>
+                </div>
+            </header>
+
+            <!-- Filter Bar -->
+            <nav class="filter-bar" aria-label="Hazard Filters">
+                <button class="filter-chip is-active" data-filter="all">All</button>
+                <button class="filter-chip filter-chip-live" data-filter="active">● Live Now</button>
+                <button class="filter-chip" data-filter="heavy">Heavy</button>
+                <button class="filter-chip" data-filter="moderate">Moderate</button>
+                <button class="filter-chip" data-filter="low">Low</button>
+
+                <div class="filter-divider"></div>
+
+                <select id="filter-barangay-select" class="filter-select" aria-label="Filter by Barangay">
+                    <option value="">All Barangays</option>
+                    <option value="1">Brgy. 1 (Poblacion)</option>
+                    <option value="2">Brgy. 4 (Poblacion)</option>
+                    <option value="3">Brgy. 7 (Poblacion)</option>
+                    <option value="4">Brgy. 12 (Poblacion)</option>
+                    <option value="5">Brgy. 24 (Poblacion)</option>
+                    <option value="6">Alangilan</option>
+                    <option value="7">Kumintang Ibaba</option>
+                    <option value="8">Kumintang Ilaya</option>
+                    <option value="9">Calicanto</option>
+                    <option value="10">Bolbok</option>
+                    <option value="11">Sta. Clara</option>
+                    <option value="12">Cuta</option>
+                    <option value="13">Sorosoro Ibaba</option>
+                    <option value="14">Tinga Labac</option>
+                    <option value="15">Dumantay</option>
+                </select>
+
+                <select id="filter-category-select" class="filter-select" aria-label="Filter by Hazard Category">
+                    <option value="">All Categories</option>
+                    <option value="faulty_wiring">Faulty Wiring</option>
+                    <option value="lpg_storage">LPG / Gas Storage</option>
+                    <option value="dry_grass">Dry Grass / Brush</option>
+                    <option value="overloaded_outlets">Overloaded Outlets</option>
+                    <option value="blocked_exit">Blocked Exit</option>
+                    <option value="illegal_burning">Illegal Burning</option>
+                    <option value="informal_settlement">Informal Settlement</option>
+                    <option value="flammable_storage">Flammable Storage</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <button id="filter-reset-btn" class="filter-reset">Clear filters</button>
+            </nav>
+
+            <!-- Map Viewport -->
+            <div id="map" role="region" aria-label="Batangas City Fire Hazard Map"></div>
+
+            <!-- Map Legend (Bottom-Left) -->
+            <aside class="map-legend" aria-label="Map Legend">
+                <div class="legend-title">Risk Level</div>
+                <div class="legend-item legend-item-heavy">
+                    <span class="legend-glyph">▲</span>
+                    <span>Heavy</span>
+                </div>
+                <div class="legend-item legend-item-mod">
+                    <span class="legend-glyph">◆</span>
+                    <span>Moderate</span>
+                </div>
+                <div class="legend-item legend-item-low">
+                    <span class="legend-glyph">●</span>
+                    <span>Low</span>
+                </div>
+                <div class="legend-item legend-item-active" style="margin-top:2px;">
+                    <span class="legend-glyph" style="border-color:transparent;">🔥</span>
+                    <span style="color:var(--risk-heavy);font-weight:700;">Live Fire</span>
+                </div>
+            </aside>
+
+            <!-- Detail Drawer (Desktop Right Panel / Mobile Bottom Sheet) -->
+            <aside id="hazard-drawer" aria-label="Hazard Details Panel">
+                <div class="drawer-close">
+                    <button class="drawer-close-btn" aria-label="Close details">&times; Close</button>
+                </div>
+                <div class="drawer-inner">
+                    <!-- Dynamic hazard content rendered by drawer.js -->
+                </div>
+            </aside>
+
+            <!-- Report FAB Button (Mobile / Quick access) -->
+            <button id="report-fab-btn" class="report-fab" aria-label="Report new fire hazard">
+                <span class="fab-icon" aria-hidden="true">+</span>
+                <span>Report Hazard</span>
+            </button>
+
+            <!-- Report Form Section (Below Map) -->
+            <section id="report-section" aria-label="Submit Hazard Report">
+                <div class="report-section-inner">
+                    <h2 class="report-heading">Report a Hazard or Risk</h2>
+                    <div class="report-heading-stripe"></div>
+                    <p class="report-sub">
+                        All reports appear immediately on the community map after submission. No login or account required.
+                    </p>
+
+                    <!-- Error Alert Box -->
+                    <div id="form-errors" class="form-errors" role="alert">
+                        <div class="form-errors-title">Please correct the following:</div>
+                        <ul id="form-errors-list"></ul>
+                    </div>
+
+                    <form id="hazard-report-form" novalidate>
+                        <!-- Anti-spam Honeypot -->
+                        <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+                        <div class="form-grid">
+                            <!-- Title -->
+                            <div class="form-field full-width">
+                                <label for="report-title" class="form-label">Hazard Title <span class="req">*</span></label>
+                                <input type="text"
+                                       id="report-title"
+                                       name="title"
+                                       class="form-input"
+                                       placeholder="e.g. Overloaded transformer sparking near residential wooden row houses"
+                                       required />
+                            </div>
+
+                            <!-- Category -->
+                            <div class="form-field">
+                                <label for="report-category" class="form-label">Hazard Type <span class="req">*</span></label>
+                                <select id="report-category" name="category" class="form-select" required>
+                                    <option value="">Select Category</option>
+                                    <option value="faulty_wiring">Faulty / Overloaded Wiring</option>
+                                    <option value="lpg_storage">LPG / Gas Storage</option>
+                                    <option value="dry_grass">Dry Grass / Brush</option>
+                                    <option value="overloaded_outlets">Overloaded Outlets</option>
+                                    <option value="blocked_exit">Blocked Exit</option>
+                                    <option value="illegal_burning">Illegal Burning</option>
+                                    <option value="informal_settlement">Informal Settlement</option>
+                                    <option value="flammable_storage">Flammable Material Storage</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Risk Level -->
+                            <div class="form-field">
+                                <label for="report-risk-level" class="form-label">Reported Risk Level <span class="req">*</span></label>
+                                <select id="report-risk-level" name="risk_level" class="form-select" required>
+                                    <option value="moderate" selected>Moderate Risk</option>
+                                    <option value="heavy">Heavy / Severe Risk</option>
+                                    <option value="low">Low Risk</option>
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="form-field">
+                                <label for="report-status" class="form-label">Reporting Status <span class="req">*</span></label>
+                                <select id="report-status" name="status" class="form-select" required>
+                                    <option value="potential" selected>Potential Hazard (Not on fire)</option>
+                                    <option value="active">Active Fire / Emergency RIGHT NOW</option>
+                                </select>
+                            </div>
+
+                            <!-- Barangay -->
+                            <div class="form-field">
+                                <label for="report-barangay" class="form-label">Barangay <span class="req">*</span></label>
+                                <select id="report-barangay" name="barangay_id" class="form-select" required>
+                                    <option value="">Loading barangays…</option>
+                                </select>
+                            </div>
+
+                            <!-- Address / Landmark -->
+                            <div class="form-field full-width">
+                                <label for="report-address" class="form-label">Address / Landmark / Street</label>
+                                <input type="text"
+                                       id="report-address"
+                                       name="address"
+                                       class="form-input"
+                                       placeholder="e.g. Near public market entrance, along P. Burgos St." />
+                            </div>
+
+                            <!-- Pin on Mini-Map -->
+                            <div class="form-field full-width">
+                                <label class="form-label">
+                                    Drop Pin on Location <span class="req">*</span>
+                                    <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);text-transform:none;margin-left:8px;" id="report-coords-display">
+                                        Click map or drag pin
+                                    </span>
+                                </label>
+                                <div id="report-minimap" class="report-minimap"></div>
+                                <input type="hidden" id="report-lat" name="lat" />
+                                <input type="hidden" id="report-lng" name="lng" />
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-field full-width">
+                                <label for="report-desc" class="form-label">Description / Field Notes</label>
+                                <textarea id="report-desc"
+                                          name="description"
+                                          class="form-textarea"
+                                          placeholder="Describe observations, nearby combustible materials, narrow road access, or fire hydrant proximity to aid BFP responders…"></textarea>
+                            </div>
+
+                            <!-- Photo Upload Area -->
+                            <div class="form-field full-width">
+                                <label class="form-label">Photo (Optional — JPG, PNG, WebP up to 5 MB)</label>
+                                <div id="photo-dropzone" class="photo-upload-area" role="button" tabindex="0">
+                                    <span id="photo-upload-label" class="photo-upload-label">
+                                        Drop photo here or click to browse
+                                    </span>
+                                    <span class="photo-upload-hint">Uploads are stored locally in ./public/uploads/user</span>
+                                </div>
+                                <input type="file"
+                                       id="report-photo-input"
+                                       name="photo"
+                                       accept="image/jpeg,image/png,image/webp"
+                                       style="display:none;" />
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="form-field full-width" style="margin-top:var(--space-4);">
+                                <button type="submit" id="report-submit-btn" class="submit-btn">
+                                    Submit Report
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- ══════════════════════════════════════════════════════════════════════
+             MODAL: SUBMISSION CONFIRMATION & ACTION PROMPT
+        ══════════════════════════════════════════════════════════════════════ -->
+        <div id="report-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-text">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <div>
+                        <h3 id="modal-title-text" class="modal-title">Report Submitted</h3>
+                        <div id="modal-ref-number" class="modal-ref">ER-XXXXXXXX-XXXX</div>
+                    </div>
+                    <button class="modal-close-btn" style="font-size:24px;color:var(--color-charcoal-400);line-height:1;" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- AI result box -->
+                    <div id="modal-ai-score-box" class="modal-ai-result">
+                        <!-- Rendered by report.js -->
+                    </div>
+
+                    <div style="font-family:var(--font-display);font-size:var(--text-base);font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:var(--space-3);color:var(--text-on-light);">
+                        What would you like to do next?
+                    </div>
+
+                    <div class="modal-action-btns">
+                        <button id="modal-action-bfp" class="action-btn">
+                            <span class="action-btn-label">Report to BFP Batangas City</span>
+                            <span class="action-btn-sub">Launches pre-filled dispatch message directly to fire responders</span>
+                        </button>
+
+                        <button id="modal-action-brgy" class="action-btn">
+                            <span class="action-btn-label">Report to Barangay Hall</span>
+                            <span class="action-btn-sub">Calls local barangay DRRM / tanod unit</span>
+                        </button>
+
+                        <button id="modal-action-done" class="action-btn" style="border-style:dashed;">
+                            <span class="action-btn-label" style="color:var(--color-charcoal-500);">Done</span>
+                            <span class="action-btn-sub">Close and view live marker on the map</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════════════
+             TOAST NOTIFICATIONS
+        ══════════════════════════════════════════════════════════════════════ -->
+        <div id="toast-container" aria-live="polite"></div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Main Application Entrypoint -->
+    <script type="module" src="./js/app.js"></script>
+</body>
+</html>

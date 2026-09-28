@@ -1,0 +1,1130 @@
+/**
+ * public/css/components.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * EmbeReady — UI Component Styles
+ * Covers: filter chips, sign badges, risk bars, map markers,
+ *         drawer sections, report form, emergency contact cards.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIGN BADGES — risk level, status, demo tag, live tag
+   Field-guide / emergency signage aesthetic: bold, outlined, angular.
+───────────────────────────────────────────────────────────────────────────── */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid currentColor;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+/* Risk level badges */
+.badge-low {
+    color: var(--risk-low);
+    background: var(--risk-low-bg);
+    border-color: var(--risk-low);
+}
+.badge-moderate {
+    color: var(--risk-mod);
+    background: var(--risk-mod-bg);
+    border-color: var(--risk-mod);
+}
+.badge-heavy {
+    color: var(--risk-heavy);
+    background: var(--risk-heavy-bg);
+    border-color: var(--risk-heavy);
+}
+
+/* Status badges */
+.badge-active {
+    color: #fff;
+    background: var(--risk-heavy);
+    border-color: var(--risk-heavy);
+    animation: badge-flash 2s infinite;
+}
+.badge-contained {
+    color: var(--risk-mod);
+    background: var(--risk-mod-bg);
+    border-color: var(--risk-mod);
+}
+.badge-resolved {
+    color: var(--color-green-600);
+    background: var(--color-green-100);
+    border-color: var(--color-green-500);
+}
+.badge-potential {
+    color: var(--color-charcoal-400);
+    background: var(--color-bone-300);
+    border-color: var(--color-charcoal-300);
+}
+
+/* Demo data badge */
+.badge-demo {
+    color: var(--color-charcoal-400);
+    background: var(--color-bone-300);
+    border-color: var(--color-charcoal-300);
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+
+/* Live badge (in drawer header) */
+.badge-live {
+    color: #fff;
+    background: var(--risk-heavy);
+    border-color: var(--risk-heavy);
+    font-family: var(--font-mono);
+}
+.badge-live::before {
+    content: '●';
+    font-size: 8px;
+    animation: pulse-dot 1.2s infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FILTER CHIPS (map filter bar)
+───────────────────────────────────────────────────────────────────────────── */
+
+.filter-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    height: 28px;
+    padding: 0 var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--dur-fast);
+    flex-shrink: 0;
+}
+.filter-chip:hover {
+    border-color: var(--border-default);
+    color: var(--text-primary);
+    background: var(--color-charcoal-700);
+}
+.filter-chip.is-active {
+    border-color: var(--color-green-500);
+    color: var(--color-green-400);
+    background: rgba(5,150,105,0.12);
+}
+
+/* Live chip (special) */
+.filter-chip-live {
+    border-color: var(--risk-heavy);
+    color: var(--risk-heavy);
+}
+.filter-chip-live:hover,
+.filter-chip-live.is-active {
+    background: rgba(220,38,38,0.12);
+    border-color: var(--risk-heavy);
+    color: var(--risk-heavy-light);
+}
+
+/* Filter dropdown selects */
+.filter-select {
+    height: 28px;
+    padding: 0 var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    appearance: none;
+    padding-right: var(--space-5);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239ba0a8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    transition: border-color var(--dur-fast);
+}
+.filter-select:hover { border-color: var(--border-default); }
+.filter-select option {
+    background: var(--color-charcoal-800);
+    color: var(--text-primary);
+}
+
+/* Reset button */
+.filter-reset {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color var(--dur-fast);
+}
+.filter-reset:hover { color: var(--text-primary); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAP LEGEND (bottom-left on map)
+───────────────────────────────────────────────────────────────────────────── */
+
+.map-legend {
+    position: absolute;
+    bottom: var(--space-5);
+    left: var(--space-4);
+    z-index: calc(var(--z-map) + 1);
+    background: var(--color-charcoal-900);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    min-width: 140px;
+    box-shadow: var(--shadow-md);
+}
+
+.legend-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    padding: var(--space-1) 0;
+    cursor: pointer;
+    transition: color var(--dur-fast);
+}
+.legend-item:hover { color: var(--text-primary); }
+.legend-item.is-active { color: var(--text-primary); }
+
+.legend-glyph {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    flex-shrink: 0;
+}
+.legend-item-low    .legend-glyph { color: var(--risk-low);   }
+.legend-item-mod    .legend-glyph { color: var(--risk-mod);   }
+.legend-item-heavy  .legend-glyph { color: var(--risk-heavy); }
+.legend-item-active .legend-glyph {
+    color: var(--risk-heavy);
+    animation: legend-pulse 1.5s infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DRAWER COMPONENTS
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Drawer header */
+.drawer-header {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-light);
+    background: var(--color-charcoal-800);
+    color: var(--color-bone-200);
+}
+
+.drawer-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.drawer-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: var(--leading-snug);
+    letter-spacing: -0.01em;
+    color: var(--color-bone-200);
+    margin-bottom: var(--space-2);
+}
+
+.drawer-ref {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-300);
+    letter-spacing: 0.08em;
+}
+
+/* Drawer section blocks */
+.drawer-section {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.drawer-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-charcoal-400);
+    margin-bottom: var(--space-2);
+}
+
+.drawer-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.drawer-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.drawer-meta-key {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-charcoal-400);
+}
+
+.drawer-meta-val {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--text-on-light);
+}
+
+/* Live fire timer */
+.live-timer {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--risk-heavy);
+    letter-spacing: 0.06em;
+    margin-top: var(--space-1);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Photo slot */
+.hazard-photo-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-bone-400);
+    position: relative;
+}
+
+.hazard-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    background: var(--color-charcoal-800);
+    border: 1px solid var(--border-default);
+}
+
+.photo-placeholder-icon {
+    font-size: 32px;
+    opacity: 0.3;
+}
+
+.photo-placeholder-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-charcoal-300);
+    text-align: center;
+    padding: 0 var(--space-4);
+    line-height: 1.6;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RISK ASSESSMENT PANEL
+───────────────────────────────────────────────────────────────────────────── */
+
+.risk-score-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-charcoal-800);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.risk-score-number {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-bone-200);
+    flex-shrink: 0;
+}
+
+.risk-score-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.risk-score-level-line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.risk-engine-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-charcoal-300);
+}
+
+.risk-confidence {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--color-charcoal-300);
+}
+
+/* Factor bars */
+.factor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.factor-item {
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background var(--dur-fast);
+    position: relative;
+}
+.factor-item:hover {
+    background: var(--color-bone-300);
+}
+.factor-item:last-child { border-bottom: none; }
+
+.factor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.factor-name {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-on-light-2);
+}
+
+.factor-score {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-400);
+    white-space: nowrap;
+}
+
+.factor-bar-track {
+    height: 6px;
+    background: var(--color-bone-400);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--space-2);
+}
+
+.factor-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    background: var(--risk-mod);
+    transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* Color the fill by % */
+.factor-bar-fill[data-pct-low]  { background: var(--risk-low); }
+.factor-bar-fill[data-pct-mod]  { background: var(--risk-mod); }
+.factor-bar-fill[data-pct-high] { background: var(--risk-heavy); }
+
+.factor-reason {
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-400);
+    line-height: 1.5;
+    display: none;
+}
+.factor-item.is-expanded .factor-reason { display: block; }
+.factor-item.is-expanded { background: var(--color-bone-300); }
+
+/* Reasoning summary */
+.risk-reasoning {
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bone-300);
+    border-bottom: 1px solid var(--border-light);
+    font-size: var(--text-sm);
+    color: var(--color-charcoal-500);
+    line-height: var(--leading-normal);
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PREPAREDNESS PLAN TABS
+───────────────────────────────────────────────────────────────────────────── */
+
+.plan-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-light);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    background: var(--color-bone-200);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.plan-tabs::-webkit-scrollbar { display: none; }
+
+.plan-tab {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-charcoal-300);
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--dur-fast);
+    flex-shrink: 0;
+}
+.plan-tab:hover { color: var(--text-on-light); }
+.plan-tab.is-active {
+    color: var(--text-on-light);
+    border-bottom-color: var(--color-green-500);
+}
+
+.plan-content {
+    display: none;
+    padding: var(--space-4) var(--space-5);
+}
+.plan-content.is-active { display: block; }
+
+.plan-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.plan-step {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bone-300);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-green-400);
+    font-size: var(--text-sm);
+    color: var(--text-on-light);
+    line-height: var(--leading-normal);
+}
+
+.plan-step-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-charcoal-300);
+    flex-shrink: 0;
+    margin-top: 2px;
+    min-width: 20px;
+}
+
+/* During steps — elevated danger */
+.plan-content[data-tab="during"] .plan-step {
+    border-left-color: var(--risk-heavy);
+}
+
+/* Prohibited actions */
+.plan-content[data-tab="prohibited"] .plan-step {
+    border-left-color: var(--risk-heavy);
+    background: var(--risk-heavy-bg);
+}
+
+/* Local context note */
+.plan-local-note {
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(5,150,105,0.08);
+    border: 1px solid rgba(5,150,105,0.25);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-500);
+    line-height: var(--leading-normal);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FIRE HISTORY LIST
+───────────────────────────────────────────────────────────────────────────── */
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.history-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bone-300);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--risk-mod);
+}
+
+.history-item-title {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-on-light);
+    line-height: var(--leading-snug);
+}
+
+.history-item-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--color-charcoal-400);
+}
+
+.history-item-notes {
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-500);
+    line-height: var(--leading-normal);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   EMERGENCY CONTACTS CARD
+───────────────────────────────────────────────────────────────────────────── */
+
+.contacts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bone-300);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contact-name {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-on-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-type {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-charcoal-400);
+}
+
+.contact-phone {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-on-light);
+    white-space: nowrap;
+}
+
+.contact-call-btn {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-green-600);
+    border: 1.5px solid var(--color-green-500);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: all var(--dur-fast);
+}
+.contact-call-btn:hover {
+    background: var(--color-green-100);
+}
+.contact-call-btn.is-placeholder {
+    color: var(--color-charcoal-300);
+    border-color: var(--border-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 911 special */
+.contact-item-911 {
+    background: var(--color-charcoal-800);
+    border-color: var(--risk-heavy);
+    color: var(--color-bone-200);
+}
+.contact-item-911 .contact-name,
+.contact-item-911 .contact-phone { color: var(--color-bone-200); }
+.contact-item-911 .contact-type { color: var(--color-charcoal-300); }
+.contact-item-911 .contact-call-btn {
+    color: var(--color-bone-200);
+    border-color: var(--risk-heavy);
+}
+.contact-item-911 .contact-call-btn:hover {
+    background: rgba(220,38,38,0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REPORT FORM
+───────────────────────────────────────────────────────────────────────────── */
+
+.report-heading {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: var(--leading-tight);
+    color: var(--color-bone-200);
+    margin-bottom: var(--space-2);
+}
+
+/* Hazard stripe accent under heading */
+.report-heading-stripe {
+    height: 4px;
+    width: 80px;
+    background: var(--stripe-danger);
+    margin-bottom: var(--space-6);
+    border-radius: var(--radius-sm);
+}
+
+.report-sub {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-8);
+    line-height: var(--leading-normal);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.form-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-bone-300);
+}
+
+.form-label .req {
+    color: var(--risk-heavy);
+    margin-left: 2px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--text-on-light);
+    background: var(--color-bone-200);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color var(--dur-fast);
+}
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--color-charcoal-300);
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--color-green-500);
+    box-shadow: 0 0 0 3px rgba(5,150,105,0.15);
+}
+.form-input.is-error,
+.form-select.is-error,
+.form-textarea.is-error {
+    border-color: var(--risk-heavy);
+}
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Report mini-map */
+.report-minimap {
+    width: 100%;
+    height: 220px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-light);
+    overflow: hidden;
+}
+
+/* Photo upload */
+.photo-upload-area {
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: var(--space-6);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--dur-fast);
+    background: var(--color-charcoal-700);
+}
+.photo-upload-area:hover {
+    border-color: var(--color-green-500);
+    background: rgba(5,150,105,0.05);
+}
+.photo-upload-area.has-file {
+    border-style: solid;
+    border-color: var(--color-green-500);
+}
+
+.photo-upload-label {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: var(--space-1);
+}
+
+.photo-upload-hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Honeypot — hidden from humans */
+.hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Form error list */
+.form-errors {
+    background: var(--risk-heavy-bg);
+    border: 1.5px solid var(--risk-heavy);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+    display: none;
+}
+.form-errors.is-visible { display: block; }
+
+.form-errors-title {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--risk-heavy);
+    margin-bottom: var(--space-2);
+}
+
+.form-errors ul {
+    list-style: disc;
+    padding-left: var(--space-4);
+}
+
+.form-errors li {
+    font-size: var(--text-sm);
+    color: var(--risk-heavy);
+    line-height: var(--leading-normal);
+    margin-bottom: 2px;
+}
+
+/* Submit button */
+.submit-btn {
+    height: 52px;
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-bone-200);
+    background: var(--color-green-500);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    transition: all var(--dur-fast);
+    position: relative;
+    overflow: hidden;
+}
+.submit-btn:hover:not(:disabled) {
+    background: var(--color-green-400);
+    transform: translateY(-1px);
+}
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODAL CONFIRM CONTENT
+───────────────────────────────────────────────────────────────────────────── */
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-on-light);
+    line-height: var(--leading-snug);
+}
+
+.modal-ref {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--color-green-600);
+    margin-top: var(--space-2);
+}
+
+.modal-ai-result {
+    background: var(--color-bone-300);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    margin: var(--space-4) 0;
+}
+
+.modal-action-btns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-light);
+    background: var(--color-bone-300);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--dur-fast);
+}
+.action-btn:hover {
+    border-color: var(--color-green-500);
+    background: var(--color-bone-200);
+}
+
+.action-btn-label {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-on-light);
+}
+
+.action-btn-sub {
+    font-size: var(--text-xs);
+    color: var(--color-charcoal-400);
+}
+
+.action-sms-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-green-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    margin-top: var(--space-2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LEAFLET CUSTOM MARKER STYLES
+   (These augment/override Leaflet defaults via the .leaflet-* namespace)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Remove default Leaflet outline */
+.leaflet-container {
+    font-family: var(--font-body) !important;
+    background: var(--color-charcoal-600);
+}
+
+/* Custom circular marker */
+.er-marker {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2.5px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    font-size: 12px;
+    cursor: pointer;
+    transition: transform var(--dur-fast), box-shadow var(--dur-fast);
+}
+.er-marker:hover {
+    transform: scale(1.2) translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    z-index: 999 !important;
+}
+
+.er-marker-low      { background: var(--risk-low); }
+.er-marker-moderate { background: var(--risk-mod); }
+.er-marker-heavy    { background: var(--risk-heavy); }
+
+/* Active fire — pulsing ring */
+.er-marker-active {
+    background: var(--risk-heavy);
+    border-color: #fff;
+    position: relative;
+    z-index: 500 !important;
+}
+
+.er-pulse-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 3px solid var(--risk-active-pulse);
+    animation: pulse-ring 2s ease-out infinite;
+    pointer-events: none;
+}
+.er-pulse-ring-2 {
+    animation-delay: 0.7s;
+    opacity: 0.5;
+}
+
+/* Tooltip popup (Leaflet) */
+.er-tooltip {
+    background: var(--color-charcoal-800) !important;
+    border: 1px solid var(--border-default) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--color-bone-200) !important;
+    padding: var(--space-2) var(--space-3) !important;
+    font-family: var(--font-body) !important;
+    font-size: var(--text-sm) !important;
+    box-shadow: var(--shadow-md) !important;
+    max-width: 200px;
+}
+.er-tooltip::before { display: none; }
+
+.tooltip-title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+.tooltip-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--color-charcoal-200);
+}
+
+/* Custom Leaflet popup (minimal, mostly we use the drawer) */
+.leaflet-popup-content-wrapper {
+    display: none;
+}

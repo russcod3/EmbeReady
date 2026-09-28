@@ -1,0 +1,192 @@
+/**
+ * public/css/tokens.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * EmbeReady Design System — CSS Custom Properties (Tokens)
+ *
+ * BRAND PALETTE (3 colors only — UI chrome)
+ * ├── Field Charcoal   — surfaces, headers, deep backgrounds
+ * ├── Survey Bone      — canvas, cards, text ground
+ * └── Safety Exit Green — confirmed safe, evacuation, actions
+ *
+ * DATA COLORS (reserved strictly for hazard risk indicators)
+ * ├── Hazard Amber     — Low risk
+ * ├── Warning Orange   — Moderate risk
+ * └── Emergency Crimson — Heavy / Active fire
+ *
+ * TYPOGRAPHY
+ * ├── Barlow Condensed — display headings, signage, labels (600, 700)
+ * ├── Barlow           — body, UI prose, descriptions (400, 500, 600)
+ * └── IBM Plex Mono    — coordinates, ref numbers, timestamps, data
+ *
+ * RATIONALE: Barlow Condensed is inspired by California public service
+ * typography — highway signage, field operations, emergency dispatch.
+ * IBM Plex Mono brings instrument-panel data-readout character.
+ * Together they create an emergency field-guide aesthetic without the
+ * generic "AI startup" look of Space Grotesk or similar.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ── Google Fonts import ──────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+    /* ── Brand Colors ─────────────────────────────────────────────────────── */
+    --color-charcoal-900: #0e0f10;
+    --color-charcoal-800: #18191b;   /* PRIMARY surface */
+    --color-charcoal-700: #222427;
+    --color-charcoal-600: #2e3135;
+    --color-charcoal-500: #3c4044;
+    --color-charcoal-400: #565b61;
+    --color-charcoal-300: #737880;
+    --color-charcoal-200: #9ba0a8;
+    --color-charcoal-100: #c2c6cc;
+
+    --color-bone-100: #fafaf8;       /* light near-white */
+    --color-bone-200: #f6f4ee;       /* PRIMARY canvas */
+    --color-bone-300: #ece8dc;
+    --color-bone-400: #ddd8ca;
+    --color-bone-500: #c8c1ae;
+
+    --color-green-600: #047857;
+    --color-green-500: #059669;      /* PRIMARY safety green */
+    --color-green-400: #10b981;
+    --color-green-300: #34d399;
+    --color-green-200: #a7f3d0;
+    --color-green-100: #d1fae5;
+
+    /* ── Data-only Risk Colors (NEVER use for UI chrome) ─────────────────── */
+    --risk-low:       #d97706;      /* amber-700 — avoids pure yellow for contrast */
+    --risk-low-bg:    #fef3c7;
+    --risk-low-light: #f59e0b;
+    --risk-mod:       #ea580c;      /* orange-600 */
+    --risk-mod-bg:    #ffedd5;
+    --risk-mod-light: #f97316;
+    --risk-heavy:     #dc2626;      /* red-600 */
+    --risk-heavy-bg:  #fee2e2;
+    --risk-heavy-light: #ef4444;
+    --risk-active-pulse: #ff2020;
+
+    /* ── Semantic tokens ─────────────────────────────────────────────────── */
+    --surface-base:   var(--color-charcoal-800);
+    --surface-raised: var(--color-charcoal-700);
+    --surface-float:  var(--color-charcoal-600);
+    --surface-light:  var(--color-bone-200);
+    --surface-card:   var(--color-bone-300);
+
+    --text-primary:   var(--color-bone-200);
+    --text-secondary: var(--color-charcoal-200);
+    --text-muted:     var(--color-charcoal-300);
+    --text-on-light:  var(--color-charcoal-800);
+    --text-on-light-2:var(--color-charcoal-600);
+
+    --border-subtle:  var(--color-charcoal-600);
+    --border-default: var(--color-charcoal-500);
+    --border-strong:  var(--color-charcoal-400);
+    --border-light:   var(--color-bone-400);
+
+    --accent-primary: var(--color-green-500);
+    --accent-hover:   var(--color-green-400);
+    --accent-subtle:  var(--color-green-100);
+
+    /* ── Hazard stripe pattern (CSS gradient) ───────────────────────────── */
+    --stripe-danger:  repeating-linear-gradient(
+        -45deg,
+        var(--risk-heavy)    0px,
+        var(--risk-heavy)    6px,
+        var(--color-charcoal-800) 6px,
+        var(--color-charcoal-800) 12px
+    );
+    --stripe-warning: repeating-linear-gradient(
+        -45deg,
+        var(--risk-mod)      0px,
+        var(--risk-mod)      5px,
+        transparent         5px,
+        transparent         10px
+    );
+
+    /* ── Topographic line pattern (SVG data URI) ─────────────────────────── */
+    /* Used on landing screen hero section */
+    --topo-pattern: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23383b3f' stroke-width='0.8'%3E%3Cellipse cx='60' cy='60' rx='12' ry='8'/%3E%3Cellipse cx='60' cy='60' rx='24' ry='16'/%3E%3Cellipse cx='60' cy='60' rx='36' ry='24'/%3E%3Cellipse cx='60' cy='60' rx='48' ry='32'/%3E%3Cellipse cx='60' cy='60' rx='58' ry='40'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* ── Typography ─────────────────────────────────────────────────────── */
+    --font-display:  'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+    --font-body:     'Barlow', system-ui, -apple-system, sans-serif;
+    --font-mono:     'IBM Plex Mono', 'Courier New', monospace;
+
+    --text-xs:   0.6875rem;  /* 11px — telemetry fine print */
+    --text-sm:   0.75rem;    /* 12px */
+    --text-base: 0.875rem;   /* 14px */
+    --text-md:   1rem;       /* 16px */
+    --text-lg:   1.125rem;   /* 18px */
+    --text-xl:   1.25rem;    /* 20px */
+    --text-2xl:  1.5rem;     /* 24px */
+    --text-3xl:  2rem;       /* 32px */
+    --text-4xl:  2.5rem;     /* 40px */
+    --text-5xl:  3.5rem;     /* 56px */
+    --text-6xl:  5rem;       /* 80px */
+
+    --leading-tight:  1.1;
+    --leading-snug:   1.25;
+    --leading-normal: 1.5;
+
+    /* ── Spacing rhythm (8px base) ───────────────────────────────────────── */
+    --space-1:  0.25rem;  /* 4px */
+    --space-2:  0.5rem;   /* 8px */
+    --space-3:  0.75rem;  /* 12px */
+    --space-4:  1rem;     /* 16px */
+    --space-5:  1.25rem;  /* 20px */
+    --space-6:  1.5rem;   /* 24px */
+    --space-8:  2rem;     /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-16: 4rem;     /* 64px */
+    --space-20: 5rem;     /* 80px */
+
+    /* ── Borders & radii ─────────────────────────────────────────────────── */
+    --radius-none:  0;
+    --radius-sm:    2px;
+    --radius-md:    4px;
+    --radius-lg:    8px;
+    --radius-pill:  999px;
+
+    /* ── Elevation (box-shadows) ─────────────────────────────────────────── */
+    --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
+    --shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
+    --shadow-drawer: -4px 0 40px rgba(0,0,0,0.7);
+
+    /* ── Transitions ─────────────────────────────────────────────────────── */
+    --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in:    cubic-bezier(0.64, 0, 0.78, 0);
+    --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-fast:   150ms;
+    --dur-med:    250ms;
+    --dur-slow:   400ms;
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    --drawer-width:      420px;
+    --drawer-width-wide: 480px;
+    --header-height:     52px;
+    --filter-bar-height: 48px;
+    --report-form-max:   760px;
+    --z-map:      10;
+    --z-filter:   20;
+    --z-drawer:   30;
+    --z-modal:    50;
+    --z-toast:    60;
+}
+
+/* ── Reduced motion overrides ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --dur-fast: 0ms;
+        --dur-med:  0ms;
+        --dur-slow: 0ms;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

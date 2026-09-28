@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background: deep charcoal -->
+  <rect width="32" height="32" fill="#18191B" rx="4"/>
+  <!-- Hazard stripe accent bar -->
+  <rect x="0" y="26" width="32" height="6" fill="#EF4444" rx="0"/>
+  <!-- "ER" monogram in bone/cream -->
+  <text
+    x="16"
+    y="21"
+    text-anchor="middle"
+    font-family="Barlow Condensed, Arial Narrow, sans-serif"
+    font-weight="700"
+    font-size="17"
+    letter-spacing="1"
+    fill="#F6F4EE"
+  >ER</text>
+  <!-- Small map pin shape above text -->
+  <circle cx="16" cy="7" r="3" fill="#EF4444"/>
+  <line x1="16" y1="10" x2="16" y2="13" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

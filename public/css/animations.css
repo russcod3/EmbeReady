@@ -1,0 +1,198 @@
+/**
+ * public/css/animations.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * EmbeReady — Keyframe Animations & Transitions
+ * All durations reference tokens from tokens.css.
+ * prefers-reduced-motion: all animations are suppressed via tokens.css.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   KEYFRAMES
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Active fire marker pulse ring */
+@keyframes pulse-ring {
+    0%   { transform: scale(1);   opacity: 0.9; }
+    70%  { transform: scale(1.8); opacity: 0;   }
+    100% { transform: scale(1.8); opacity: 0;   }
+}
+
+/* Live counter / badge dot blink */
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* Legend item pulse for active */
+@keyframes legend-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+}
+
+/* Badge flash for active status */
+@keyframes badge-flash {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.7; }
+}
+
+/* Landing → map transition: fade-slide search content out */
+@keyframes search-exit {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-20px); }
+}
+
+/* Map view fade in */
+@keyframes map-enter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Toast notification slide up */
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Toast exit */
+@keyframes toast-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(8px); }
+}
+
+/* Factor bar entrance (triggered by JS adding class) */
+@keyframes bar-grow {
+    from { width: 0; }
+    to   { width: var(--factor-pct); }
+}
+
+/* Drawer spin-in for hazard score circle */
+@keyframes score-reveal {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1);   }
+}
+
+/* Shimmer loading skeleton */
+@keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+
+/* Marker pop — new marker appears */
+@keyframes marker-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    60%  { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ANIMATION UTILITY CLASSES
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Skeleton loading placeholder */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--color-charcoal-700) 0%,
+        var(--color-charcoal-600) 40%,
+        var(--color-charcoal-700) 80%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: var(--radius-sm);
+}
+
+/* View transition classes (added/removed by app.js) */
+.view-exit-active {
+    animation: search-exit var(--dur-slow) var(--ease-in) forwards;
+}
+.view-enter-active {
+    animation: map-enter var(--dur-slow) var(--ease-out) forwards;
+}
+
+/* Marker pop animation (added dynamically) */
+.marker-animate {
+    animation: marker-pop var(--dur-med) var(--ease-spring) forwards;
+}
+
+/* Score number reveal */
+.score-animate {
+    animation: score-reveal var(--dur-slow) var(--ease-spring) forwards;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HOVER EFFECTS — micro-interactions
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Card lift */
+.hover-lift {
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+}
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Outline highlight */
+.hover-outline {
+    transition: outline var(--dur-fast), outline-offset var(--dur-fast);
+}
+.hover-outline:hover {
+    outline: 2px solid var(--color-green-500);
+    outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIVE FIRE MARKER — special overlay dot animation
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Radar-sweep style: two rings staggered */
+.er-marker-active .er-pulse-ring   { animation-delay: 0s; }
+.er-marker-active .er-pulse-ring-2 { animation-delay: 0.75s; }
+
+/* The inner marker itself also slightly throbs */
+.er-marker-active {
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LOADING STATE
+───────────────────────────────────────────────────────────────────────────── */
+
+.loading-indicator {
+    display: none;
+    position: fixed;
+    top: calc(var(--header-height) + var(--filter-bar-height) + var(--space-3));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: calc(var(--z-filter) + 1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-bone-200);
+    background: var(--color-charcoal-800);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    padding: var(--space-2) var(--space-4);
+    box-shadow: var(--shadow-md);
+    gap: var(--space-2);
+    align-items: center;
+}
+.loading-indicator.is-visible {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--border-default);
+    border-top-color: var(--color-green-400);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
