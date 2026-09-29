@@ -164,11 +164,11 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
     }
 
     // Preparedness tabs
-    const beforeSteps = plan?.before || [];
-    const duringSteps = plan?.during || [];
-    const afterSteps  = plan?.after || [];
-    const evacTips    = plan?.evacuation_tips || [];
-    const prohibited  = plan?.prohibited_actions || [];
+    const beforeSteps = plan?.before_steps || plan?.before || [];
+    const duringSteps = plan?.during_steps || plan?.during || [];
+    const afterSteps = plan?.after_steps || plan?.after || [];
+    const evacTips = plan?.evacuation_tips || [];
+    const prohibited = plan?.prohibited_actions || [];
 
     const renderSteps = (steps, isProhibited = false) => {
         if (!steps || steps.length === 0) {
@@ -210,26 +210,30 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         contactsHtml = `
             <div class="contacts-grid">
                 ${contacts.map(c => {
-                    const is911 = c.phone === '911' || c.contact_type === 'national';
-                    const isPlaceholder = c.phone.includes('REPLACE-ME') || c.phone.startsWith('09XX');
-                    const callHref = isPlaceholder ? 'javascript:void(0)' : `tel:${c.phone.replace(/[^0-9+]/g, '')}`;
-                    const warnAttr = isPlaceholder ? `title="${S.drawer.placeholderWarn}"` : '';
-                    const extraClass = is911 ? 'contact-item-911' : '';
-                    const btnClass   = isPlaceholder ? 'contact-call-btn is-placeholder' : 'contact-call-btn';
+            const name = c.name || c.facility_name || 'Unnamed contact';
+            const phone = String(c.phone || c.phone_display || '');
+            const ctype = String(c.contact_type || c.agency_type || '').toLowerCase();
 
-                    return `
+            const is911 = phone === '911' || ctype === 'national';
+            const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX');
+            const callHref = isPlaceholder ? 'javascript:void(0)' : `tel:${phone.replace(/[^0-9+]/g, '')}`;
+            const warnAttr = isPlaceholder ? `title="${S.drawer.placeholderWarn}"` : '';
+            const extraClass = is911 ? 'contact-item-911' : '';
+            const btnClass = isPlaceholder ? 'contact-call-btn is-placeholder' : 'contact-call-btn';
+
+            return `
                         <div class="contact-item ${extraClass}">
                             <div class="contact-info">
-                                <div class="contact-name">${escapeHtml(c.name)}</div>
-                                <div class="contact-type">${escapeHtml(c.jurisdiction || c.contact_type || '')}</div>
-                                <div class="contact-phone">${escapeHtml(c.phone)}</div>
+                                <div class="contact-name">${escapeHtml(name)}</div>
+                                <div class="contact-type">${escapeHtml(c.jurisdiction || ctype || '')}</div>
+                                <div class="contact-phone">${escapeHtml(phone || 'Not configured')}</div>
                             </div>
                             <a href="${callHref}" class="${btnClass}" ${warnAttr}>
                                 ${isPlaceholder ? 'UNCONFIGURED' : 'CALL'}
                             </a>
                         </div>
                     `;
-                }).join('')}
+        }).join('')}
             </div>
         `;
     }
