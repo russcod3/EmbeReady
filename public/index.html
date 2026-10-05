@@ -169,29 +169,31 @@ in your area.</h1>
                 <button id="filter-reset-btn" class="filter-reset">Clear filters</button>
             </nav>
 
-            <!-- Map Viewport -->
-            <div id="map" role="region" aria-label="Batangas City Fire Hazard Map"></div>
+            <!-- Map Viewport Wrapper -->
+            <div class="map-viewport-wrapper">
+                <div id="map" role="region" aria-label="Batangas City Fire Hazard Map"></div>
 
-            <!-- Map Legend (Bottom-Left) -->
-            <aside class="map-legend" aria-label="Map Legend">
-                <div class="legend-title">Risk Level</div>
-                <div class="legend-item legend-item-heavy">
-                    <span class="legend-glyph">▲</span>
-                    <span>Heavy</span>
-                </div>
-                <div class="legend-item legend-item-mod">
-                    <span class="legend-glyph">◆</span>
-                    <span>Moderate</span>
-                </div>
-                <div class="legend-item legend-item-low">
-                    <span class="legend-glyph">●</span>
-                    <span>Low</span>
-                </div>
-                <div class="legend-item legend-item-active" style="margin-top:2px;">
-                    <span class="legend-glyph" style="border-color:transparent;">🔥</span>
-                    <span style="color:var(--risk-heavy);font-weight:700;">Live Fire</span>
-                </div>
-            </aside>
+                <!-- Map Legend (Bottom-Left) -->
+                <aside class="map-legend" aria-label="Map Legend">
+                    <div class="legend-title">Risk Level</div>
+                    <div class="legend-item legend-item-heavy">
+                        <span class="legend-glyph">▲</span>
+                        <span>Heavy</span>
+                    </div>
+                    <div class="legend-item legend-item-mod">
+                        <span class="legend-glyph">◆</span>
+                        <span>Moderate</span>
+                    </div>
+                    <div class="legend-item legend-item-low">
+                        <span class="legend-glyph">●</span>
+                        <span>Low</span>
+                    </div>
+                    <div class="legend-item legend-item-active" style="margin-top:2px;">
+                        <span class="legend-glyph" style="border-color:transparent;">🔥</span>
+                        <span style="color:var(--risk-heavy);font-weight:700;">Live Fire</span>
+                    </div>
+                </aside>
+            </div>
 
             <!-- Detail Drawer (Desktop Right Panel / Mobile Bottom Sheet) -->
             <aside id="hazard-drawer" aria-label="Hazard Details Panel">
@@ -212,7 +214,12 @@ in your area.</h1>
             <!-- Report Form Section (Below Map) -->
             <section id="report-section" aria-label="Submit Hazard Report">
                 <div class="report-section-inner">
-                    <h2 class="report-heading">Report a Hazard or Risk</h2>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
+                        <h2 class="report-heading" style="margin-bottom:0;">Report a Hazard or Risk</h2>
+                        <button type="button" id="back-to-map-btn" class="filter-chip" style="color:var(--text-secondary); border-color:var(--border-light); cursor:pointer;">
+                            &uarr; Back to Map
+                        </button>
+                    </div>
                     <div class="report-heading-stripe"></div>
                     <p class="report-sub">
                         All reports appear immediately on the community map after submission. No login or account required.

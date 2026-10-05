@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmbeReady — Starting Application</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 36px 32px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(249, 115, 22, 0.15);
+      color: #fb923c;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .code-block {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: Consolas, Monaco, monospace;
+      color: #38bdf8;
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      background: #ea580c;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: 8px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn:hover {
+      background: #c2410c;
+      transform: translateY(-1px);
+    }
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #64748b;
+    }
+  </style>
+  <script>
+    // Automatically redirect to Express server at port 3000 if active
+    fetch('http://localhost:3000/api/health')
+      .then(res => {
+        if (res.ok) {
+          window.location.href = 'http://localhost:3000';
+        }
+      })
+      .catch(() => {
+        // Backend not reachable on 3000
+      });
+  </script>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">Node.js Express App</div>
+    <h1>Open EmbeReady on Port 3000</h1>
+    <p>
+      EmbeReady requires its Node.js backend for database and hazard map features.
+      If the backend server is running, you will be redirected automatically.
+    </p>
+    <div>
+      <div class="code-block">npm start</div>
+    </div>
+    <a class="btn" href="http://localhost:3000">Go to http://localhost:3000</a>
+    <div class="status">Click the button above to view the app</div>
+  </div>
+</body>
+</html>

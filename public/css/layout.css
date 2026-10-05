@@ -396,7 +396,9 @@ ul, ol { list-style: none; }
 
 #view-map {
     position: relative;
-    overflow: hidden;
+    padding-top: calc(var(--header-height) + var(--filter-bar-height));
+    min-height: 100dvh;
+    overflow-x: hidden;
 }
 
 /* Global map header bar */
@@ -481,21 +483,28 @@ ul, ol { list-style: none; }
 }
 .filter-bar::-webkit-scrollbar { display: none; }
 
-/* The map itself */
+/* The map viewport container */
+.map-viewport-wrapper {
+    position: relative;
+    width: 100%;
+    height: calc(100dvh - var(--header-height) - var(--filter-bar-height));
+    flex-shrink: 0;
+    transition: width var(--dur-slow) var(--ease-out);
+    overflow: hidden;
+}
+
+/* The map itself fills its container */
 #map {
-    position: fixed;
-    top: calc(var(--header-height) + var(--filter-bar-height));
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: var(--z-map);
 }
 
-/* When drawer is open on desktop, map shifts left */
+/* When drawer is open on desktop, map viewport shifts left */
 @media (min-width: 768px) {
-    .drawer-open #map {
-        right: var(--drawer-width);
-        transition: right var(--dur-slow) var(--ease-out);
+    .drawer-open .map-viewport-wrapper {
+        width: calc(100% - var(--drawer-width));
     }
 }
 

@@ -90,11 +90,13 @@ function switchView(viewName) {
     if (viewName === 'map') {
         landingView.classList.remove('is-active');
         mapView.classList.add('is-active');
+        window.scrollTo(0, 0);
         invalidateSize();
     } else {
         closeDrawer();
         mapView.classList.remove('is-active');
         landingView.classList.add('is-active');
+        window.scrollTo(0, 0);
     }
 }
 
@@ -107,7 +109,10 @@ function setupNavigation() {
     if (exploreBtn) {
         exploreBtn.addEventListener('click', () => {
             switchView('map');
-            resetView();
+            setTimeout(() => {
+                invalidateSize();
+                resetView();
+            }, 60);
         });
     }
 
@@ -142,13 +147,22 @@ function setupNavigation() {
             scrollToReport();
         });
     }
+
+    // Back to map button in report section
+    const backToMapBtn = document.getElementById('back-to-map-btn');
+    if (backToMapBtn) {
+        backToMapBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
 }
 
 function scrollToReport() {
     const reportSection = document.getElementById('report-section');
     if (reportSection) {
         reportSection.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => refreshMiniMap(), 400);
+        setTimeout(() => refreshMiniMap(), 300);
+        setTimeout(() => refreshMiniMap(), 600);
     }
 }
 
@@ -236,8 +250,11 @@ function renderAutocompleteResults(results, dropEl, inputEl, isOffline) {
 
 function executeSearchJump(lat, lng, label) {
     switchView('map');
-    highlightLocation(lat, lng, label);
-    showToast(`Jumped to ${label}`, 'info');
+    setTimeout(() => {
+        invalidateSize();
+        highlightLocation(lat, lng, label);
+        showToast(`Jumped to ${label}`, 'info');
+    }, 60);
 }
 
 /**
