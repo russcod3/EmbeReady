@@ -14,11 +14,11 @@ const BOUNDS = { south: 13.60, north: 13.85, west: 120.93, east: 121.14 };
 // ── Quick-jump locations ──────────────────────────────────────────────────────
 export const QUICK_JUMPS = [
     { label: 'Poblacion',       lat: 13.7565, lng: 121.0583 },
-    { label: 'Batangas Port',   lat: 13.7575, lng: 121.0401 },
+    { label: 'Batangas Port',   lat: 13.7552, lng: 121.0440 },
     { label: 'Alangilan',       lat: 13.7841, lng: 121.0722 },
     { label: 'Pallocan',        lat: 13.7510, lng: 121.0478 },
-    { label: 'Grand Terminal',  lat: 13.7438, lng: 121.0516 },
-    { label: 'Tabangao',        lat: 13.7812, lng: 121.1095 }
+    { label: 'Grand Terminal',  lat: 13.7898, lng: 121.0623 },
+    { label: 'Tabangao',        lat: 13.7142, lng: 121.0645 }
 ];
 
 /**

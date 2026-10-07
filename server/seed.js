@@ -85,42 +85,42 @@ const BARANGAYS = [
     },
     {
         name: 'Santa Clara', classification: 'coastal',
-        center_lat: 13.7578, center_lng: 121.0401,
+        center_lat: 13.7539, center_lng: 121.0449,
         evacuation_center_name: 'Santa Clara Barangay Hall / Covered Court'
     },
     {
         name: 'Wawa', classification: 'coastal',
-        center_lat: 13.7542, center_lng: 121.0316,
+        center_lat: 13.7417, center_lng: 121.0530,
         evacuation_center_name: 'Wawa Barangay Hall'
     },
     {
         name: 'Bolbok', classification: 'transit',
-        center_lat: 13.7438, center_lng: 121.0516,
+        center_lat: 13.7725, center_lng: 121.0492,
         evacuation_center_name: 'Bolbok Covered Court / Barangay Hall'
     },
     {
         name: 'Tabangao', classification: 'industrial',
-        center_lat: 13.7812, center_lng: 121.1095,
+        center_lat: 13.7142, center_lng: 121.0645,
         evacuation_center_name: 'Tabangao Barangay Hall'
     },
     {
         name: 'Ilijan', classification: 'industrial',
-        center_lat: 13.8058, center_lng: 121.1178,
+        center_lat: 13.6333, center_lng: 121.0713,
         evacuation_center_name: 'Ilijan Barangay Hall / Covered Court'
     },
     {
         name: 'Sorosoro Ibaba', classification: 'upland',
-        center_lat: 13.7268, center_lng: 121.0398,
+        center_lat: 13.8112, center_lng: 121.0897,
         evacuation_center_name: 'Sorosoro Ibaba Elementary School'
     },
     {
         name: 'Tinga Labac', classification: 'upland',
-        center_lat: 13.7178, center_lng: 121.0348,
+        center_lat: 13.7964, center_lng: 121.0803,
         evacuation_center_name: 'Tinga Labac Barangay Hall'
     },
     {
         name: 'Dumantay', classification: 'upland',
-        center_lat: 13.7092, center_lng: 121.0448,
+        center_lat: 13.7653, center_lng: 121.1034,
         evacuation_center_name: 'Dumantay Barangay Hall'
     },
     // Calicanto added for contacts file completeness
@@ -275,7 +275,7 @@ const HAZARDS_RAW = [
         barangay: 'Santa Clara',
         title:    'Flammable goods storage — port-side warehouse',
         category: 'flammable_storage', risk_level: 'heavy', status: 'potential',
-        lat: 13.7582, lng: 121.0406,
+        lat: 13.7552, lng: 121.0440,
         address:  'Port-side warehouse area, Santa Clara, near Batangas Port',
         description: 'A warehouse near the port area stores paint, solvents, and petroleum-based lubricants without fire-rated wall separation. Ventilation openings are obstructed by stacked goods. No sprinkler system. Only one fire extinguisher (CO₂, expired) is visible. MSDS documents are not posted.',
         photo_url: '/uploads/seed/hazard-14.jpg'
@@ -286,7 +286,7 @@ const HAZARDS_RAW = [
         title:    'Structure fire — coastal shanty cluster',
         category: 'informal_settlement', risk_level: 'heavy', status: 'active',
         active_offset_minutes: -22,  // started 22 minutes ago (computed at seed time)
-        lat: 13.7570, lng: 121.0395,
+        lat: 13.7532, lng: 121.0452,
         address:  'Coastal shanty row, shoreline edge, Santa Clara',
         description: '⚠️ DEMO ACTIVE FIRE: A rapidly spreading fire is consuming three to four improvised wooden and tarpaulin structures in a coastal shanty cluster along the shoreline. Adjacent structures at immediate risk. Access is restricted by a narrow dirt lane.',
         photo_url: '/uploads/seed/hazard-15.jpg'
@@ -296,7 +296,7 @@ const HAZARDS_RAW = [
         barangay: 'Wawa',
         title:    'Dense informal settlement — congested alleyways near shoreline',
         category: 'informal_settlement', risk_level: 'heavy', status: 'potential',
-        lat: 13.7545, lng: 121.0322,
+        lat: 13.7425, lng: 121.0538,
         address:  'Informal settlement cluster, Wawa coastal zone',
         description: 'A densely packed informal settlement of approximately 30–40 residential structures in close proximity to the shoreline. Structures are constructed primarily from salvaged lumber, plywood, and nipa. Internal lanes are 0.5–0.8 meters wide. Open cooking, candle use, and improvised electrical connections are observed throughout.',
         photo_url: '/uploads/seed/hazard-16.jpg'
@@ -307,7 +307,7 @@ const HAZARDS_RAW = [
         title:    'Open burning — debris pile near residential cluster',
         category: 'illegal_burning', risk_level: 'heavy', status: 'active',
         active_offset_minutes: -9,  // started 9 minutes ago
-        lat: 13.7538, lng: 121.0310,
+        lat: 13.7410, lng: 121.0522,
         address:  'Vacant lot edge, Wawa coastal area',
         description: '⚠️ DEMO ACTIVE FIRE: An unattended debris-burning pile has expanded to dry surrounding vegetation within 4 meters of the nearest residential structure. Wind from the sea is accelerating spread toward the informal settlement.',
         photo_url: '/uploads/seed/hazard-17.jpg'
@@ -317,7 +317,7 @@ const HAZARDS_RAW = [
         barangay: 'Bolbok',
         title:    'LPG and vehicle fuel storage — terminal service area',
         category: 'lpg_storage', risk_level: 'heavy', status: 'potential',
-        lat: 13.7441, lng: 121.0519,
+        lat: 13.7738, lng: 121.0502,
         address:  'Service and fuel storage area, transport terminal, Bolbok',
         description: 'A terminal service bay adjacent to a major transit hub stores LPG cylinders and vehicle fuel in close proximity. Fuel drums are unlabeled. The area is open to public access. Two motorcycles are parked within 1 meter of the fuel drum cluster. Cigarette butts are visible on the ground.',
         photo_url: '/uploads/seed/hazard-18.jpg'
@@ -327,7 +327,7 @@ const HAZARDS_RAW = [
         barangay: 'Bolbok',
         title:    'Blocked emergency exits — commercial transit terminal structure',
         category: 'blocked_exit', risk_level: 'moderate', status: 'potential',
-        lat: 13.7435, lng: 121.0513,
+        lat: 13.7718, lng: 121.0488,
         address:  'Waiting area, commercial terminal building, Bolbok',
         description: 'Multiple fire exit doors in a busy transit terminal waiting area are obstructed by vendor stalls, baggage carousels, and parked trolleys. Exit signage is faded and not illuminated. The space has high pedestrian density during peak travel hours. Nearest unobstructed exit is approximately 40 meters from the far end of the waiting hall.',
         photo_url: '/uploads/seed/hazard-19.jpg'
@@ -337,7 +337,7 @@ const HAZARDS_RAW = [
         barangay: 'Tabangao',
         title:    'Industrial chemical compound — open-yard drum storage',
         category: 'flammable_storage', risk_level: 'heavy', status: 'potential',
-        lat: 13.7815, lng: 121.1098,
+        lat: 13.7185, lng: 121.0665,
         address:  'Industrial compound, eastern industrial zone, Tabangao',
         description: 'A large open-yard compound contains numerous 200-liter drums labeled with flammable chemical markings. Some drums show corrosion and leakage staining at the base. The yard is adjacent to a perimeter road near a residential edge. No secondary containment bunding is visible. Fire suppression equipment is not accessible from the yard entrance.',
         photo_url: '/uploads/seed/hazard-20.jpg'
@@ -347,7 +347,7 @@ const HAZARDS_RAW = [
         barangay: 'Tabangao',
         title:    'LPG and fuel pipeline corridor — proximate to residential zone',
         category: 'lpg_storage', risk_level: 'moderate', status: 'potential',
-        lat: 13.7808, lng: 121.1085,
+        lat: 13.7155, lng: 121.0652,
         address:  'Pipeline corridor edge, Tabangao industrial zone',
         description: 'An above-ground pipeline corridor runs within approximately 50 meters of the nearest residential structures. Informal housing has incrementally expanded toward the corridor over time. Pipeline inspection markers are present but condition of above-ground sections cannot be visually confirmed. Community awareness of the hazard is limited.',
         photo_url: '/uploads/seed/hazard-21.jpg'
@@ -357,7 +357,7 @@ const HAZARDS_RAW = [
         barangay: 'Ilijan',
         title:    'Informal settlement — adjacent to power facility perimeter',
         category: 'informal_settlement', risk_level: 'heavy', status: 'potential',
-        lat: 13.8052, lng: 121.1172,
+        lat: 13.6350, lng: 121.0730,
         address:  'Informal settlement, perimeter zone, Ilijan industrial area',
         description: 'A cluster of approximately 20 informal structures has established itself adjacent to the perimeter fence of a power facility. Structures are within 15–30 meters of industrial infrastructure. Improvised electrical connections tap from the perimeter lighting circuit. Community has no formal evacuation plan.',
         photo_url: '/uploads/seed/hazard-22.jpg'
@@ -367,7 +367,7 @@ const HAZARDS_RAW = [
         barangay: 'Ilijan',
         title:    'Flammable chemical drums — open yard, industrial compound',
         category: 'flammable_storage', risk_level: 'moderate', status: 'potential',
-        lat: 13.8065, lng: 121.1183,
+        lat: 13.6375, lng: 121.0760,
         address:  'Open storage yard, industrial compound, Ilijan',
         description: 'Approximately 30 chemical drums (labels partially degraded) are stored in an open yard with no secondary containment. Some drums are uncapped. The yard receives direct sunlight with ambient temperatures that can reach 38–40°C during dry season. The site is downwind of the settlement cluster.',
         photo_url: '/uploads/seed/hazard-23.jpg'
@@ -377,7 +377,7 @@ const HAZARDS_RAW = [
         barangay: 'Sorosoro Ibaba',
         title:    'Dry brush and cogon hillside — upland fire risk zone',
         category: 'dry_grass', risk_level: 'moderate', status: 'potential',
-        lat: 13.7271, lng: 121.0402,
+        lat: 13.8125, lng: 121.0910,
         address:  'Upland hillside, Sorosoro Ibaba',
         description: 'An extensive area of cogon grass and dried scrub brush covers an upland hillside in Sorosoro Ibaba. The area has not been cleared or maintained. Steep gradient on the upper slope will accelerate any fire spread downhill toward residential areas at the hillside base. Multiple informal paths and trails pass through the area.',
         photo_url: '/uploads/seed/hazard-24.jpg'
@@ -388,7 +388,7 @@ const HAZARDS_RAW = [
         title:    'Illegal burning of agricultural waste — spreading to brush',
         category: 'illegal_burning', risk_level: 'heavy', status: 'active',
         active_offset_minutes: -41,  // started 41 minutes ago
-        lat: 13.7261, lng: 121.0391,
+        lat: 13.8105, lng: 121.0885,
         address:  'Agricultural plot edge, Sorosoro Ibaba',
         description: '⚠️ DEMO ACTIVE FIRE: An agricultural waste burn on a plot edge has spread to adjacent cogon grassland. Fire is now moving upslope at an estimated 3–5 meters per minute. Smoke is visible from the main road. Nearest residential structures are approximately 80 meters downhill.',
         photo_url: '/uploads/seed/hazard-25.jpg'
@@ -398,7 +398,7 @@ const HAZARDS_RAW = [
         barangay: 'Tinga Labac',
         title:    'Dry grass slope — seasonal fire risk, upland zone',
         category: 'dry_grass', risk_level: 'moderate', status: 'potential',
-        lat: 13.7181, lng: 121.0352,
+        lat: 13.7955, lng: 121.0792,
         address:  'Hillside slope, Tinga Labac upland area',
         description: 'A hillside grass slope covering approximately 2 hectares in Tinga Labac consists of mature, fully dried cogon grass at the peak of dry season. The area borders a narrow road used for barangay access. Downslope, within 120 meters, are the nearest residential structures of the barangay.',
         photo_url: '/uploads/seed/hazard-26.jpg'
@@ -408,7 +408,7 @@ const HAZARDS_RAW = [
         barangay: 'Tinga Labac',
         title:    'Illegal burning near residential edge — dry season activity',
         category: 'illegal_burning', risk_level: 'moderate', status: 'contained',
-        lat: 13.7172, lng: 121.0341,
+        lat: 13.7972, lng: 121.0815,
         address:  'Residential edge lot, Tinga Labac',
         description: 'A recent illegal burning incident at the edge of a residential lot was contained by community members using water drums. Residual hotspot smoldering is still present. The neighboring lots have dry vegetation that could reignite. Community members have been advised but no formal barangay action has been recorded.',
         photo_url: '/uploads/seed/hazard-27.jpg'
@@ -418,7 +418,7 @@ const HAZARDS_RAW = [
         barangay: 'Dumantay',
         title:    'Cogon brush — road-adjacent hillside, seasonal fire hazard',
         category: 'dry_grass', risk_level: 'low', status: 'potential',
-        lat: 13.7095, lng: 121.0451,
+        lat: 13.7660, lng: 121.1045,
         address:  'Road-adjacent hillside, Dumantay',
         description: 'A road-adjacent hillside in Dumantay is covered with seasonal cogon grass and scattered brush. The vegetation line reaches within 2–3 meters of the road shoulder. During peak dry season, the fire risk from passing vehicle exhaust or discarded materials is elevated. No firebreak is maintained along this road edge.',
         photo_url: '/uploads/seed/hazard-28.jpg'
@@ -471,7 +471,7 @@ const FIRE_HISTORY_RAW = [
         incident_name: 'DEMO: Coastal shanty structure fire — 5 families displaced',
         incident_year: 2020, severity: 'heavy',
         damage_notes: 'Five shanty structures along the shoreline were destroyed. Wind from the bay accelerated spread. BFP suppression was delayed by narrow access. Families relocated to Brgy. Hall temporarily.',
-        lat: 13.7569, lng: 121.0394
+        lat: 13.7530, lng: 121.0450
     },
     {
         barangay: 'Wawa',
@@ -479,7 +479,7 @@ const FIRE_HISTORY_RAW = [
         incident_name: 'DEMO: Settlement night fire — partial structure loss',
         incident_year: 2019, severity: 'moderate',
         damage_notes: 'A cooking fire in an enclosed shanty spread to two adjacent units before community suppression. One minor injury. Two structures rendered uninhabitable.',
-        lat: 13.7543, lng: 121.0320
+        lat: 13.7420, lng: 121.0535
     },
     {
         barangay: 'Alangilan',
@@ -503,7 +503,7 @@ const FIRE_HISTORY_RAW = [
         incident_name: 'DEMO: Chemical drum fire — industrial zone, contained',
         incident_year: 2018, severity: 'heavy',
         damage_notes: 'Ignition of a leaking solvent drum spread to four adjacent drums. Industrial fire brigade responded before BFP arrival. No community impact but significant smoke dispersion reported toward residential area.',
-        lat: 13.7812, lng: 121.1097
+        lat: 13.7180, lng: 121.0660
     },
     {
         barangay: 'Bolbok',
@@ -511,7 +511,7 @@ const FIRE_HISTORY_RAW = [
         incident_name: 'DEMO: Terminal service area fuel fire — vehicle damage',
         incident_year: 2021, severity: 'moderate',
         damage_notes: 'Spilled fuel near a vehicle maintenance bay ignited. Two vehicles partially burned. Terminal evacuated for approximately 2 hours. No injuries. BFP arrived in approximately 11 minutes.',
-        lat: 13.7440, lng: 121.0518
+        lat: 13.7735, lng: 121.0498
     },
     {
         barangay: 'Sorosoro Ibaba',
@@ -519,7 +519,7 @@ const FIRE_HISTORY_RAW = [
         incident_name: 'DEMO: Hillside grass fire — 1.5 ha burned',
         incident_year: 2022, severity: 'moderate',
         damage_notes: 'An estimated 1.5 hectares of cogon grass burned on the Sorosoro Ibaba upland hillside during peak dry season. Community fire brigade managed containment before the fire reached residential structures. No injuries.',
-        lat: 13.7268, lng: 121.0400
+        lat: 13.8115, lng: 121.0900
     },
     {
         barangay: 'Brgy. 12 (Poblacion)',
