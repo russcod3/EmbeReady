@@ -262,6 +262,14 @@ export function highlightLocation(lat, lng, label = '') {
 }
 
 /**
+ * getMapInstance()
+ * Returns the initialized Leaflet map instance for use by other modules.
+ */
+export function getMapInstance() {
+    return _map;
+}
+
+/**
  * resetView()
  */
 export function resetView() {

@@ -16,9 +16,10 @@
 import S from '../strings.js';
 import { fetchHazards, startLivePolling } from './api.js';
 import { search, QUICK_JUMPS, formatLabel } from './search.js';
-import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize } from './map.js';
+import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize, getMapInstance } from './map.js';
 import { initDrawer, openDrawer, closeDrawer } from './drawer.js';
 import { initReportForm, refreshMiniMap } from './report.js';
+import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations } from './infrastructure.js';
 
 // State
 let _currentView = 'landing'; // 'landing' | 'map'
@@ -36,10 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initApp() {
     // 1. Initialize Map & Detail Drawer
-    initMap('map', (hazardId) => {
+    const map = initMap('map', (hazardId) => {
         openDrawer(hazardId);
     });
     initDrawer();
+
+    // 1b. Initialize Infrastructure Layers (hidden by default)
+    initInfrastructure(map);
 
     // 2. Initialize Report Form
     initReportForm(async (newHazardId) => {
@@ -153,6 +157,38 @@ function setupNavigation() {
     if (backToMapBtn) {
         backToMapBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ── Infrastructure Layer Toggles ─────────────────────────────────────────
+    const hydrantBtn     = document.getElementById('toggle-hydrants-btn');
+    const hospitalBtn    = document.getElementById('toggle-hospitals-btn');
+    const fireStationBtn = document.getElementById('toggle-firestations-btn');
+
+    if (hydrantBtn) {
+        hydrantBtn.addEventListener('click', () => {
+            const visible = toggleHydrants();
+            hydrantBtn.classList.toggle('infra-toggle-active', visible);
+            hydrantBtn.setAttribute('aria-pressed', visible);
+            showToast(visible ? '🔵 Fire Hydrants shown' : 'Fire Hydrants hidden', 'info');
+        });
+    }
+
+    if (hospitalBtn) {
+        hospitalBtn.addEventListener('click', () => {
+            const visible = toggleHospitals();
+            hospitalBtn.classList.toggle('infra-toggle-active', visible);
+            hospitalBtn.setAttribute('aria-pressed', visible);
+            showToast(visible ? '🏥 Hospitals shown' : 'Hospitals hidden', 'info');
+        });
+    }
+
+    if (fireStationBtn) {
+        fireStationBtn.addEventListener('click', () => {
+            const visible = toggleFireStations();
+            fireStationBtn.classList.toggle('infra-toggle-active', visible);
+            fireStationBtn.setAttribute('aria-pressed', visible);
+            showToast(visible ? '🚒 Fire Stations shown' : 'Fire Stations hidden', 'info');
         });
     }
 }
