@@ -142,29 +142,68 @@ router.get('/meta/barangays', (req, res) => {
     }
 });
 
-// ── GET /api/geocode — offline barangay/hazard search ─────────────────────────
+// Curated real-world Batangas City landmarks (matches Google Maps ground truth)
+const BATANGAS_LANDMARKS = [
+    { name: 'Batangas State University - Alangilan Campus', lat: 13.7841, lng: 121.0743, type: 'University', barangay_name: 'Alangilan' },
+    { name: 'Batangas State University - Pablo Borbon (Main)', lat: 13.7543, lng: 121.0549, type: 'University', barangay_name: 'Brgy. 1 (Poblacion)' },
+    { name: 'Batangas City Grand Terminal', lat: 13.7898, lng: 121.0623, type: 'Terminal', barangay_name: 'Bolbok' },
+    { name: 'Batangas Port (Passenger & Cargo Terminal)', lat: 13.7552, lng: 121.0440, type: 'Port', barangay_name: 'Santa Clara' },
+    { name: 'SM City Batangas', lat: 13.7505, lng: 121.0515, type: 'Commercial', barangay_name: 'Pallocan West' },
+    { name: 'Batangas Medical Center (BatMC)', lat: 13.7670, lng: 121.0668, type: 'Hospital', barangay_name: 'Kumintang Ibaba' },
+    { name: 'St. Patrick\'s Hospital Medical Center', lat: 13.7556, lng: 121.0603, type: 'Hospital', barangay_name: 'Brgy. 3 (Poblacion)' },
+    { name: 'United Doctors of St. Camillus de Lellis Hospital', lat: 13.7821, lng: 121.0559, type: 'Hospital', barangay_name: 'Bolbok' },
+    { name: 'Batangas City Hall / Plaza Mabini', lat: 13.7559, lng: 121.0592, type: 'Government', barangay_name: 'Brgy. 1 (Poblacion)' },
+    { name: 'Batangas Provincial Capitol', lat: 13.7617, lng: 121.0528, type: 'Government', barangay_name: 'Kumintang Ibaba' },
+    { name: 'BFP Batangas City Central Fire Station', lat: 13.7562, lng: 121.0590, type: 'Fire Station', barangay_name: 'Brgy. 1 (Poblacion)' },
+    { name: 'Batangas Sports Coliseum', lat: 13.7715, lng: 121.0535, type: 'Sports', barangay_name: 'Bolbok' },
+    { name: 'Batangas Diversion Road', lat: 13.7750, lng: 121.0550, type: 'Highway', barangay_name: 'Bolbok / Alangilan' }
+];
+
+// ── GET /api/geocode — offline barangay & landmark search ──────────────────────
 router.get('/meta/geocode', (req, res) => {
     const q = (req.query.q || '').trim().toLowerCase();
     if (!q) return res.json({ success: true, data: [] });
 
     try {
-        // Match barangays by name
+        // 1. Match official barangays by name (highest priority)
         const barangays = db.prepare(`
-            SELECT name, center_lat AS lat, center_lng AS lng, 'barangay' AS type
+            SELECT name, center_lat AS lat, center_lng AS lng, 'Barangay' AS type
             FROM barangays
             WHERE lower(name) LIKE ?
+            ORDER BY
+                CASE WHEN lower(name) = ? THEN 1
+                     WHEN lower(name) LIKE ? THEN 2
+                     ELSE 3 END,
+                name ASC
             LIMIT 5
+        `).all(`%${q}%`, q, `${q}%`);
+
+        // 2. Match curated Batangas City landmarks (schools, terminals, hospitals)
+        const matchedLandmarks = BATANGAS_LANDMARKS.filter(lm =>
+            lm.name.toLowerCase().includes(q) || lm.barangay_name.toLowerCase().includes(q)
+        ).slice(0, 3);
+
+        // 3. Match evacuation sites
+        const evacCenters = db.prepare(`
+            SELECT evacuation_center_name AS name, center_lat AS lat, center_lng AS lng, 'Evacuation Site' AS type, name AS barangay_name
+            FROM barangays
+            WHERE lower(evacuation_center_name) LIKE ? AND evacuation_center_name IS NOT NULL
+            LIMIT 2
         `).all(`%${q}%`);
 
-        // Match hazard titles / addresses
-        const hazards = db.prepare(`
-            SELECT h.title AS name, h.lat, h.lng, 'hazard' AS type, b.name AS barangay_name
-            FROM hazards h JOIN barangays b ON h.barangay_id = b.id
-            WHERE lower(h.title) LIKE ? OR lower(h.address) LIKE ? OR lower(b.name) LIKE ?
-            LIMIT 5
-        `).all(`%${q}%`, `%${q}%`, `%${q}%`);
+        // 4. Only search hazards if the user explicitly types hazard keywords (e.g. fire, wiring, lpg)
+        const isHazardKeyword = ['fire', 'sunog', 'wiring', 'lpg', 'grass', 'burning', 'outlets', 'chemical'].some(k => q.includes(k));
+        let hazards = [];
+        if (isHazardKeyword) {
+            hazards = db.prepare(`
+                SELECT h.title AS name, h.lat, h.lng, 'Hazard' AS type, b.name AS barangay_name
+                FROM hazards h JOIN barangays b ON h.barangay_id = b.id
+                WHERE lower(h.title) LIKE ?
+                LIMIT 2
+            `).all(`%${q}%`);
+        }
 
-        res.json({ success: true, data: [...barangays, ...hazards] });
+        res.json({ success: true, data: [...barangays, ...matchedLandmarks, ...evacCenters, ...hazards] });
     } catch (err) {
         console.error('[GET /api/geocode]', err);
         res.status(500).json({ success: false, error: 'Database error' });

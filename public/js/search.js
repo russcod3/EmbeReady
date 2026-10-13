@@ -2,8 +2,10 @@
  * public/js/search.js
  * ─────────────────────────────────────────────────────────────────────────────
  * EmbeReady — Location Search Module
- * Handles: Nominatim online search → offline local DB fallback
- * Feeds results to: app.js (which calls map.js to center the map)
+ * Matches Google Maps ground truth for Batangas City:
+ * - Prioritizes official Batangas City barangays and landmarks
+ * - Cleans OSM boundary hierarchy artifacts (e.g. Alangilan vs Banaba South)
+ * - Returns clean "{Place}, Batangas City" labels
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -22,54 +24,113 @@ export const QUICK_JUMPS = [
 ];
 
 /**
- * search(query)
- * Tries Nominatim first; falls back to local DB if offline or no results.
- * Returns: { results: Array<{label, lat, lng, type, source}>, offline: boolean }
+ * cleanPlaceLabel(r)
+ * Converts raw OSM / local names into clean Google Maps-style labels:
+ * e.g. "Alangilan, Batangas City" instead of "Alangilan, Banaba Ibaba"
  */
-export async function search(query) {
-    if (!query || query.trim().length < 2) return { results: [], offline: false };
+function cleanPlaceLabel(r) {
+    const rawName = (r.name || (r.display_name ? r.display_name.split(',')[0] : '')).trim();
+    if (!rawName) return 'Batangas City';
 
-    // 1. Try Nominatim (online)
-    try {
-        const online = await nominatimSearch(query.trim());
-        if (online.length > 0) {
-            const results = online.map(r => ({
-                label:   r.display_name.split(',').slice(0, 2).join(', '),
-                lat:     parseFloat(r.lat),
-                lng:     parseFloat(r.lon),
-                type:    r.type || 'place',
-                source:  'nominatim'
-            })).filter(r => inBounds(r.lat, r.lng));
+    // If local DB item with a parent barangay
+    if (r.barangay_name && r.barangay_name !== rawName) {
+        return `${rawName}, ${r.barangay_name}, Batangas City`;
+    }
 
-            if (results.length > 0) return { results, offline: false };
+    if (r.display_name) {
+        const parts = r.display_name.split(',').map(s => s.trim());
+        // Remove erroneous OSM boundary inclusions like Banaba Ibaba/South on Alangilan or Bolbok
+        const filtered = parts.filter(p => {
+            if ((rawName.toLowerCase() === 'alangilan' || rawName.toLowerCase() === 'bolbok') && p.toLowerCase().includes('banaba')) {
+                return false;
+            }
+            if (/^\d{4}$/.test(p) || p.toLowerCase() === 'philippines' || p.toLowerCase() === 'calabarzon') {
+                return false;
+            }
+            return true;
+        });
+
+        if (filtered.length >= 2 && !filtered[0].toLowerCase().includes('batangas city')) {
+            const second = filtered[1].toLowerCase().includes('batangas city') ? 'Batangas City' : filtered[1];
+            return `${filtered[0]}, ${second}`;
         }
-    } catch (err) {
-        console.warn('[Search] Nominatim unavailable:', err.message);
     }
 
-    // 2. Fallback: local DB search
-    try {
-        const local = await localGeocode(query.trim());
-        const results = local.map(r => ({
-            label:   r.barangay_name
-                ? `${r.name} — ${r.barangay_name}`
-                : r.name,
-            lat:     r.lat,
-            lng:     r.lng,
-            type:    r.type || 'local',
-            source:  'local'
-        }));
-        return { results, offline: true };
-    } catch (err) {
-        console.error('[Search] Local geocode also failed:', err.message);
-        return { results: [], offline: true };
-    }
+    // Default clean format
+    if (rawName.toLowerCase().includes('batangas city')) return rawName;
+    return `${rawName}, Batangas City`;
+}
+
+function cleanPlaceType(r) {
+    const t = (r.type || r.class || 'place').toLowerCase();
+    if (t === 'administrative' || t === 'quarter' || t === 'suburb' || t === 'village' || t === 'barangay') return 'Barangay';
+    if (t === 'university' || t === 'college' || t === 'school') return 'School';
+    if (t === 'hospital' || t === 'clinic') return 'Hospital';
+    if (t === 'bus_station' || t === 'terminal') return 'Terminal';
+    if (t === 'port' || t === 'harbour') return 'Port';
+    if (t === 'residential' || t === 'highway' || t === 'primary' || t === 'road') return 'Road';
+    if (t === 'commercial' || t === 'mall') return 'Mall';
+    if (t === 'evacuation site' || t === 'evacuation') return 'Evacuation';
+    if (t === 'government') return 'Govt';
+    if (t === 'fire station') return 'Fire Station';
+    return 'Place';
 }
 
 /**
- * validateBounds(lat, lng)
- * Returns true if the point is within the Batangas City bounding box.
+ * search(query)
+ * Runs local geocode first (guaranteed official Batangas landmarks and barangays)
+ * supplemented by Nominatim for streets and specific buildings.
  */
+export async function search(query) {
+    if (!query || query.trim().length < 2) return { results: [], offline: false };
+    const q = query.trim();
+
+    // 1. Local database search (instant, official Batangas City data)
+    let localResults = [];
+    try {
+        const local = await localGeocode(q);
+        localResults = (local || []).map(r => ({
+            label:  cleanPlaceLabel(r),
+            lat:    r.lat,
+            lng:    r.lng,
+            type:   cleanPlaceType(r),
+            source: 'official'
+        }));
+    } catch (err) {
+        console.warn('[Search] Local geocode failed:', err.message);
+    }
+
+    // 2. Online Nominatim search (for streets, specific addresses)
+    let onlineResults = [];
+    try {
+        const online = await nominatimSearch(q);
+        onlineResults = (online || []).map(r => ({
+            label:  cleanPlaceLabel(r),
+            lat:    parseFloat(r.lat),
+            lng:    parseFloat(r.lon),
+            type:   cleanPlaceType(r),
+            source: 'online'
+        })).filter(r => inBounds(r.lat, r.lng));
+    } catch (err) {
+        // Offline or network error
+    }
+
+    // Merge and deduplicate by label/coordinates
+    const seen = new Set();
+    const merged = [];
+
+    // Prioritize official local barangays & landmarks first
+    for (const item of [...localResults, ...onlineResults]) {
+        const key = `${item.label.toLowerCase()}_${item.lat.toFixed(3)}_${item.lng.toFixed(3)}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            merged.push(item);
+        }
+    }
+
+    return { results: merged.slice(0, 7), offline: onlineResults.length === 0 };
+}
+
 export function validateBounds(lat, lng) {
     return inBounds(parseFloat(lat), parseFloat(lng));
 }
@@ -79,10 +140,6 @@ function inBounds(lat, lng) {
            lng >= BOUNDS.west  && lng <= BOUNDS.east;
 }
 
-/**
- * formatSearchResult(result) → display label string
- */
 export function formatLabel(result) {
-    if (result.source === 'local') return `📍 ${result.label} (local database)`;
     return result.label;
 }

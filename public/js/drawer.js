@@ -66,6 +66,11 @@ export function closeDrawer() {
 export async function openDrawer(hazardId) {
     if (!_drawerEl || !_contentEl) return;
 
+    if (_activeTimerInterval) {
+        clearInterval(_activeTimerInterval);
+        _activeTimerInterval = null;
+    }
+
     // Show loading state
     _contentEl.innerHTML = `
         <div style="padding: var(--space-8); text-align: center; color: var(--color-charcoal-400);">
@@ -110,8 +115,10 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
     const isLive = hazard.status === 'active';
     const isDemo = hazard.is_demo === 1;
 
-    // Category label
-    const categoryLabel = S.categories[hazard.category] || hazard.category.replace(/_/g, ' ');
+    // Category label — guard against null/undefined category
+    const categoryLabel = hazard.category
+        ? (S.categories[hazard.category] || hazard.category.replace(/_/g, ' '))
+        : 'Uncategorized';
 
     // Calculate seed slot name (e.g. hazard-01.jpg)
     const slotNum = String(hazard.id).padStart(2, '0');
@@ -142,7 +149,8 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
     if (assessment && assessment.factors) {
         const factorEntries = Object.entries(assessment.factors);
         factorsHtml = factorEntries.map(([key, f]) => {
-            const pct = Math.round((f.score / f.max_score) * 100);
+            const max = f.max_score || 10;
+            const pct = Math.min(100, Math.round(((f.score || 0) / max) * 100));
             let pctAttr = 'data-pct-low';
             if (pct >= 70) pctAttr = 'data-pct-high';
             else if (pct >= 40) pctAttr = 'data-pct-mod';
@@ -215,7 +223,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
             const ctype = String(c.contact_type || c.agency_type || '').toLowerCase();
 
             const is911 = phone === '911' || ctype === 'national';
-            const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX');
+            const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX') || c.is_placeholder === 1;
             const callHref = isPlaceholder ? 'javascript:void(0)' : `tel:${phone.replace(/[^0-9+]/g, '')}`;
             const warnAttr = isPlaceholder ? `title="${S.drawer.placeholderWarn}"` : '';
             const extraClass = is911 ? 'contact-item-911' : '';
@@ -285,7 +293,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
                 </div>
                 <div class="drawer-meta-item">
                     <span class="drawer-meta-key">Coordinates</span>
-                    <span class="drawer-meta-val" style="font-family:var(--font-mono);font-size:12px;">${hazard.lat.toFixed(4)}°N, ${hazard.lng.toFixed(4)}°E</span>
+                    <span class="drawer-meta-val" style="font-family:var(--font-mono);font-size:12px;">${parseFloat(hazard.lat || 0).toFixed(4)}°N, ${parseFloat(hazard.lng || 0).toFixed(4)}°E</span>
                 </div>
             </div>
             ${hazard.address ? `
@@ -308,7 +316,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
                     <div class="risk-score-meta">
                         <div class="risk-score-level-line">
                             <span class="badge badge-${assessment.assessed_level}">${assessment.assessed_level} RISK</span>
-                            <span class="risk-confidence">${assessment.confidence_level.toUpperCase()} CONFIDENCE</span>
+                            <span class="risk-confidence">${(assessment.confidence_level || 'medium').toUpperCase()} CONFIDENCE</span>
                         </div>
                         <div class="risk-engine-tag">
                             ${assessment.engine === 'llm' ? '● AI-GENERATED (LLM)' : '◆ RULE-BASED ESTIMATE'}

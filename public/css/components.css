@@ -1096,6 +1096,23 @@
 }
 
 /* Tooltip popup (Leaflet) */
+/* .er-tooltip-wrap is added to the outer .leaflet-tooltip via className option in bindTooltip */
+.leaflet-tooltip.er-tooltip-wrap,
+.er-tooltip-wrap {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: max-content !important;
+    max-width: 260px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+.leaflet-tooltip.er-tooltip-wrap::before,
+.er-tooltip-wrap::before,
+.er-tooltip::before {
+    display: none !important;
+}
 .er-tooltip {
     background: var(--color-charcoal-800) !important;
     border: 1px solid var(--border-default) !important;
@@ -1105,9 +1122,7 @@
     font-family: var(--font-body) !important;
     font-size: var(--text-sm) !important;
     box-shadow: var(--shadow-md) !important;
-    max-width: 200px;
 }
-.er-tooltip::before { display: none; }
 
 .tooltip-title {
     font-family: var(--font-display);

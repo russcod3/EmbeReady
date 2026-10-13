@@ -14,7 +14,7 @@
  */
 
 import S from '../strings.js';
-import { fetchHazards, startLivePolling } from './api.js';
+import { fetchHazards, fetchBarangays, startLivePolling } from './api.js';
 import { search, QUICK_JUMPS, formatLabel } from './search.js';
 import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize, getMapInstance } from './map.js';
 import { initDrawer, openDrawer, closeDrawer } from './drawer.js';
@@ -64,15 +64,18 @@ async function initApp() {
     // 5. Setup Quick-Jump Buttons
     setupQuickJumps();
 
-    // 6. Setup Filters
+    // 6. Populate barangay dropdown from DB (ensures IDs match actual database)
+    await populateBarangayDropdown();
+
+    // 7. Setup Filters
     setupFilters();
 
-    // 7. Setup Live Polling (every 30 seconds)
+    // 8. Setup Live Polling (every 30 seconds)
     startLivePolling((activeFires) => {
         updateLiveFireCounter(activeFires.length);
-        // If live filter is active or count changed, refresh markers
+        // If live filter is active, refresh markers respecting all current filters (e.g. barangay)
         if (_currentFilters.status === 'active') {
-            renderHazards(activeFires);
+            loadHazards();
         }
     });
 
@@ -265,7 +268,7 @@ function renderAutocompleteResults(results, dropEl, inputEl, isOffline) {
 
     dropEl.innerHTML = results.map(r => `
         <div class="autocomplete-item" data-lat="${r.lat}" data-lng="${r.lng}" data-label="${escapeAttr(r.label)}">
-            <span class="item-type">${r.source === 'local' ? 'OFFLINE' : (r.type || 'PLACE')}</span>
+            <span class="item-type">${escapeHtml((r.type || 'PLACE').toUpperCase())}</span>
             <span>${escapeHtml(r.label)}</span>
         </div>
     `).join('');
@@ -317,11 +320,46 @@ function setupQuickJumps() {
 }
 
 /**
+ * populateBarangayDropdown()
+ * Fetches barangays from the API and builds <option> elements using
+ * actual DB IDs as values — prevents mismatch with hardcoded options.
+ */
+async function populateBarangayDropdown() {
+    const bgySelect = document.getElementById('filter-barangay-select');
+    if (!bgySelect) return;
+
+    try {
+        const barangays = await fetchBarangays();
+        // Preserve the "All Barangays" default option, then append real ones
+        bgySelect.innerHTML = '<option value="">All Barangays</option>';
+        barangays.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.id;        // actual DB primary key
+            opt.textContent = b.name;
+            bgySelect.appendChild(opt);
+        });
+    } catch (err) {
+        console.warn('[App] Could not load barangays for filter dropdown:', err.message);
+        // Dropdown degrades gracefully — stays at "All Barangays" only
+    }
+}
+
+/**
  * setupFilters()
  */
 function setupFilters() {
     // Filter chips (All, Live Now, Low, Moderate, Heavy)
     const chips = document.querySelectorAll('.filter-bar .filter-chip');
+
+    // ── Explicitly reset to "show all" on init (prevents browser form-state restore) ──
+    chips.forEach(c => c.classList.remove('is-active'));
+    const allChipInit = document.querySelector('.filter-chip[data-filter="all"]');
+    if (allChipInit) allChipInit.classList.add('is-active');
+    const bgySelectInit = document.getElementById('filter-barangay-select');
+    const catSelectInit = document.getElementById('filter-category-select');
+    if (bgySelectInit) bgySelectInit.value = '';
+    if (catSelectInit) catSelectInit.value = '';
+    // ────────────────────────────────────────────────────────────────────────────
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
             chips.forEach(c => c.classList.remove('is-active'));
@@ -398,7 +436,10 @@ async function loadHazards() {
         const hazards = await fetchHazards(_currentFilters);
         _allHazards = hazards;
         const { total, active } = renderHazards(hazards);
-        updateLiveFireCounter(active);
+        // Only update citywide active fire badge if no specific sub-filters are hiding it
+        if (!_currentFilters.risk_level && !_currentFilters.category && !_currentFilters.barangay_id) {
+            updateLiveFireCounter(active);
+        }
     } catch (err) {
         console.error('[App] Failed to load hazards:', err);
         showToast(S.errors.loadFailed, 'error');

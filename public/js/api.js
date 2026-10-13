@@ -117,29 +117,41 @@ const NOMINATIM_PARAMS = {
     addressdetails: '1'
 };
 
+// ── In-memory search cache ──────────────────────────────────────────────────
+const _nominatimCache = new Map();
+
 /**
  * nominatimSearch(query) → array of results
  * Each result: { lat, lon, display_name, type, ... }
  */
 export async function nominatimSearch(query) {
+    const qKey = query.trim().toLowerCase();
+    if (_nominatimCache.has(qKey)) {
+        return _nominatimCache.get(qKey);
+    }
+
     const params = new URLSearchParams({
         ...NOMINATIM_PARAMS,
         q: `${query}, Batangas City, Philippines`
     });
     const res = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {
-        headers: { 'Accept-Language': 'en', 'User-Agent': 'EmbeReady/1.0' }
+        headers: { 'Accept-Language': 'en', 'User-Agent': 'EmbeReady/1.0' },
+        signal: AbortSignal.timeout(3000)
     });
     if (!res.ok) throw new Error(`Nominatim ${res.status}`);
     const results = await res.json();
 
     // Filter: must be within Batangas City bounding box
     const BOUNDS = { south: 13.60, north: 13.85, west: 120.93, east: 121.14 };
-    return results.filter(r => {
+    const filtered = results.filter(r => {
         const lat = parseFloat(r.lat);
         const lon = parseFloat(r.lon);
         return lat >= BOUNDS.south && lat <= BOUNDS.north &&
                lon >= BOUNDS.west  && lon <= BOUNDS.east;
     });
+
+    _nominatimCache.set(qKey, filtered);
+    return filtered;
 }
 
 // ── 30-second live fire polling ───────────────────────────────────────────────
