@@ -1096,6 +1096,23 @@
 }
 
 /* Tooltip popup (Leaflet) */
+/* .er-tooltip-wrap is added to the outer .leaflet-tooltip via className option in bindTooltip */
+.leaflet-tooltip.er-tooltip-wrap,
+.er-tooltip-wrap {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: max-content !important;
+    max-width: 260px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+.leaflet-tooltip.er-tooltip-wrap::before,
+.er-tooltip-wrap::before,
+.er-tooltip::before {
+    display: none !important;
+}
 .er-tooltip {
     background: var(--color-charcoal-800) !important;
     border: 1px solid var(--border-default) !important;
@@ -1105,9 +1122,7 @@
     font-family: var(--font-body) !important;
     font-size: var(--text-sm) !important;
     box-shadow: var(--shadow-md) !important;
-    max-width: 200px;
 }
-.er-tooltip::before { display: none; }
 
 .tooltip-title {
     font-family: var(--font-display);
@@ -1128,3 +1143,181 @@
 .leaflet-popup-content-wrapper {
     display: none;
 }
+
+/* =============================================================================
+   INFRASTRUCTURE TOGGLE BUTTONS (map header nav)
+============================================================================= */
+
+.infra-toggles {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+.infra-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 10px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    border-radius: calc(var(--radius-sm) - 1px);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.infra-toggle-btn svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.18s ease;
+}
+.infra-toggle-btn:hover {
+    color: var(--text-secondary);
+    border-color: var(--border-subtle);
+    background: rgba(255,255,255,0.06);
+}
+.infra-toggle-btn:hover svg { opacity: 0.9; }
+
+/* Hydrant active */
+#toggle-hydrants-btn.infra-toggle-active {
+    color: #60a5fa;
+    border-color: rgba(59,130,246,0.5);
+    background: rgba(59,130,246,0.12);
+}
+#toggle-hydrants-btn.infra-toggle-active svg { opacity: 1; }
+
+/* Hospital active */
+#toggle-hospitals-btn.infra-toggle-active {
+    color: #34d399;
+    border-color: rgba(52,211,153,0.5);
+    background: rgba(52,211,153,0.10);
+}
+#toggle-hospitals-btn.infra-toggle-active svg { opacity: 1; }
+
+/* Fire Station active */
+#toggle-firestations-btn.infra-toggle-active {
+    color: #fb923c;
+    border-color: rgba(251,146,60,0.5);
+    background: rgba(251,146,60,0.10);
+}
+#toggle-firestations-btn.infra-toggle-active svg { opacity: 1; }
+
+/* =============================================================================
+   INFRASTRUCTURE MAP MARKER WRAPPERS
+============================================================================= */
+
+.infra-marker-wrapper {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.infra-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.45));
+    cursor: pointer;
+}
+.infra-marker:hover {
+    transform: scale(1.15) translateY(-3px);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+}
+
+/* =============================================================================
+   INFRASTRUCTURE LEAFLET POPUP CARDS
+   Override Leaflet's default popup only for infra markers (others use drawer)
+============================================================================= */
+
+.infra-leaflet-popup .leaflet-popup-content-wrapper {
+    display: block !important;
+    background: #1e2433;
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+    padding: 0;
+    overflow: hidden;
+    min-width: 240px;
+}
+.infra-leaflet-popup .leaflet-popup-content {
+    margin: 0;
+    width: auto !important;
+}
+.infra-leaflet-popup .leaflet-popup-tip-container { display: block; }
+.infra-leaflet-popup .leaflet-popup-tip { background: #1e2433; }
+.infra-leaflet-popup .leaflet-popup-close-button {
+    color: #6b7280 !important;
+    font-size: 18px !important;
+    top: 8px !important;
+    right: 10px !important;
+    transition: color 0.15s;
+    background: none !important;
+}
+.infra-leaflet-popup .leaflet-popup-close-button:hover { color: #e5e7eb !important; }
+
+/* Popup inner layout */
+.infra-popup {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    color: #e5e7eb;
+}
+.infra-popup-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.infra-popup-icon { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+.infra-popup-title {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    color: #f9fafb;
+    margin-bottom: 3px;
+    padding-right: 20px;
+}
+.infra-popup-id {
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+.infra-popup-body {
+    padding: 10px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.infra-popup-row { display: flex; align-items: baseline; gap: 8px; }
+.infra-popup-label {
+    font-family: monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b7280;
+    flex-shrink: 0;
+    min-width: 52px;
+}
+.infra-popup-value { font-size: 12px; color: #d1d5db; line-height: 1.4; }
+
+/* Popup header accent tints */
+.infra-popup-hydrant    .infra-popup-header { background: rgba(37,99,235,0.12); }
+.infra-popup-hospital   .infra-popup-header { background: rgba(16,185,129,0.10); }
+.infra-popup-firestation .infra-popup-header { background: rgba(234,88,12,0.12); }
+

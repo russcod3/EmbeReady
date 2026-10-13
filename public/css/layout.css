@@ -56,7 +56,8 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; }
+/* Scope img reset away from Leaflet's tile/pane images */
+img:not(.leaflet-tile):not(.leaflet-marker-icon):not(.leaflet-marker-shadow) { display: block; max-width: 100%; }
 button, input, select, textarea { font-family: inherit; }
 button { cursor: pointer; border: none; background: none; }
 ul, ol { list-style: none; }
@@ -257,7 +258,7 @@ ul, ol { list-style: none; }
     background: var(--color-bone-200);
     border: 2px solid var(--border-light);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.25);
     z-index: var(--z-modal);
     overflow: hidden;
     display: none;
@@ -414,7 +415,7 @@ ul, ol { list-style: none; }
     padding: 0 var(--space-4);
     background: var(--color-charcoal-900);
     border-bottom: 1px solid var(--border-subtle);
-    z-index: var(--z-filter);
+    z-index: calc(var(--z-filter) + 5);
 }
 
 .map-header-wordmark {

@@ -117,6 +117,38 @@ in your area.</h1>
                         <span id="live-counter-text">0 ACTIVE FIRES</span>
                     </div>
 
+                    <!-- Infrastructure Layer Toggles -->
+                    <div class="infra-toggles" role="group" aria-label="Infrastructure Layers">
+                        <button id="toggle-hydrants-btn"
+                                class="infra-toggle-btn"
+                                aria-pressed="false"
+                                title="Toggle Fire Hydrants">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="14" height="14" fill="currentColor" aria-hidden="true">
+                                <path d="M9 3a1 1 0 012 0v1h1a2 2 0 012 2v1h1a1 1 0 110 2h-1v4h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H6a1 1 0 110-2h1V9H6a1 1 0 110-2h1V6a2 2 0 012-2h1V3z"/>
+                            </svg>
+                            <span>Hydrants</span>
+                        </button>
+                        <button id="toggle-hospitals-btn"
+                                class="infra-toggle-btn"
+                                aria-pressed="false"
+                                title="Toggle Hospitals &amp; Clinics">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="14" height="14" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                <path d="M9 6h2v8H9V6zM6 9h8v2H6V9z"/>
+                            </svg>
+                            <span>Hospitals</span>
+                        </button>
+                        <button id="toggle-firestations-btn"
+                                class="infra-toggle-btn"
+                                aria-pressed="false"
+                                title="Toggle Fire Protection Departments">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="14" height="14" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Fire Depts</span>
+                        </button>
+                    </div>
+
                     <!-- Header Report Trigger -->
                     <button id="map-report-btn" class="filter-chip" style="border-color:var(--color-green-500);color:var(--color-green-400);background:rgba(5,150,105,0.1);">
                         + REPORT HAZARD
@@ -136,21 +168,7 @@ in your area.</h1>
 
                 <select id="filter-barangay-select" class="filter-select" aria-label="Filter by Barangay">
                     <option value="">All Barangays</option>
-                    <option value="1">Brgy. 1 (Poblacion)</option>
-                    <option value="2">Brgy. 4 (Poblacion)</option>
-                    <option value="3">Brgy. 7 (Poblacion)</option>
-                    <option value="4">Brgy. 12 (Poblacion)</option>
-                    <option value="5">Brgy. 24 (Poblacion)</option>
-                    <option value="6">Alangilan</option>
-                    <option value="7">Kumintang Ibaba</option>
-                    <option value="8">Kumintang Ilaya</option>
-                    <option value="9">Calicanto</option>
-                    <option value="10">Bolbok</option>
-                    <option value="11">Sta. Clara</option>
-                    <option value="12">Cuta</option>
-                    <option value="13">Sorosoro Ibaba</option>
-                    <option value="14">Tinga Labac</option>
-                    <option value="15">Dumantay</option>
+                    <!-- populated dynamically by app.js from /api/hazards/meta/barangays -->
                 </select>
 
                 <select id="filter-category-select" class="filter-select" aria-label="Filter by Hazard Category">
@@ -192,7 +210,24 @@ in your area.</h1>
                         <span class="legend-glyph" style="border-color:transparent;">🔥</span>
                         <span style="color:var(--risk-heavy);font-weight:700;">Live Fire</span>
                     </div>
+                    <!-- Infrastructure legend items (always visible as reference) -->
+                    <div style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border-subtle);">
+                        <div class="legend-title" style="margin-bottom:4px;">Infrastructure</div>
+                        <div class="legend-item" style="color:#60a5fa;">
+                            <span class="legend-glyph" style="border-color:#60a5fa;font-size:10px;">💧</span>
+                            <span>Hydrants</span>
+                        </div>
+                        <div class="legend-item" style="color:#34d399;">
+                            <span class="legend-glyph" style="border-color:#34d399;font-size:10px;">🏥</span>
+                            <span>Hospitals</span>
+                        </div>
+                        <div class="legend-item" style="color:#fb923c;">
+                            <span class="legend-glyph" style="border-color:#fb923c;font-size:10px;">🚒</span>
+                            <span>Fire Depts</span>
+                        </div>
+                    </div>
                 </aside>
+
             </div>
 
             <!-- Detail Drawer (Desktop Right Panel / Mobile Bottom Sheet) -->

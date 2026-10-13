@@ -208,6 +208,9 @@ async function handleFormSubmit(e) {
 
         // Reset form fields
         _formEl.reset();
+        if (_miniMapCtrl) {
+            _miniMapCtrl.setLatLng(13.7565, 121.0583);
+        }
         const uploadArea = document.getElementById('photo-dropzone');
         const labelEl = document.getElementById('photo-upload-label');
         if (uploadArea) uploadArea.classList.remove('has-file');
@@ -290,12 +293,14 @@ function showSuccessModal(data, hazardTitle) {
     if (brgyBtn) {
         brgyBtn.onclick = async () => {
             await logReportAction(refNumber, 'barangay');
-            // Check if barangay contact exists
-            const brgyContact = (data.contacts || []).find(c => c.contact_type === 'barangay');
-            if (brgyContact && !brgyContact.phone.includes('REPLACE-ME')) {
-                window.location.href = `tel:${brgyContact.phone.replace(/[^0-9+]/g, '')}`;
+            // contacts schema uses phone_display and is_placeholder (not phone)
+            const brgyContact = (data.contacts || []).find(c => c.agency_type === 'barangay' || c.agency_type === 'Barangay');
+            const phoneNum = brgyContact ? (brgyContact.phone_display || brgyContact.phone || '') : '';
+            const isPlaceholder = brgyContact ? (brgyContact.is_placeholder === 1 || String(phoneNum).includes('REPLACE-ME')) : true;
+            if (brgyContact && !isPlaceholder) {
+                window.location.href = `tel:${phoneNum.replace(/[^0-9+]/g, '')}`;
             } else {
-                alert(`Barangay Hall contact number for this area is listed as: ${brgyContact ? brgyContact.phone : 'Not configured'}`);
+                alert(`Barangay Hall contact number for this area is listed as: ${phoneNum || 'Not configured'}`);
             }
             closeModal();
         };

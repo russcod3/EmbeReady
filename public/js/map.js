@@ -8,7 +8,7 @@
  */
 
 const BATANGAS_CENTER = [13.7565, 121.0583];
-const DEFAULT_ZOOM    = 14;
+const DEFAULT_ZOOM = 14;
 
 let _map = null;
 let _markerGroup = null;
@@ -178,17 +178,19 @@ function createHazardMarker(hazard) {
     const marker = L.marker([hazard.lat, hazard.lng], { icon });
 
     // Custom tooltip
+    const riskLevelDisplay = (hazard.status === 'active' ? 'ACTIVE FIRE' : (hazard.risk_level || 'moderate')).toUpperCase();
     const tooltipContent = `
         <div class="er-tooltip">
             <div class="tooltip-title">${escapeHtml(hazard.title)}</div>
-            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml((hazard.status === 'active' ? 'ACTIVE FIRE' : hazard.risk_level).toUpperCase())}</div>
+            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml(riskLevelDisplay)}</div>
         </div>
     `;
 
     marker.bindTooltip(tooltipContent, {
         direction: 'top',
         offset: [0, -14],
-        opacity: 0.95
+        opacity: 0.95,
+        className: 'er-tooltip-wrap'
     });
 
     marker.on('click', () => {
@@ -255,10 +257,33 @@ export function highlightLocation(lat, lng, label = '') {
     _searchMarker = L.marker([lat, lng], { icon }).addTo(_map);
 
     if (label) {
-        _searchMarker.bindTooltip(label, { permanent: true, direction: 'top', offset: [0, -14] }).openTooltip();
+        _searchMarker.bindTooltip(label, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -14],
+            className: 'er-tooltip-wrap'
+        }).openTooltip();
     }
 
     flyTo(lat, lng, 16);
+}
+
+/**
+ * clearSearchMarker()
+ */
+export function clearSearchMarker() {
+    if (_searchMarker && _map) {
+        _map.removeLayer(_searchMarker);
+        _searchMarker = null;
+    }
+}
+
+/**
+ * getMapInstance()
+ * Returns the initialized Leaflet map instance for use by other modules.
+ */
+export function getMapInstance() {
+    return _map;
 }
 
 /**
@@ -266,6 +291,7 @@ export function highlightLocation(lat, lng, label = '') {
  */
 export function resetView() {
     if (!_map) return;
+    clearSearchMarker();
     _map.flyTo(BATANGAS_CENTER, DEFAULT_ZOOM);
 }
 
@@ -371,6 +397,7 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
                 _miniPinLastValidLatLng = [lat, lng];
                 _miniPin.setLatLng([lat, lng]);
                 _miniMap.panTo([lat, lng]);
+                if (onLocationChange) onLocationChange(lat, lng);
             }
         },
         invalidate: () => {
