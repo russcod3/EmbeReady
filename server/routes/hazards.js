@@ -56,7 +56,10 @@ router.get('/', (req, res) => {
         params.push(is_demo === '1' || is_demo === 'true' ? 1 : 0);
     }
 
-    sql += ' ORDER BY h.status DESC, h.risk_level DESC, h.updated_at DESC';
+    sql += ` ORDER BY
+        CASE h.status WHEN 'active' THEN 0 WHEN 'potential' THEN 1 WHEN 'contained' THEN 2 WHEN 'resolved' THEN 3 ELSE 4 END,
+        CASE h.risk_level WHEN 'heavy' THEN 0 WHEN 'moderate' THEN 1 WHEN 'low' THEN 2 ELSE 3 END,
+        h.updated_at DESC`;
 
     try {
         const rows = db.prepare(sql).all(...params);
@@ -159,24 +162,30 @@ const BATANGAS_LANDMARKS = [
     { name: 'Batangas Diversion Road', lat: 13.7750, lng: 121.0550, type: 'Highway', barangay_name: 'Bolbok / Alangilan' }
 ];
 
+// ── Helper: escape LIKE pattern wildcards (%, _) ─────────────────────────────
+function escapeLike(str) {
+    return str.replace(/[%_\\]/g, '\\$&');
+}
+
 // ── GET /api/geocode — offline barangay & landmark search ──────────────────────
 router.get('/meta/geocode', (req, res) => {
     const q = (req.query.q || '').trim().toLowerCase();
     if (!q) return res.json({ success: true, data: [] });
+    const qEsc = escapeLike(q);
 
     try {
         // 1. Match official barangays by name (highest priority)
         const barangays = db.prepare(`
             SELECT name, center_lat AS lat, center_lng AS lng, 'Barangay' AS type
             FROM barangays
-            WHERE lower(name) LIKE ?
+            WHERE lower(name) LIKE ? ESCAPE '\\'
             ORDER BY
                 CASE WHEN lower(name) = ? THEN 1
-                     WHEN lower(name) LIKE ? THEN 2
+                     WHEN lower(name) LIKE ? ESCAPE '\\' THEN 2
                      ELSE 3 END,
                 name ASC
             LIMIT 5
-        `).all(`%${q}%`, q, `${q}%`);
+        `).all(`%${qEsc}%`, q, `${qEsc}%`);
 
         // 2. Match curated Batangas City landmarks (schools, terminals, hospitals)
         const matchedLandmarks = BATANGAS_LANDMARKS.filter(lm =>
@@ -187,9 +196,9 @@ router.get('/meta/geocode', (req, res) => {
         const evacCenters = db.prepare(`
             SELECT evacuation_center_name AS name, center_lat AS lat, center_lng AS lng, 'Evacuation Site' AS type, name AS barangay_name
             FROM barangays
-            WHERE lower(evacuation_center_name) LIKE ? AND evacuation_center_name IS NOT NULL
+            WHERE lower(evacuation_center_name) LIKE ? ESCAPE '\\' AND evacuation_center_name IS NOT NULL
             LIMIT 2
-        `).all(`%${q}%`);
+        `).all(`%${qEsc}%`);
 
         // 4. Only search hazards if the user explicitly types hazard keywords (e.g. fire, wiring, lpg)
         const isHazardKeyword = ['fire', 'sunog', 'wiring', 'lpg', 'grass', 'burning', 'outlets', 'chemical'].some(k => q.includes(k));
@@ -198,9 +207,9 @@ router.get('/meta/geocode', (req, res) => {
             hazards = db.prepare(`
                 SELECT h.title AS name, h.lat, h.lng, 'Hazard' AS type, b.name AS barangay_name
                 FROM hazards h JOIN barangays b ON h.barangay_id = b.id
-                WHERE lower(h.title) LIKE ?
+                WHERE lower(h.title) LIKE ? ESCAPE '\\'
                 LIMIT 2
-            `).all(`%${q}%`);
+            `).all(`%${qEsc}%`);
         }
 
         res.json({ success: true, data: [...barangays, ...matchedLandmarks, ...evacCenters, ...hazards] });

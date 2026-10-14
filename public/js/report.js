@@ -8,6 +8,7 @@
  */
 
 import S from '../strings.js';
+import { escapeHtml } from './utils.js';
 import { fetchBarangays, submitReport, logReportAction } from './api.js';
 import { initReportMiniMap } from './map.js';
 
@@ -283,8 +284,9 @@ function showSuccessModal(data, hazardTitle) {
         bfpBtn.onclick = async () => {
             await logReportAction(refNumber, 'bfp');
             const smsBody = encodeURIComponent(`EmbeReady Report ${refNumber}: Fire hazard reported at ${hazardTitle}. Please check.`);
-            // Batangas BFP contact
-            window.location.href = `sms:?&body=${smsBody}`;
+            const bfpContact = (data.contacts || []).find(c => (c.agency_type || '').toUpperCase() === 'BFP');
+            const bfpPhone = bfpContact ? (bfpContact.phone_dialable || bfpContact.phone_display || '').replace(/[^0-9+]/g, '') : '';
+            window.location.href = bfpPhone ? `sms:${bfpPhone}?body=${smsBody}` : `sms:?body=${smsBody}`;
             closeModal();
         };
     }
@@ -323,12 +325,3 @@ export function closeModal() {
     }
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}

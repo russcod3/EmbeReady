@@ -538,28 +538,33 @@ const FIRE_HISTORY_RAW = [
 function seed() {
     console.log('\n[seed] Starting EmbeReady database seed...\n');
 
-    // ── Clear demo data only (preserve user reports) ─────────────────────────
+    // ── Clear demo data only (preserve user reports & barangays) ─────────────
     db.exec(`
         DELETE FROM preparedness_plans WHERE hazard_id IN (SELECT id FROM hazards WHERE is_demo=1);
         DELETE FROM risk_assessments   WHERE hazard_id IN (SELECT id FROM hazards WHERE is_demo=1);
         DELETE FROM fire_history       WHERE is_demo=1;
         DELETE FROM hazards            WHERE is_demo=1;
         DELETE FROM emergency_contacts;
-        DELETE FROM barangays;
     `);
     console.log('[seed] Cleared existing demo data.');
 
-    // ── Insert barangays ──────────────────────────────────────────────────────
-    const insertBrgy = db.prepare(`
+    // ── Insert/upsert barangays (preserves IDs for existing user-submitted hazards) ─
+    const upsertBrgy = db.prepare(`
         INSERT INTO barangays (name, classification, center_lat, center_lng, evacuation_center_name)
         VALUES (@name, @classification, @center_lat, @center_lng, @evacuation_center_name)
+        ON CONFLICT(name) DO UPDATE SET
+            classification = excluded.classification,
+            center_lat = excluded.center_lat,
+            center_lng = excluded.center_lng,
+            evacuation_center_name = excluded.evacuation_center_name
     `);
     const brgyMap = {};
     for (const b of BARANGAYS) {
-        const result = insertBrgy.run(b);
-        brgyMap[b.name] = result.lastInsertRowid;
+        upsertBrgy.run(b);
+        const row = db.prepare('SELECT id FROM barangays WHERE name = ?').get(b.name);
+        brgyMap[b.name] = row.id;
     }
-    console.log(`[seed] Inserted ${BARANGAYS.length} barangays.`);
+    console.log(`[seed] Initialized ${BARANGAYS.length} barangays.`);
 
     // ── Insert emergency contacts ─────────────────────────────────────────────
     const contactsPath = path.join(__dirname, 'contacts.json');

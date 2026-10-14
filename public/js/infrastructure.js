@@ -12,6 +12,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import { escapeHtml } from './utils.js';
+
 // ── DATA: HOSPITALS ──────────────────────────────────────────────────────────
 // Sources: Wikipedia, Nominatim OSM, batangascity.gov.ph, mapcarta.com
 export const HOSPITALS = [
@@ -516,13 +518,3 @@ export function getLayerVisibility() {
     };
 }
 
-// ── UTIL ──────────────────────────────────────────────────────────────────────
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g,  '&amp;')
-        .replace(/</g,  '&lt;')
-        .replace(/>/g,  '&gt;')
-        .replace(/"/g,  '&quot;')
-        .replace(/'/g,  '&#039;');
-}

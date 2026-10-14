@@ -26,30 +26,38 @@ const app  = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // ── Trust proxy (for accurate IP rate limiting behind nginx/LAN) ──────────────
-app.set('trust proxy', 1);
+// Only enable when actually behind a reverse proxy. Set TRUST_PROXY=1 in .env.
+if (process.env.TRUST_PROXY) {
+    app.set('trust proxy', parseInt(process.env.TRUST_PROXY, 10) || 1);
+}
 
 // ── Body parsers ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+// ── Security headers ──────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Content-Security-Policy', [
+        "default-src 'self'",
+        "script-src 'self' https://unpkg.com",
+        "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://unpkg.com https://*.basemaps.cartocdn.com https://basemaps.cartocdn.com",
+        "connect-src 'self' https://nominatim.openstreetmap.org https://is-on-water.balbona.me",
+        "frame-ancestors 'none'"
+    ].join('; '));
+    next();
+});
+
 // ── Static files ──────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// ── Rate limiter for report submissions ───────────────────────────────────────
-const reportLimiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
-    max:      parseInt(process.env.RATE_LIMIT_MAX       || '5',      10),
-    standardHeaders: true,
-    legacyHeaders:   false,
-    message: {
-        success: false,
-        error:   'Too many reports submitted from this device. Please wait 15 minutes before trying again.'
-    }
-});
-
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/hazards',  hazardRoutes);
-app.use('/api/reports',  reportLimiter, reportRoutes);
+app.use('/api/reports',  reportRoutes);
 app.use('/api/contacts', contactRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────────

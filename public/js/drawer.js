@@ -13,6 +13,7 @@
  */
 
 import S from '../strings.js';
+import { escapeHtml } from './utils.js';
 import { fetchHazardDetail } from './api.js';
 
 let _drawerEl = null;
@@ -436,12 +437,3 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
     }
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}

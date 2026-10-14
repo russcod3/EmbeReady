@@ -59,6 +59,24 @@ db.pragma('cache_size = -8000');   // 8 MB page cache
 const schemaSql = fs.readFileSync(SCHEMA_PATH, 'utf8');
 db.exec(schemaSql);
 
+// ── Transaction helper (works with node:sqlite & better-sqlite3) ─────────────
+/**
+ * runTransaction(fn) — wraps fn() in BEGIN/COMMIT with auto-ROLLBACK on error.
+ * Use for multi-statement writes that must be atomic.
+ * NOTE: Keep fn() synchronous — the write lock is held for the entire duration.
+ */
+db.runTransaction = function runTransaction(fn) {
+    db.exec('BEGIN');
+    try {
+        const result = fn();
+        db.exec('COMMIT');
+        return result;
+    } catch (err) {
+        try { db.exec('ROLLBACK'); } catch (_) { /* already rolled back */ }
+        throw err;
+    }
+};
+
 console.log(`[DB] Connected → ${DB_PATH}`);
 
 module.exports = db;

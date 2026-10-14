@@ -117,7 +117,8 @@ const NOMINATIM_PARAMS = {
     addressdetails: '1'
 };
 
-// ── In-memory search cache ──────────────────────────────────────────────────
+// ── In-memory search cache with LRU eviction (max 50 entries) ───────────────
+const MAX_NOMINATIM_CACHE = 50;
 const _nominatimCache = new Map();
 
 /**
@@ -127,7 +128,11 @@ const _nominatimCache = new Map();
 export async function nominatimSearch(query) {
     const qKey = query.trim().toLowerCase();
     if (_nominatimCache.has(qKey)) {
-        return _nominatimCache.get(qKey);
+        const cached = _nominatimCache.get(qKey);
+        // Move to most-recently used position in Map
+        _nominatimCache.delete(qKey);
+        _nominatimCache.set(qKey, cached);
+        return cached;
     }
 
     const params = new URLSearchParams({
@@ -150,6 +155,11 @@ export async function nominatimSearch(query) {
                lon >= BOUNDS.west  && lon <= BOUNDS.east;
     });
 
+    if (_nominatimCache.size >= MAX_NOMINATIM_CACHE) {
+        // Evict oldest entry (first key in Map iterator)
+        const oldestKey = _nominatimCache.keys().next().value;
+        _nominatimCache.delete(oldestKey);
+    }
     _nominatimCache.set(qKey, filtered);
     return filtered;
 }

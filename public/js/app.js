@@ -14,6 +14,7 @@
  */
 
 import S from '../strings.js';
+import { escapeHtml, escapeAttr } from './utils.js';
 import { fetchHazards, fetchBarangays, startLivePolling } from './api.js';
 import { search, QUICK_JUMPS, formatLabel } from './search.js';
 import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize, getMapInstance } from './map.js';
@@ -503,17 +504,3 @@ export function showToast(message, type = 'info') {
     }, 3500);
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-function escapeAttr(str) {
-    if (!str) return '';
-    return String(str).replace(/"/g, '&quot;');
-}

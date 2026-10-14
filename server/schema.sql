@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS fire_history (
 CREATE TABLE IF NOT EXISTS reports (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     ref_number          TEXT    NOT NULL UNIQUE,            -- ER-YYYYMMDD-XXXX
-    hazard_id           INTEGER REFERENCES hazards(id),     -- created on accept
+    hazard_id           INTEGER REFERENCES hazards(id) ON DELETE SET NULL,     -- created on accept
     reporter_ip_hash    TEXT,                               -- SHA-256 of IP, not raw
     honeypot_triggered  INTEGER NOT NULL DEFAULT 0,
     reported_level      TEXT,                               -- reporter's own assessment
