@@ -67,71 +67,7 @@ router.get('/', (req, res) => {
     }
 });
 
-// ── GET /api/hazards/:id ──────────────────────────────────────────────────────
-router.get('/:id', (req, res) => {
-    const { id } = req.params;
-    try {
-        // Main hazard record
-        const hazard = db.prepare(`
-            SELECT h.*, b.name AS barangay_name, b.classification AS barangay_classification,
-                   b.center_lat AS barangay_lat, b.center_lng AS barangay_lng,
-                   b.evacuation_center_name
-            FROM hazards h
-            JOIN barangays b ON h.barangay_id = b.id
-            WHERE h.id = ?
-        `).get(id);
-
-        if (!hazard) return res.status(404).json({ success: false, error: 'Not found' });
-
-        // Latest risk assessment
-        const assessment = db.prepare(`
-            SELECT * FROM risk_assessments
-            WHERE hazard_id = ?
-            ORDER BY created_at DESC LIMIT 1
-        `).get(id);
-
-        // Preparedness plan
-        const plan = db.prepare(`
-            SELECT * FROM preparedness_plans
-            WHERE hazard_id = ?
-            ORDER BY created_at DESC LIMIT 1
-        `).get(id);
-
-        // Fire history at this hazard or in the same barangay
-        const history = db.prepare(`
-            SELECT * FROM fire_history
-            WHERE hazard_id = ? OR barangay_id = (
-                SELECT barangay_id FROM hazards WHERE id = ?
-            )
-            ORDER BY incident_year DESC
-            LIMIT 5
-        `).all(id, id);
-
-        // Emergency contacts for city + this barangay
-        const contacts = db.prepare(`
-            SELECT * FROM emergency_contacts
-            WHERE jurisdiction = 'Citywide' OR jurisdiction = ?
-            ORDER BY sort_order ASC
-        `).all(hazard.barangay_name);
-
-        // Parse JSON fields safely
-        if (assessment?.factors_json) {
-            try { assessment.factors = JSON.parse(assessment.factors_json); } catch { assessment.factors = {}; }
-        }
-        if (plan) {
-            for (const field of ['before_steps_json','during_steps_json','after_steps_json','evacuation_tips_json','prohibited_actions_json']) {
-                try { plan[field.replace('_json','')] = JSON.parse(plan[field]); } catch { plan[field.replace('_json','')] = []; }
-            }
-        }
-
-        res.json({ success: true, data: { hazard, assessment, plan, history, contacts } });
-    } catch (err) {
-        console.error(`[GET /api/hazards/${id}]`, err);
-        res.status(500).json({ success: false, error: 'Database error' });
-    }
-});
-
-// ── GET /api/barangays ────────────────────────────────────────────────────────
+// ── GET /api/hazards/meta/barangays ─────────────────────────────────────────
 router.get('/meta/barangays', (req, res) => {
     try {
         const rows = db.prepare('SELECT * FROM barangays ORDER BY name ASC').all();
@@ -206,6 +142,70 @@ router.get('/meta/geocode', (req, res) => {
         res.json({ success: true, data: [...barangays, ...matchedLandmarks, ...evacCenters, ...hazards] });
     } catch (err) {
         console.error('[GET /api/geocode]', err);
+        res.status(500).json({ success: false, error: 'Database error' });
+    }
+});
+
+// ── GET /api/hazards/:id ──────────────────────────────────────────────────────
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    try {
+        // Main hazard record
+        const hazard = db.prepare(`
+            SELECT h.*, b.name AS barangay_name, b.classification AS barangay_classification,
+                   b.center_lat AS barangay_lat, b.center_lng AS barangay_lng,
+                   b.evacuation_center_name
+            FROM hazards h
+            JOIN barangays b ON h.barangay_id = b.id
+            WHERE h.id = ?
+        `).get(id);
+
+        if (!hazard) return res.status(404).json({ success: false, error: 'Not found' });
+
+        // Latest risk assessment
+        const assessment = db.prepare(`
+            SELECT * FROM risk_assessments
+            WHERE hazard_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        `).get(id);
+
+        // Preparedness plan
+        const plan = db.prepare(`
+            SELECT * FROM preparedness_plans
+            WHERE hazard_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        `).get(id);
+
+        // Fire history at this hazard or in the same barangay
+        const history = db.prepare(`
+            SELECT * FROM fire_history
+            WHERE hazard_id = ? OR barangay_id = (
+                SELECT barangay_id FROM hazards WHERE id = ?
+            )
+            ORDER BY incident_year DESC
+            LIMIT 5
+        `).all(id, id);
+
+        // Emergency contacts for city + this barangay
+        const contacts = db.prepare(`
+            SELECT * FROM emergency_contacts
+            WHERE jurisdiction = 'Citywide' OR jurisdiction = ?
+            ORDER BY sort_order ASC
+        `).all(hazard.barangay_name);
+
+        // Parse JSON fields safely
+        if (assessment?.factors_json) {
+            try { assessment.factors = JSON.parse(assessment.factors_json); } catch { assessment.factors = {}; }
+        }
+        if (plan) {
+            for (const field of ['before_steps_json','during_steps_json','after_steps_json','evacuation_tips_json','prohibited_actions_json']) {
+                try { plan[field.replace('_json','')] = JSON.parse(plan[field]); } catch { plan[field.replace('_json','')] = []; }
+            }
+        }
+
+        res.json({ success: true, data: { hazard, assessment, plan, history, contacts } });
+    } catch (err) {
+        console.error(`[GET /api/hazards/${id}]`, err);
         res.status(500).json({ success: false, error: 'Database error' });
     }
 });

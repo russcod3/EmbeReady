@@ -62,8 +62,9 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// ── SPA fallback — serve index.html for all unmatched routes ──────────────────
-app.get('*', (req, res) => {
+// ── SPA fallback — serve index.html for all unmatched non-API routes ──────────
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 

@@ -183,7 +183,7 @@ async function handleFormSubmit(e) {
         }
     }
 
-    if (photo && photo.size > 5 * 1024 * 1024) {
+    if (photo && photo.size > 0 && photo.size > 5 * 1024 * 1024) {
         errors.push('Photo file size must not exceed 5 MB.');
     }
 
@@ -300,7 +300,12 @@ function showSuccessModal(data, hazardTitle) {
             if (brgyContact && !isPlaceholder) {
                 window.location.href = `tel:${phoneNum.replace(/[^0-9+]/g, '')}`;
             } else {
-                alert(`Barangay Hall contact number for this area is listed as: ${phoneNum || 'Not configured'}`);
+                const msg = `Barangay Hall contact: ${phoneNum || 'Not configured'}`;
+                const notice = document.createElement('div');
+                notice.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;z-index:9999;max-width:90vw;text-align:center;';
+                notice.textContent = msg;
+                document.body.appendChild(notice);
+                setTimeout(() => notice.remove(), 4000);
             }
             closeModal();
         };

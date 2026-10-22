@@ -161,6 +161,17 @@ let _pollCallback = null;
 export function startLivePolling(callback, intervalMs = 30000) {
     _pollCallback = callback;
     if (_pollTimer) clearInterval(_pollTimer);
+
+    // Fire immediately on start so the counter is populated right away
+    (async () => {
+        try {
+            const active = await fetchActiveHazards();
+            callback(active);
+        } catch (err) {
+            console.warn('[API] Initial poll failed:', err.message);
+        }
+    })();
+
     _pollTimer = setInterval(async () => {
         try {
             const active = await fetchActiveHazards();
