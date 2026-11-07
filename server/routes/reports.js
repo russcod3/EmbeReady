@@ -212,7 +212,7 @@ router.post('/', reportLimiter, upload.single('photo'), async (req, res) => {
     // 7. Run AI assessment (outside transaction — non-blocking, failure still returns success)
     let aiResult = null;
     try {
-        const reportData = { category, risk_level, status, description };
+        const reportData = { title, category, risk_level, status, description };
         aiResult = await ai.assessReport(reportData, barangay);
 
         // Save assessment
@@ -231,6 +231,9 @@ router.post('/', reportLimiter, upload.single('photo'), async (req, res) => {
             aiResult.assessment.engine,
             aiResult.assessment.model_version
         );
+
+        // Map severity follows the generated assessment; Live status remains independent.
+        db.prepare("UPDATE hazards SET risk_level = ?, updated_at = datetime('now') WHERE id = ?").run(aiResult.assessment.assessed_level, hazardId);
 
         // Save plan
         db.prepare(`

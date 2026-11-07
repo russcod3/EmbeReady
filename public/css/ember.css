@@ -1,0 +1,84 @@
+/* Independent joints: the outer SVG wrappers place the pivots in local space. */
+.ember-puppet{display:inline-block;width:100%;height:100%;vertical-align:middle;flex-shrink:0;}
+.ember-puppet > svg{display:block;width:100%;height:100%;overflow:visible;}
+.ember-puppet .ember-original-fallback{display:block;width:100%;height:100%;object-fit:contain;}
+.ember-brand{display:block;width:44px;height:48px;flex-shrink:0;}
+.map-header-wordmark{display:inline-flex;align-items:center;gap:8px;}
+.ember-companion{margin-top:18px;padding:12px;border:1px solid #e2e6eb;border-radius:14px;background:#fff;}
+.ember-companion-main{display:flex;align-items:center;gap:12px;}
+.ember-pet{width:94px;height:110px;flex-shrink:0;border-radius:12px;cursor:pointer;}
+.ember-companion strong{font-size:14px;color:#26313b;}
+.ember-message{margin-top:4px;font-size:12px;line-height:1.5;color:#65717c;}
+.ember-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.ember-actions button,.ember-motion-toggle{padding:6px 10px;min-height:36px;border-radius:8px;color:#0963cd;background:#eef4fc;font-size:12px;}
+.ember-motion-toggle{margin:8px 0 0 auto;display:block;}
+.ember-motion-toggle:disabled{color:#65717c;background:#f1f3f5;}
+.report-heading,.modal-title{display:flex;align-items:center;gap:10px;}
+.ember-head,.ember-tail,.ember-tail-tip,.ember-arm,.ember-forearm,.ember-hand,.ember-leg,.ember-foot,.ember-eye{transform-box:view-box;transform-origin:0 0;}
+.ember-rig{transform-origin:121px 245px;animation:ember-idle 3.6s ease-in-out infinite;}
+.ember-head{animation:ember-head-idle 3.6s ease-in-out infinite;}
+.ember-tail{animation:ember-tail-sway 3s ease-in-out infinite;}
+.ember-tail-tip{animation:ember-flame-sway 2.2s ease-in-out infinite;}
+.ember-eye{animation:ember-blink 5.6s linear infinite;}
+.ember-arm-left{animation:ember-arm-rest 3.6s ease-in-out infinite;}
+.ember-arm-right{animation:ember-arm-rest 3.6s ease-in-out -1.8s infinite;}
+.ember-puppet[data-pose='greeting'] .ember-arm-right{animation:ember-wave-shoulder 1s ease-in-out infinite;}
+.ember-puppet[data-pose='greeting'] .ember-forearm-right{animation:ember-wave-elbow .5s ease-in-out infinite;}
+.ember-puppet[data-pose='greeting'] .ember-hand-right{animation:ember-wave-hand .5s ease-in-out infinite;}
+.ember-puppet[data-pose='greeting'] .ember-head{animation:ember-nod 1.4s ease-in-out infinite;}
+.ember-puppet[data-pose='walking'] .ember-rig{animation:ember-walk-bounce .6s ease-in-out infinite;}
+.ember-puppet[data-pose='walking'] .ember-leg-left,.ember-puppet[data-pose='walking'] .ember-arm-right{animation:ember-stride .6s ease-in-out infinite;}
+.ember-puppet[data-pose='walking'] .ember-leg-right,.ember-puppet[data-pose='walking'] .ember-arm-left{animation:ember-stride .6s ease-in-out -.3s infinite;}
+.ember-puppet[data-pose='walking'] .ember-foot-left{animation:ember-step .6s ease-in-out infinite;}
+.ember-puppet[data-pose='walking'] .ember-foot-right{animation:ember-step .6s ease-in-out -.3s infinite;}
+.ember-puppet[data-pose='walking'] .ember-forearm{transform:rotate(-12deg);}
+.ember-puppet[data-pose='thinking'] .ember-head{animation:ember-think-head 2.4s ease-in-out infinite;}
+.ember-puppet[data-pose='thinking'] .ember-arm-right{animation:none;transform:rotate(-125deg);}
+.ember-puppet[data-pose='thinking'] .ember-forearm-right{transform:rotate(-35deg);}
+.ember-puppet[data-pose='thinking'] .ember-tail{animation-duration:5s;}
+.ember-puppet[data-pose='success'] .ember-rig{animation:ember-hop .9s ease-in-out infinite;}
+.ember-puppet[data-pose='success'] .ember-arm-left{animation:ember-cheer-left .9s ease-in-out infinite;}
+.ember-puppet[data-pose='success'] .ember-arm-right{animation:ember-cheer-right .9s ease-in-out infinite;}
+.ember-puppet[data-pose='success'] .ember-forearm-left{transform:rotate(20deg);}
+.ember-puppet[data-pose='success'] .ember-forearm-right{transform:rotate(-20deg);}
+@keyframes ember-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes ember-head-idle{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg) translateY(-1px)}}
+@keyframes ember-tail-sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+@keyframes ember-flame-sway{0%,100%{transform:rotate(-5deg) scale(.98,1)}50%{transform:rotate(7deg) scale(1,1.04)}}
+@keyframes ember-arm-rest{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes ember-blink{0%,40%,44%,85%,89%,100%{transform:scaleY(1)}42%,87%{transform:scaleY(.07)}}
+@keyframes ember-wave-shoulder{0%,100%{transform:rotate(-125deg)}50%{transform:rotate(-140deg)}}
+@keyframes ember-wave-elbow{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(22deg)}}
+@keyframes ember-wave-hand{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+@keyframes ember-nod{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes ember-walk-bounce{0%,50%,100%{transform:translateY(0)}25%,75%{transform:translateY(-4px)}}
+@keyframes ember-stride{0%,100%{transform:rotate(-19deg)}50%{transform:rotate(19deg)}}
+@keyframes ember-step{0%,100%{transform:rotate(10deg) translateY(-3px)}50%{transform:rotate(-8deg)}}
+@keyframes ember-think-head{0%,100%{transform:rotate(6deg)}50%{transform:rotate(10deg) translateY(-1px)}}
+@keyframes ember-hop{0%,100%{transform:translateY(0)}20%{transform:translateY(2px) scale(1.02,.98)}55%{transform:translateY(-12px)}80%{transform:translateY(0)}}
+@keyframes ember-cheer-left{0%,100%{transform:rotate(115deg)}50%{transform:rotate(145deg)}}
+@keyframes ember-cheer-right{0%,100%{transform:rotate(-115deg)}50%{transform:rotate(-145deg)}}
+html[data-ember-motion='paused'] .ember-puppet *,.ember-puppet[data-paused='true'] *{animation-play-state:paused !important;}
+@media(max-width:767px){.ember-brand{width:32px;height:36px;}.map-header-wordmark{gap:4px;font-size:17px;}.ember-actions button,.ember-motion-toggle{min-height:44px;}}
+@media(prefers-reduced-motion:reduce){.ember-puppet *{animation:none !important;transform:none !important;}}
+
+/* Texture-specific pivots. The head and its two flame tufts are ONE cutout. */
+.ember-textured .ember-rig{transform-origin:170px 345px;}
+.ember-textured .ember-head{animation:ember-texture-head 4s ease-in-out infinite;}
+.ember-textured .ember-tail{animation:ember-texture-tail 3.6s ease-in-out infinite;}
+.ember-textured[data-pose='greeting'] .ember-head{animation:ember-texture-nod 1.6s ease-in-out infinite;}
+.ember-textured[data-pose='greeting'] .ember-arm-right{animation:ember-texture-wave .65s ease-in-out infinite;}
+.ember-textured[data-pose='thinking'] .ember-head{animation:ember-texture-think 2.8s ease-in-out infinite;}
+.ember-textured[data-pose='thinking'] .ember-arm-right{animation:none;transform:rotate(-14deg);}
+.ember-textured[data-pose='success'] .ember-arm-left{animation:ember-texture-cheer-left .9s ease-in-out infinite;}
+.ember-textured[data-pose='success'] .ember-arm-right{animation:ember-texture-cheer-right .9s ease-in-out infinite;}
+.ember-textured[data-pose='walking'] .ember-leg-left,.ember-textured[data-pose='walking'] .ember-arm-right{animation:ember-texture-stride .65s ease-in-out infinite;}
+.ember-textured[data-pose='walking'] .ember-leg-right,.ember-textured[data-pose='walking'] .ember-arm-left{animation:ember-texture-stride .65s ease-in-out -.325s infinite;}
+@keyframes ember-texture-head{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg) translateY(-1px)}}
+@keyframes ember-texture-nod{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(2deg)}}
+@keyframes ember-texture-tail{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
+@keyframes ember-texture-wave{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(11deg)}}
+@keyframes ember-texture-think{0%,100%{transform:rotate(2deg)}50%{transform:rotate(4deg)}}
+@keyframes ember-texture-cheer-left{0%,100%{transform:rotate(10deg)}50%{transform:rotate(28deg)}}
+@keyframes ember-texture-cheer-right{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(-17deg)}}
+@keyframes ember-texture-stride{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}

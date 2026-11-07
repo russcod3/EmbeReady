@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 
     let sql = `
         SELECT
-            h.id, h.ref_code, h.title, h.category, h.risk_level, h.status,
+            h.id, h.barangay_id, h.ref_code, h.title, h.category, h.risk_level, h.status,
             h.lat, h.lng, h.address, h.description, h.photo_url, h.is_demo,
             h.active_started_at, h.created_at, h.updated_at,
             b.name  AS barangay_name,

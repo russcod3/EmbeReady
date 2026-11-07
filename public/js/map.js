@@ -116,7 +116,7 @@ export function initMap(containerId = 'map', onSelectHazard = null) {
         center: BATANGAS_CENTER,
         zoom: DEFAULT_ZOOM,
         zoomControl: false,
-        attributionControl: false,
+        attributionControl: true,
         preferCanvas: true  // canvas renderer — faster marker drawing
     });
 
@@ -178,7 +178,7 @@ function createHazardMarker(hazard) {
     const marker = L.marker([hazard.lat, hazard.lng], { icon });
 
     // Custom tooltip
-    const riskLevelDisplay = (hazard.status === 'active' ? 'ACTIVE FIRE' : (hazard.risk_level || 'moderate')).toUpperCase();
+    const riskLevelDisplay = (hazard.status === 'active' ? 'Live' : (hazard.risk_level === 'heavy' ? 'High' : (hazard.risk_level || 'moderate'))).toUpperCase();
     const tooltipContent = `
         <div class="er-tooltip">
             <div class="tooltip-title">${escapeHtml(hazard.title)}</div>
@@ -327,7 +327,7 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
         center: BATANGAS_CENTER,
         zoom: 14,
         zoomControl: false,
-        attributionControl: false,
+        attributionControl: true,
         scrollWheelZoom: false  // prevents trapping mouse wheel when scrolling the form
     });
 

@@ -92,7 +92,7 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+module.exports = app.listen(PORT, () => {
     console.log(`\n┌──────────────────────────────────────────────────────┐`);
     console.log(`│  EmbeReady — Batangas City Fire Hazard & Risk Map    │`);
     console.log(`│  Server running at http://localhost:${PORT}               │`);

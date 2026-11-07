@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#18191B">
     <meta name="description" content="EmbeReady — Community fire hazard and risk map for Batangas City, Philippines. No login, 100% local, BFP-aligned field intelligence.">
     <title>EmbeReady — Batangas City Fire Hazard & Risk Map</title>
@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/animations.css">
+    <link rel="stylesheet" href="./css/experience.css">
+    <link rel="stylesheet" href="./css/ember.css">
 </head>
 <body>
     <div id="app">
@@ -24,11 +26,11 @@
         <!-- ══════════════════════════════════════════════════════════════════════
              VIEW 1: LANDING & SEARCH (Hero Dispatch)
         ══════════════════════════════════════════════════════════════════════ -->
-        <main id="view-landing" class="view is-active" aria-label="EmbeReady Landing">
+        <main id="view-landing" class="view" aria-label="EmbeReady Landing">
             <!-- Telemetry Topbar -->
             <header class="landing-topbar">
                 <div class="topbar-wordmark">
-                    <span class="wordmark-dot" aria-hidden="true"></span>
+                    <img class="ember-brand" src="./images/embeready-mascot.png" width="44" height="44" alt="" decoding="async">
                     <span>EmbeReady</span>
                 </div>
                 <div class="topbar-meta">
@@ -91,13 +93,13 @@ in your area.</h1>
         <!-- ══════════════════════════════════════════════════════════════════════
              VIEW 2: INTERACTIVE MAP & FIELD SHELL
         ══════════════════════════════════════════════════════════════════════ -->
-        <main id="view-map" class="view" aria-label="Interactive Map Shell">
+        <main id="view-map" class="view is-active" aria-label="Interactive Map Shell">
             <!-- Global Map Header -->
             <header class="map-header">
-                <div id="map-wordmark" class="map-header-wordmark" title="Back to home">
-                    <span class="wm-dot"></span>
+                <button type="button" id="map-wordmark" class="map-header-wordmark" title="Reset city map" aria-label="EmbeReady — reset city map">
+                    <img class="ember-brand" src="./images/embeready-mascot.png" width="44" height="44" alt="" decoding="async" fetchpriority="high">
                     <span>EmbeReady</span>
-                </div>
+                </button>
 
                 <!-- Header Search -->
                 <form id="map-search-form" style="position:relative; flex:1; max-width:380px; margin:0 var(--space-4);" role="search">
@@ -114,7 +116,7 @@ in your area.</h1>
                     <!-- Live Fire Counter -->
                     <div id="live-fire-counter" class="live-counter is-hidden" title="Filter to active fires">
                         <span class="live-dot"></span>
-                        <span id="live-counter-text">0 ACTIVE FIRES</span>
+                        <span id="live-counter-text">0 Live</span>
                     </div>
 
                     <!-- Infrastructure Layer Toggles -->
@@ -151,7 +153,7 @@ in your area.</h1>
 
                     <!-- Header Report Trigger -->
                     <button id="map-report-btn" class="filter-chip" style="border-color:var(--color-green-500);color:var(--color-green-400);background:rgba(5,150,105,0.1);">
-                        + REPORT HAZARD
+                        + Report hazard
                     </button>
                 </div>
             </header>
@@ -159,8 +161,8 @@ in your area.</h1>
             <!-- Filter Bar -->
             <nav class="filter-bar" aria-label="Hazard Filters">
                 <button class="filter-chip is-active" data-filter="all">All</button>
-                <button class="filter-chip filter-chip-live" data-filter="active">● Live Now</button>
-                <button class="filter-chip" data-filter="heavy">Heavy</button>
+                <button class="filter-chip filter-chip-live" data-filter="active">Live</button>
+                <button class="filter-chip" data-filter="heavy">High</button>
                 <button class="filter-chip" data-filter="moderate">Moderate</button>
                 <button class="filter-chip" data-filter="low">Low</button>
 
@@ -196,7 +198,7 @@ in your area.</h1>
                     <div class="legend-title">Risk Level</div>
                     <div class="legend-item legend-item-heavy">
                         <span class="legend-glyph">▲</span>
-                        <span>Heavy</span>
+                        <span>High</span>
                     </div>
                     <div class="legend-item legend-item-mod">
                         <span class="legend-glyph">◆</span>
@@ -208,7 +210,7 @@ in your area.</h1>
                     </div>
                     <div class="legend-item legend-item-active" style="margin-top:2px;">
                         <span class="legend-glyph" style="border-color:transparent;">🔥</span>
-                        <span style="color:var(--risk-heavy);font-weight:700;">Live Fire</span>
+                        <span style="color:var(--risk-heavy);font-weight:700;">Live</span>
                     </div>
                     <!-- Infrastructure legend items (always visible as reference) -->
                     <div style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border-subtle);">
@@ -304,7 +306,7 @@ in your area.</h1>
                                 <label for="report-risk-level" class="form-label">Reported Risk Level <span class="req">*</span></label>
                                 <select id="report-risk-level" name="risk_level" class="form-select" required>
                                     <option value="moderate" selected>Moderate Risk</option>
-                                    <option value="heavy">Heavy / Severe Risk</option>
+                                    <option value="heavy">High risk</option>
                                     <option value="low">Low Risk</option>
                                 </select>
                             </div>
@@ -365,7 +367,7 @@ in your area.</h1>
                                     <span id="photo-upload-label" class="photo-upload-label">
                                         Drop photo here or click to browse
                                     </span>
-                                    <span class="photo-upload-hint">Uploads are stored locally in ./public/uploads/user</span>
+                                    <span class="photo-upload-hint">Optional photo · JPG, PNG or WebP, up to 5 MB</span>
                                 </div>
                                 <input type="file"
                                        id="report-photo-input"
@@ -410,12 +412,12 @@ in your area.</h1>
 
                     <div class="modal-action-btns">
                         <button id="modal-action-bfp" class="action-btn">
-                            <span class="action-btn-label">Report to BFP Batangas City</span>
-                            <span class="action-btn-sub">Launches pre-filled dispatch message directly to fire responders</span>
+                            <span class="action-btn-label">Call BFP</span>
+                            <span class="action-btn-sub">Contact number will be added by the site owner</span>
                         </button>
 
                         <button id="modal-action-brgy" class="action-btn">
-                            <span class="action-btn-label">Report to Barangay Hall</span>
+                            <span class="action-btn-label">Call barangay</span>
                             <span class="action-btn-sub">Calls local barangay DRRM / tanod unit</span>
                         </button>
 
@@ -440,5 +442,7 @@ in your area.</h1>
 
     <!-- Main Application Entrypoint -->
     <script type="module" src="./js/app.js"></script>
+    <script type="module" src="./js/experience.js"></script>
+    <script type="module" src="./js/ember.js"></script>
 </body>
 </html>

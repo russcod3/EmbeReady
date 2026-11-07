@@ -23,7 +23,7 @@ import { initReportForm, refreshMiniMap } from './report.js';
 import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations } from './infrastructure.js';
 
 // State
-let _currentView = 'landing'; // 'landing' | 'map'
+let _currentView = 'map'; // 'landing' | 'map'
 let _currentFilters = {
     risk_level: '',
     status: '',
@@ -48,7 +48,8 @@ async function initApp() {
 
     // 2. Initialize Report Form
     initReportForm(async (newHazardId) => {
-        showToast('Report received! AI assessment generated.', 'success');
+        showToast('Report saved on the map.', 'success');
+        document.getElementById('report-section').classList.remove('is-open');
         await loadHazards();
         // Open the newly created hazard
         if (newHazardId) {
@@ -128,7 +129,7 @@ function setupNavigation() {
     const mapWordmark = document.getElementById('map-wordmark');
     if (mapWordmark) {
         mapWordmark.addEventListener('click', () => {
-            switchView('landing');
+            resetView();
         });
     }
 
@@ -160,7 +161,7 @@ function setupNavigation() {
     const backToMapBtn = document.getElementById('back-to-map-btn');
     if (backToMapBtn) {
         backToMapBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('report-section').classList.remove('is-open');
         });
     }
 
@@ -200,7 +201,8 @@ function setupNavigation() {
 function scrollToReport() {
     const reportSection = document.getElementById('report-section');
     if (reportSection) {
-        reportSection.scrollIntoView({ behavior: 'smooth' });
+        closeDrawer();
+        reportSection.classList.add('is-open');
         setTimeout(() => refreshMiniMap(), 300);
         setTimeout(() => refreshMiniMap(), 600);
     }
@@ -456,7 +458,7 @@ function updateLiveFireCounter(count) {
     if (!counterEl || !textEl) return;
 
     if (count > 0) {
-        textEl.textContent = count === 1 ? '1 ACTIVE FIRE' : `${count} ACTIVE FIRES`;
+        textEl.textContent = `${count} Live`;
         counterEl.classList.remove('is-hidden');
     } else {
         counterEl.classList.add('is-hidden');

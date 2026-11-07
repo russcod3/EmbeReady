@@ -225,7 +225,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
 
             const is911 = phone === '911' || ctype === 'national';
             const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX') || c.is_placeholder === 1;
-            const callHref = isPlaceholder ? 'javascript:void(0)' : `tel:${phone.replace(/[^0-9+]/g, '')}`;
+            const callHref = isPlaceholder ? '#' : `tel:${phone.replace(/[^0-9+]/g, '')}`;
             const warnAttr = isPlaceholder ? `title="${S.drawer.placeholderWarn}"` : '';
             const extraClass = is911 ? 'contact-item-911' : '';
             const btnClass = isPlaceholder ? 'contact-call-btn is-placeholder' : 'contact-call-btn';
@@ -251,9 +251,9 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         <!-- HEADER -->
         <div class="drawer-header">
             <div class="drawer-badges">
-                <span class="badge badge-${hazard.risk_level}">${hazard.risk_level}</span>
-                <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? 'ACTIVE FIRE' : hazard.status}</span>
-                ${isLive ? '<span class="badge badge-live">LIVE</span>' : ''}
+                <span class="badge badge-${hazard.risk_level}">${hazard.risk_level === 'heavy' ? 'High' : hazard.risk_level}</span>
+                <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? 'Live' : hazard.status}</span>
+
                 ${isDemo ? '<span class="badge badge-demo">DEMO DATA</span>' : ''}
             </div>
             <h2 class="drawer-title">${escapeHtml(hazard.title)}</h2>
@@ -263,15 +263,15 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
 
         <!-- PHOTO SECTION -->
         <div class="hazard-photo-wrap">
-            <img src="${photoSrc}"
+            <img src="${escapeHtml(photoSrc)}"
                  class="hazard-photo"
                  alt="${escapeHtml(hazard.title)}"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+ />
             <div class="photo-placeholder" style="display:none;">
                 <span class="photo-placeholder-icon">📷</span>
                 <div class="photo-placeholder-text">
-                    ${S.drawer.photoSlot}<br>
-                    <span style="font-size:9px;opacity:0.7;">Drop file: ./public${escapeHtml(seedSlotPath)}</span>
+                    Photo not yet available<br>
+                    <span>The site owner can add a photo here.</span>
                 </div>
             </div>
         </div>
@@ -316,11 +316,11 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
                     <div class="risk-score-number">${assessment.overall_score}</div>
                     <div class="risk-score-meta">
                         <div class="risk-score-level-line">
-                            <span class="badge badge-${assessment.assessed_level}">${assessment.assessed_level} RISK</span>
+                            <span class="badge badge-${assessment.assessed_level}">${assessment.assessed_level === 'heavy' ? 'High' : assessment.assessed_level} risk</span>
                             <span class="risk-confidence">${(assessment.confidence_level || 'medium').toUpperCase()} CONFIDENCE</span>
                         </div>
                         <div class="risk-engine-tag">
-                            ${assessment.engine === 'llm' ? '● AI-GENERATED (LLM)' : '◆ RULE-BASED ESTIMATE'}
+                            ${assessment.engine === 'llm' ? 'Gemini · AI-generated' : '◆ RULE-BASED ESTIMATE'}
                         </div>
                     </div>
                 </div>
@@ -395,6 +395,12 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         </div>
     `;
 
+    const photo = _contentEl.querySelector('.hazard-photo');
+    const fallback = () => { photo.style.display = 'none'; photo.nextElementSibling.style.display = 'flex'; };
+    photo.addEventListener('error', fallback);
+    if (photo.complete && !photo.naturalWidth) fallback();
+
+    _contentEl.querySelectorAll('.is-placeholder').forEach(link => { link.setAttribute('aria-disabled', 'true'); link.addEventListener('click', e => e.preventDefault()); });
     // Bind factor row toggles
     _contentEl.querySelectorAll('.factor-item').forEach(item => {
         item.addEventListener('click', () => {

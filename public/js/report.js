@@ -176,7 +176,7 @@ async function handleFormSubmit(e) {
         errors.push('Please select a barangay.');
     }
     if (isNaN(lat) || isNaN(lng)) {
-        errors.push('Please drop a pin on the mini-map to set location coordinates.');
+        errors.push('Please drop a pin on the map to set location coordinates.');
     } else {
         // Batangas bounds check
         if (lat < 13.60 || lat > 13.85 || lng < 120.93 || lng > 121.14) {
@@ -264,10 +264,10 @@ function showSuccessModal(data, hazardTitle) {
     if (scoreBox) {
         if (data.ai_result?.assessment) {
             const score = data.ai_result.assessment.overall_score;
-            const level = data.ai_result.assessment.assessed_level.toUpperCase();
+            const level = data.ai_result.assessment.assessed_level === 'heavy' ? 'HIGH' : data.ai_result.assessment.assessed_level.toUpperCase();
             scoreBox.innerHTML = `
                 <div style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;color:var(--text-on-light);margin-bottom:4px;">
-                    AI RISK ASSESSMENT: <span style="color:var(--risk-${data.ai_result.assessment.assessed_level});">${level} (${score}/100)</span>
+                    ${data.ai_result.assessment.engine === 'llm' ? 'GEMINI ASSESSMENT' : 'RULE-BASED ESTIMATE'}: <span style="color:var(--risk-${data.ai_result.assessment.assessed_level});">${level} (${score}/100)</span>
                 </div>
                 <div style="font-size:var(--text-xs);color:var(--color-charcoal-500);line-height:1.4;">
                     ${escapeHtml(data.ai_result.assessment.reasoning_summary || 'Preliminary field evaluation recorded.')}
@@ -279,33 +279,15 @@ function showSuccessModal(data, hazardTitle) {
         }
     }
 
-    // Action: Report to BFP Batangas City
-    if (bfpBtn) {
-        bfpBtn.onclick = async () => {
-            await logReportAction(refNumber, 'bfp');
-            const smsBody = encodeURIComponent(`EmbeReady Report ${refNumber}: Fire hazard reported at ${hazardTitle}. Please check.`);
-            const bfpContact = (data.contacts || []).find(c => (c.agency_type || '').toUpperCase() === 'BFP');
-            const bfpPhone = bfpContact ? (bfpContact.phone_dialable || bfpContact.phone_display || '').replace(/[^0-9+]/g, '') : '';
-            window.location.href = bfpPhone ? `sms:${bfpPhone}?body=${smsBody}` : `sms:?body=${smsBody}`;
-            closeModal();
-        };
-    }
-
-    // Action: Report to Barangay Hall
-    if (brgyBtn) {
-        brgyBtn.onclick = async () => {
-            await logReportAction(refNumber, 'barangay');
-            // contacts schema uses phone_display and is_placeholder (not phone)
-            const brgyContact = (data.contacts || []).find(c => c.agency_type === 'barangay' || c.agency_type === 'Barangay');
-            const phoneNum = brgyContact ? (brgyContact.phone_display || brgyContact.phone || '') : '';
-            const isPlaceholder = brgyContact ? (brgyContact.is_placeholder === 1 || String(phoneNum).includes('REPLACE-ME')) : true;
-            if (brgyContact && !isPlaceholder) {
-                window.location.href = `tel:${phoneNum.replace(/[^0-9+]/g, '')}`;
-            } else {
-                alert(`Barangay Hall contact number for this area is listed as: ${phoneNum || 'Not configured'}`);
-            }
-            closeModal();
-        };
+    // Placeholder contacts never produce a call link.
+    for (const [button, agency] of [[bfpBtn, 'bfp'], [brgyBtn, 'barangay']]) {
+        if (!button) continue;
+        const contact = (data.contacts || []).find(c => String(c.agency_type).toLowerCase() === agency);
+        const number = contact?.phone_dialable || '';
+        const valid = contact && !contact.is_placeholder && /^\+?[0-9][0-9 ()-]{2,}$/.test(number);
+        button.disabled = !valid;
+        button.querySelector('.action-btn-sub').textContent = valid ? contact.phone_display : 'Contact number not yet configured';
+        button.onclick = () => { if (valid) { logReportAction(refNumber, agency).catch(() => {}); window.location.href = 'tel:' + number.replace(/[^0-9+]/g, ''); } };
     }
 
     // Action: Done
