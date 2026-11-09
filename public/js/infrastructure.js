@@ -13,6 +13,7 @@
  */
 
 import { escapeHtml } from './utils.js';
+import { mapSymbolMarkup } from './map-symbols.js';
 
 // ── DATA: HOSPITALS ──────────────────────────────────────────────────────────
 // Sources: Wikipedia, Nominatim OSM, batangascity.gov.ph, mapcarta.com
@@ -217,108 +218,14 @@ let _hydrantsVisible     = false;
 let _hospitalsVisible    = false;
 let _fireStationsVisible = false;
 
-// ── SVG ICON HELPERS ──────────────────────────────────────────────────────────
-
-/**
- * buildHydrantIcon()
- * Classic fire hydrant silhouette — red with chrome accents.
- */
-function buildHydrantIcon() {
-    const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" width="32" height="40">
-  <!-- Shadow -->
-  <ellipse cx="16" cy="38" rx="8" ry="2.5" fill="rgba(0,0,0,0.25)"/>
-  <!-- Body -->
-  <rect x="10" y="18" width="12" height="14" rx="4" fill="#DC2626" stroke="#7f1d1d" stroke-width="1.5"/>
-  <!-- Top cap -->
-  <rect x="12" y="14" width="8" height="5" rx="2" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
-  <!-- Nozzle bolt top -->
-  <ellipse cx="16" cy="13.5" rx="4.5" ry="2" fill="#ef4444"/>
-  <ellipse cx="16" cy="13" rx="3" ry="1.5" fill="#fca5a5"/>
-  <!-- Left side outlet -->
-  <rect x="5" y="22" width="6" height="4" rx="2" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
-  <circle cx="5.5" cy="24" r="1.5" fill="#7f1d1d"/>
-  <!-- Right side outlet -->
-  <rect x="21" y="22" width="6" height="4" rx="2" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
-  <circle cx="26.5" cy="24" r="1.5" fill="#7f1d1d"/>
-  <!-- Center band -->
-  <rect x="9.5" y="23" width="13" height="3" rx="1" fill="#fca5a5" opacity="0.4"/>
-  <!-- Base flange -->
-  <rect x="8" y="31" width="16" height="4" rx="2" fill="#991b1b" stroke="#7f1d1d" stroke-width="1"/>
-</svg>`;
+// ── Shared marker icons ──────────────────────────────────────────────────────
+function buildInfrastructureIcon(type) {
     return L.divIcon({
         className: 'infra-marker-wrapper',
-        html: `<div class="infra-marker infra-hydrant" title="Fire Hydrant">${svg}</div>`,
-        iconSize: [32, 40],
-        iconAnchor: [16, 38],
-        popupAnchor: [0, -38]
-    });
-}
-
-/**
- * buildHospitalIcon()
- * White cross on deep blue background — international hospital symbol.
- */
-function buildHospitalIcon() {
-    const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 42" width="36" height="42">
-  <!-- Shadow -->
-  <ellipse cx="18" cy="40" rx="9" ry="2.5" fill="rgba(0,0,0,0.25)"/>
-  <!-- Pin body -->
-  <path d="M18 2 C9.163 2 2 9.163 2 18 C2 28 18 40 18 40 C18 40 34 28 34 18 C34 9.163 26.837 2 18 2Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="1.5"/>
-  <!-- White circle bg -->
-  <circle cx="18" cy="18" r="11" fill="white" opacity="0.95"/>
-  <!-- Red cross -->
-  <rect x="15" y="10" width="6" height="16" rx="1.5" fill="#dc2626"/>
-  <rect x="10" y="15" width="16" height="6" rx="1.5" fill="#dc2626"/>
-</svg>`;
-    return L.divIcon({
-        className: 'infra-marker-wrapper',
-        html: `<div class="infra-marker infra-hospital" title="Hospital">${svg}</div>`,
-        iconSize: [36, 42],
-        iconAnchor: [18, 40],
-        popupAnchor: [0, -42]
-    });
-}
-
-/**
- * buildFireStationIcon()
- * BFP-style fire truck / station icon — orange-red with flame.
- */
-function buildFireStationIcon() {
-    const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 44" width="38" height="44">
-  <!-- Shadow -->
-  <ellipse cx="19" cy="42" rx="10" ry="2.5" fill="rgba(0,0,0,0.25)"/>
-  <!-- Pin body -->
-  <path d="M19 2 C9.611 2 2 9.611 2 19 C2 30 19 42 19 42 C19 42 36 30 36 19 C36 9.611 28.389 2 19 2Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.5"/>
-  <!-- White circle bg -->
-  <circle cx="19" cy="19" r="12" fill="white" opacity="0.95"/>
-  <!-- Fire truck simplified icon -->
-  <!-- Cab -->
-  <rect x="10" y="15" width="9" height="8" rx="1.5" fill="#ea580c"/>
-  <!-- Windshield -->
-  <rect x="11" y="16" width="5" height="4" rx="0.5" fill="#bae6fd" opacity="0.8"/>
-  <!-- Body -->
-  <rect x="17" y="16" width="12" height="7" rx="1" fill="#dc2626"/>
-  <!-- Hose reel / equipment indicator -->
-  <circle cx="24" cy="17.5" r="2" fill="#fca5a5" stroke="#b91c1c" stroke-width="0.8"/>
-  <!-- Wheels -->
-  <circle cx="12.5" cy="24" r="2.5" fill="#374151" stroke="#111827" stroke-width="0.8"/>
-  <circle cx="12.5" cy="24" r="1" fill="#6b7280"/>
-  <circle cx="25" cy="24" r="2.5" fill="#374151" stroke="#111827" stroke-width="0.8"/>
-  <circle cx="25" cy="24" r="1" fill="#6b7280"/>
-  <!-- Siren light -->
-  <rect x="14" y="14" width="4" height="2" rx="1" fill="#fbbf24"/>
-  <!-- Flame icon small -->
-  <text x="27" y="22" font-size="7" fill="#dc2626" font-family="serif">🔥</text>
-</svg>`;
-    return L.divIcon({
-        className: 'infra-marker-wrapper',
-        html: `<div class="infra-marker infra-firestation" title="Fire Station">${svg}</div>`,
-        iconSize: [38, 44],
-        iconAnchor: [19, 42],
-        popupAnchor: [0, -44]
+        html: `<div class="infra-marker infra-${type}">${mapSymbolMarkup(type)}</div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
     });
 }
 
@@ -330,7 +237,7 @@ function buildHydrantPopup(h) {
     return `
         <div class="infra-popup infra-popup-hydrant">
             <div class="infra-popup-header">
-                <span class="infra-popup-icon">🔵</span>
+                <span class="infra-popup-icon">${mapSymbolMarkup('hydrant')}</span>
                 <div>
                     <div class="infra-popup-title">Fire Hydrant</div>
                     <div class="infra-popup-id">${h.id.toUpperCase()}</div>
@@ -358,7 +265,7 @@ function buildHospitalPopup(h) {
     return `
         <div class="infra-popup infra-popup-hospital">
             <div class="infra-popup-header">
-                <span class="infra-popup-icon">🏥</span>
+                <span class="infra-popup-icon">${mapSymbolMarkup('hospital')}</span>
                 <div>
                     <div class="infra-popup-title">${escapeHtml(h.name)}</div>
                     <div class="infra-popup-id">${escapeHtml(h.type)}</div>
@@ -386,7 +293,7 @@ function buildFireStationPopup(fs) {
     return `
         <div class="infra-popup infra-popup-firestation">
             <div class="infra-popup-header">
-                <span class="infra-popup-icon">🚒</span>
+                <span class="infra-popup-icon">${mapSymbolMarkup('firestation')}</span>
                 <div>
                     <div class="infra-popup-title">${escapeHtml(fs.name)}</div>
                     <div class="infra-popup-id">${escapeHtml(fs.type)}</div>
@@ -430,30 +337,30 @@ export function initInfrastructure(mapInstance) {
 
     // Populate hydrant layer
     for (const h of FIRE_HYDRANTS) {
-        const marker = L.marker([h.lat, h.lng], { icon: buildHydrantIcon(), zIndexOffset: 100 });
+        const marker = L.marker([h.lat, h.lng], { icon: buildInfrastructureIcon('hydrant'), title: 'Fire hydrant', alt: 'Fire hydrant', zIndexOffset: 100 });
         marker.bindPopup(buildHydrantPopup(h), { maxWidth: 280, className: 'infra-leaflet-popup' });
-        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">🔵 Hydrant · ${h.area}</span>`, {
-            direction: 'top', offset: [0, -38], opacity: 0.95
+        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">Hydrant · ${h.area}</span>`, {
+            direction: 'top', offset: [0, -16], opacity: 0.95
         });
         _hydrantLayer.addLayer(marker);
     }
 
     // Populate hospital layer
     for (const h of HOSPITALS) {
-        const marker = L.marker([h.lat, h.lng], { icon: buildHospitalIcon(), zIndexOffset: 200 });
+        const marker = L.marker([h.lat, h.lng], { icon: buildInfrastructureIcon('hospital'), title: h.name, alt: h.name, zIndexOffset: 200 });
         marker.bindPopup(buildHospitalPopup(h), { maxWidth: 300, className: 'infra-leaflet-popup' });
-        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">🏥 ${h.shortName}</span>`, {
-            direction: 'top', offset: [0, -42], opacity: 0.95
+        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">${h.shortName}</span>`, {
+            direction: 'top', offset: [0, -16], opacity: 0.95
         });
         _hospitalLayer.addLayer(marker);
     }
 
     // Populate fire station layer
     for (const fs of FIRE_STATIONS) {
-        const marker = L.marker([fs.lat, fs.lng], { icon: buildFireStationIcon(), zIndexOffset: 300 });
+        const marker = L.marker([fs.lat, fs.lng], { icon: buildInfrastructureIcon('firestation'), title: fs.name, alt: fs.name, zIndexOffset: 300 });
         marker.bindPopup(buildFireStationPopup(fs), { maxWidth: 300, className: 'infra-leaflet-popup' });
-        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">🚒 ${fs.shortName}</span>`, {
-            direction: 'top', offset: [0, -44], opacity: 0.95
+        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">${fs.shortName}</span>`, {
+            direction: 'top', offset: [0, -16], opacity: 0.95
         });
         _fireStationLayer.addLayer(marker);
     }
@@ -518,3 +425,17 @@ export function getLayerVisibility() {
     };
 }
 
+
+// Used by the All filter to clear every infrastructure overlay and its state.
+export function hideInfrastructure() {
+    if (_map) {
+        for (const layer of [_hydrantLayer, _hospitalLayer, _fireStationLayer]) {
+            if (layer && _map.hasLayer(layer)) _map.removeLayer(layer);
+        }
+    }
+    _hydrantsVisible = _hospitalsVisible = _fireStationsVisible = false;
+    document.querySelectorAll('.infra-toggle-btn').forEach(button => {
+        button.classList.remove('infra-toggle-active');
+        button.setAttribute('aria-pressed', 'false');
+    });
+}

@@ -59,6 +59,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/hazards',  hazardRoutes);
 app.use('/api/reports',  reportRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/assessments', require('./routes/assessments'));
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -96,6 +97,6 @@ module.exports = app.listen(PORT, () => {
     console.log(`\n┌──────────────────────────────────────────────────────┐`);
     console.log(`│  EmbeReady — Batangas City Fire Hazard & Risk Map    │`);
     console.log(`│  Server running at http://localhost:${PORT}               │`);
-    console.log(`│  AI Provider: ${(process.env.AI_PROVIDER || 'none').padEnd(37)}│`);
+    console.log(`│  AI Provider: ${'gemini'.padEnd(37)}│`);
     console.log(`└──────────────────────────────────────────────────────┘\n`);
 });

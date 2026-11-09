@@ -15,11 +15,14 @@
 import S from '../strings.js';
 import { escapeHtml } from './utils.js';
 import { fetchHazardDetail } from './api.js';
+import { riskCardsMarkup, initRiskCards } from './risk-cards.js';
 
 let _drawerEl = null;
 let _closeBtn = null;
 let _contentEl = null;
 let _activeTimerInterval = null;
+let _currentHazardId=null, _requestVersion=0, _cleanupCards=()=>{}, _assessmentKey="";
+const resultKey=data=>`${data.hazard.ai_status}:${data.assessment?.id||""}:${data.hazard.ai_error||""}`;
 
 /**
  * initDrawer()
@@ -43,7 +46,16 @@ export function initDrawer() {
         }
     });
 
-    // Mobile: handle swipe down or clicking backdrop if needed
+    window.addEventListener('assessment:updated', async()=>{
+        if(!_currentHazardId||!isDrawerOpen())return;
+        const id=_currentHazardId,version=_requestVersion;
+        try {
+            const data=await fetchHazardDetail(id);
+            if(id!==_currentHazardId||version!==_requestVersion||resultKey(data)===_assessmentKey)return;
+            const scroll=_contentEl.scrollTop,index=Number(_contentEl.querySelector('.factor-carousel')?.dataset.index||0);
+            renderHazardContent(data,index);_contentEl.scrollTop=scroll;
+        } catch {}
+    });
 }
 
 export function isDrawerOpen() {
@@ -52,6 +64,7 @@ export function isDrawerOpen() {
 
 export function closeDrawer() {
     if (!_drawerEl) return;
+    _requestVersion++;_currentHazardId=null;_cleanupCards();
     _drawerEl.classList.remove('is-open');
     document.body.classList.remove('drawer-open');
     if (_activeTimerInterval) {
@@ -72,14 +85,15 @@ export async function openDrawer(hazardId) {
         _activeTimerInterval = null;
     }
 
+    const version=++_requestVersion;_currentHazardId=hazardId;_cleanupCards();
     // Show loading state
     _contentEl.innerHTML = `
         <div style="padding: var(--space-8); text-align: center; color: var(--color-charcoal-400);">
             <div style="font-family: var(--font-display); font-size: var(--text-lg); text-transform: uppercase; margin-bottom: 8px;">
-                Loading field dispatch…
+                Loading hazard…
             </div>
             <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-charcoal-300);">
-                Querying hazard ID #${hazardId}
+                Preparing the report details
             </div>
         </div>
     `;
@@ -89,8 +103,10 @@ export async function openDrawer(hazardId) {
 
     try {
         const data = await fetchHazardDetail(hazardId);
+        if(version!==_requestVersion)return;
         renderHazardContent(data);
     } catch (err) {
+        if(version!==_requestVersion)return;
         _contentEl.innerHTML = `
             <div style="padding: var(--space-8); text-align: center; color: var(--risk-heavy);">
                 <div style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: 8px;">
@@ -107,24 +123,23 @@ export async function openDrawer(hazardId) {
 /**
  * renderHazardContent({ hazard, assessment, plan, history, contacts })
  */
-function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
+function renderHazardContent({ hazard, assessment, plan, history, contacts },cardIndex=0) {
+    _cleanupCards();
+    _assessmentKey=resultKey({hazard,assessment});
     if (_activeTimerInterval) {
         clearInterval(_activeTimerInterval);
         _activeTimerInterval = null;
     }
 
     const isLive = hazard.status === 'active';
-    const isDemo = hazard.is_demo === 1;
+    const isDemo = hazard.is_demo === 1 || assessment?.engine === 'mock';
 
     // Category label — guard against null/undefined category
     const categoryLabel = hazard.category
         ? (S.categories[hazard.category] || hazard.category.replace(/_/g, ' '))
         : 'Uncategorized';
 
-    // Calculate seed slot name (e.g. hazard-01.jpg)
-    const slotNum = String(hazard.id).padStart(2, '0');
-    const seedSlotPath = `/uploads/seed/hazard-${slotNum}.jpg`;
-    const photoSrc = hazard.photo_url || seedSlotPath;
+    const photoSrc = hazard.photo_url;
 
     // Active fire duration
     let activeTimerHtml = '';
@@ -145,32 +160,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         `;
     }
 
-    // Build Risk factors breakdown
-    let factorsHtml = '';
-    if (assessment && assessment.factors) {
-        const factorEntries = Object.entries(assessment.factors);
-        factorsHtml = factorEntries.map(([key, f]) => {
-            const max = f.max_score || 10;
-            const pct = Math.min(100, Math.round(((f.score || 0) / max) * 100));
-            let pctAttr = 'data-pct-low';
-            if (pct >= 70) pctAttr = 'data-pct-high';
-            else if (pct >= 40) pctAttr = 'data-pct-mod';
-
-            const cleanName = key.replace(/_/g, ' ');
-            return `
-                <div class="factor-item" data-factor="${escapeHtml(key)}">
-                    <div class="factor-header">
-                        <span class="factor-name">${escapeHtml(cleanName)}</span>
-                        <span class="factor-score">${f.score} / ${f.max_score}</span>
-                    </div>
-                    <div class="factor-bar-track">
-                        <div class="factor-bar-fill" ${pctAttr} style="width: ${pct}%"></div>
-                    </div>
-                    <div class="factor-reason">${escapeHtml(f.reason || '')}</div>
-                </div>
-            `;
-        }).join('');
-    }
+    const factorsHtml=assessment?.factors?riskCardsMarkup(assessment.factors):'';
 
     // Preparedness tabs
     const beforeSteps = plan?.before_steps || plan?.before || [];
@@ -251,7 +241,8 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         <!-- HEADER -->
         <div class="drawer-header">
             <div class="drawer-badges">
-                <span class="badge badge-${hazard.risk_level}">${hazard.risk_level === 'heavy' ? 'High' : hazard.risk_level}</span>
+                ${!isLive ? `<span class="badge badge-${hazard.risk_level || 'pending'}">${hazard.risk_level === 'heavy' ? 'High' : hazard.risk_level || (assessment?'More evidence needed':hazard.ai_status==='unavailable'?'Unassessed':'Assessing')}</span>` : ''}
+${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-demo">Reporter-selected</span>':''}
                 <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? 'Live' : hazard.status}</span>
 
                 ${isDemo ? '<span class="badge badge-demo">DEMO DATA</span>' : ''}
@@ -262,19 +253,19 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         </div>
 
         <!-- PHOTO SECTION -->
-        <div class="hazard-photo-wrap">
-            <img src="${escapeHtml(photoSrc)}"
+        ${!isLive ? `<div class="hazard-photo-wrap">
+            ${photoSrc ? `<img src="${escapeHtml(photoSrc)}"
                  class="hazard-photo"
                  alt="${escapeHtml(hazard.title)}"
- />
-            <div class="photo-placeholder" style="display:none;">
+ />` : ''}
+            <div class="photo-placeholder" style="display:${photoSrc?'none':'flex'};">
                 <span class="photo-placeholder-icon">📷</span>
                 <div class="photo-placeholder-text">
                     Photo not yet available<br>
                     <span>The site owner can add a photo here.</span>
                 </div>
             </div>
-        </div>
+        </div>` : ''}
 
         <!-- DETAILS / LOCATION -->
         <div class="drawer-section">
@@ -310,39 +301,24 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
         </div>
 
         <!-- RISK ASSESSMENT -->
+        <section class="risk-panel" aria-label="Risk assessment">
         ${assessment ? `
-            <div class="drawer-section" style="padding:0;">
-                <div class="risk-score-display">
-                    <div class="risk-score-number">${assessment.overall_score}</div>
-                    <div class="risk-score-meta">
-                        <div class="risk-score-level-line">
-                            <span class="badge badge-${assessment.assessed_level}">${assessment.assessed_level === 'heavy' ? 'High' : assessment.assessed_level} risk</span>
-                            <span class="risk-confidence">${(assessment.confidence_level || 'medium').toUpperCase()} CONFIDENCE</span>
-                        </div>
-                        <div class="risk-engine-tag">
-                            ${assessment.engine === 'llm' ? 'Gemini · AI-generated' : '◆ RULE-BASED ESTIMATE'}
-                        </div>
-                    </div>
-                </div>
-                ${assessment.reasoning_summary ? `
-                    <div class="risk-reasoning">
-                        "${escapeHtml(assessment.reasoning_summary)}"
-                    </div>
-                ` : ''}
-                <div class="factor-list">
-                    <div style="padding:var(--space-3) var(--space-5);font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-400);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border-light);background:var(--color-bone-300);">
-                        Risk Factors (Click row for field notes)
-                    </div>
-                    ${factorsHtml}
-                </div>
+            <div class="risk-overview">
+                <div class="risk-overall-value ${assessment.overall_score===null?'is-range':''}">${assessment.overall_score===null?`${assessment.score_range.min}–${assessment.score_range.max}`:assessment.overall_score}<small>/100</small></div>
+                <div class="risk-overview-meta"><strong>${assessment.assessed_level?`${assessment.assessed_level==='heavy'?'High':assessment.assessed_level} risk`:'More evidence needed'}</strong><span>${escapeHtml(assessment.confidence_level)} confidence</span><span>${assessment.engine==='mock'?'Demo assessment':'Gemini assessment'}</span></div>
             </div>
-        ` : ''}
+            ${factorsHtml}
+            <p class="risk-summary">${escapeHtml(assessment.reasoning_summary)}</p>
+            <p class="risk-disclaimer">${assessment.overall_score===null?'Estimated range reflects missing observations. ':''}Prioritisation index · not a probability of fire. ${assessment.action_priority==='immediate'?'Immediate attention recommended.':''}</p>
+            ${assessment.missing_information?.length?`<div class="risk-missing"><strong>Still unknown</strong><br>${assessment.missing_information.map(escapeHtml).join(' · ')}</div>`:''}
+        ` : `<div class="assessment-empty"><strong>${isLive?'Live fire reported':hazard.ai_status==='unavailable'?'Assessment unavailable':'Gemini is assessing this hazard'}</strong><p>${isLive?'Use the responder contacts below to call for help.':hazard.ai_status==='unavailable'?'The report is saved. Retry assessment from the map controls. No generated score is available.':'The risk breakdown and precautions will appear here automatically. You can keep exploring the map.'}</p></div>`}
+        </section>
 
         <!-- PREPAREDNESS PLAN -->
-        <div class="drawer-section" style="padding:0;">
+        ${plan ? `<div class="drawer-section" style="padding:0;">
             <div style="padding:var(--space-3) var(--space-5);background:var(--color-charcoal-800);color:var(--color-bone-200);display:flex;align-items:center;justify-content:space-between;">
                 <span style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Community Preparedness Plan</span>
-                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">BFP PROTOCOL</span>
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${assessment?.engine==='mock'?'Demo guidance':'Gemini guidance'}</span>
             </div>
             <div class="plan-tabs" role="tablist">
                 <button class="plan-tab is-active" data-tab-target="before">Before</button>
@@ -380,7 +356,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
                     </div>
                 </div>
             ` : ''}
-        </div>
+        </div>` : ''}
 
         <!-- FIRE HISTORY -->
         <div class="drawer-section">
@@ -397,16 +373,14 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts }) {
 
     const photo = _contentEl.querySelector('.hazard-photo');
     const fallback = () => { photo.style.display = 'none'; photo.nextElementSibling.style.display = 'flex'; };
-    photo.addEventListener('error', fallback);
-    if (photo.complete && !photo.naturalWidth) fallback();
+    if (photo) {
+        photo.addEventListener('error', fallback);
+        if (photo.complete && !photo.naturalWidth) fallback();
+    }
 
     _contentEl.querySelectorAll('.is-placeholder').forEach(link => { link.setAttribute('aria-disabled', 'true'); link.addEventListener('click', e => e.preventDefault()); });
-    // Bind factor row toggles
-    _contentEl.querySelectorAll('.factor-item').forEach(item => {
-        item.addEventListener('click', () => {
-            item.classList.toggle('is-expanded');
-        });
-    });
+    _contentEl.querySelector('.drawer-header').after(_contentEl.querySelector('.risk-panel'));
+    if(assessment?.factors)_cleanupCards=initRiskCards(_contentEl,assessment.factors,cardIndex);
 
     // Bind tab clicks
     const tabs = _contentEl.querySelectorAll('.plan-tab');

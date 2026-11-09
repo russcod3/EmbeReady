@@ -1,0 +1,597 @@
+{
+  "HZ-0001": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: improvised electrical joints and damaged insulation are present; repeated arcing was reported while circuits are in use.",
+      "fuel_combustibles": "Mock observation: wooden framing and stored household goods are within 0.5 m of the affected wiring.",
+      "proximity_to_people": "Mock scenario: rooms are occupied in the evening and some occupants sleep in the affected building.",
+      "structure_material": "Mock survey: mixed timber and masonry structures have gaps of less than 1 m along the affected row.",
+      "escape_routes": "Mock survey: two pedestrian exits exist, but stored goods partially narrow one route.",
+      "truck_access": "Mock survey: the nearest road is 4 m wide; the final 35 m approach is a 1.5 m pedestrian alley.",
+      "human_behavior": "Mock observation: occupants continue using extensions after repeated breaker trips; electrical repairs have been improvised.",
+      "safeguards": "Mock survey: no working smoke alarms were recorded in the affected rooms; one extinguisher has no current service record.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0002": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: several power strips share one outlet; the plug becomes warm under evening load and breakers trip repeatedly.",
+      "fuel_combustibles": "Mock observation: ordinary paper and furnishings are near extension leads; no bulk flammable-liquid storage was recorded.",
+      "proximity_to_people": "Mock scenario: the building contains occupied workspaces and residences, including sleeping rooms upstairs.",
+      "structure_material": "Mock survey: masonry exterior with timber interior partitions; adjacent buildings are approximately 2 m away.",
+      "escape_routes": "Mock survey: two exits are available and their doors open, but cords cross one corridor.",
+      "truck_access": "Mock survey: a 5 m access road reaches the entrance and is clear during the fictional inspection.",
+      "human_behavior": "Mock observation: tenants repeatedly reconnect high-load appliances after breaker trips.",
+      "safeguards": "Mock survey: an extinguisher is serviceable at the entrance, but the affected circuit has no recent professional inspection.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0003": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: open-flame cooking is carried out beside improvised electrical extensions.",
+      "fuel_combustibles": "Mock survey: timber, plywood and household textiles form a continuous combustible load across closely spaced homes.",
+      "proximity_to_people": "Mock scenario: approximately 45 residents occupy the cluster, including children and older adults; dwellings are used for sleeping.",
+      "structure_material": "Mock survey: timber and tarpaulin units are generally separated by less than 1 m.",
+      "escape_routes": "Mock survey: the main escape alley is 1.2 m wide; a second footpath exists but is narrowed by stored materials.",
+      "truck_access": "Mock survey: the 1.2 m entrance alley is impassable to apparatus; the nearest staging point is 65 m away. No response-time estimate is available.",
+      "human_behavior": "Mock observation: cooking and charging devices are left unattended in shared spaces.",
+      "safeguards": "Mock survey: no maintained alarms or extinguishers were recorded; residents have no practised evacuation arrangement.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0004": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: cylinders are stored beside a cooking area; no active leak was detected in the fictional inspection, but one hose is visibly deteriorated.",
+      "fuel_combustibles": "Mock inventory: multiple 11 kg LPG cylinders are unsecured and some are horizontal; nearby cardboard adds combustible load.",
+      "proximity_to_people": "Mock scenario: 15 people regularly use the adjoining food and residential spaces.",
+      "structure_material": "Mock survey: storage shares a wall with occupied rooms and has restricted low-level ventilation.",
+      "escape_routes": "Mock survey: a usable front exit exists; cylinder storage narrows the secondary passage.",
+      "truck_access": "Mock survey: a 4.5 m road is accessible, with parked delivery vehicles sometimes narrowing the approach.",
+      "human_behavior": "Mock observation: cylinders are moved and exchanged without a documented leak-check routine.",
+      "safeguards": "Mock survey: no maintained gas detector or appropriate inspected extinguisher was recorded in the storage area.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0005": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock inspection: normal electrical and cooking equipment is present; no active arcing, overheating or leak was recorded.",
+      "fuel_combustibles": "Mock observation: cardboard cartons and plastic merchandise obstruct an escape corridor.",
+      "proximity_to_people": "Mock scenario: up to 70 occupants are present at peak periods and would depend on the remaining exit.",
+      "structure_material": "Mock survey: a masonry public-use structure has combustible stall partitions.",
+      "escape_routes": "Mock inspection: the secondary exit cannot be used because of stored goods; the remaining corridor narrows below 1 m.",
+      "truck_access": "Mock survey: a 6 m public road is clear to the main entrance; internal pedestrian congestion can delay evacuation.",
+      "human_behavior": "Mock observation: deliveries repeatedly refill the escape corridor and no one checks it before opening.",
+      "safeguards": "Mock inspection: some exit signs are missing and the emergency-light battery failed its fictional check; extinguishers are present.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0006": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: improvised electrical joints and damaged insulation are present; repeated arcing was reported while circuits are in use.",
+      "fuel_combustibles": "Mock observation: wooden framing and stored household goods are within 0.5 m of the affected wiring.",
+      "proximity_to_people": "Mock scenario: rooms are occupied in the evening and some occupants sleep in the affected building.",
+      "structure_material": "Mock survey: mixed timber and masonry structures have gaps of less than 1 m along the affected row.",
+      "escape_routes": "Mock survey: two pedestrian exits exist, but stored goods partially narrow one route.",
+      "truck_access": "Mock survey: the nearest road is 4 m wide; the final 35 m approach is a 1.5 m pedestrian alley.",
+      "human_behavior": "Mock observation: occupants continue using extensions after repeated breaker trips; electrical repairs have been improvised.",
+      "safeguards": "Mock survey: no working smoke alarms were recorded in the affected rooms; one extinguisher has no current service record.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0007": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: cylinders are stored beside a cooking area; no active leak was detected in the fictional inspection, but one hose is visibly deteriorated.",
+      "fuel_combustibles": "Mock inventory: multiple 11 kg LPG cylinders are unsecured and some are horizontal; nearby cardboard adds combustible load.",
+      "proximity_to_people": "Mock scenario: 15 people regularly use the adjoining food and residential spaces.",
+      "structure_material": "Mock survey: storage shares a wall with occupied rooms and has restricted low-level ventilation.",
+      "escape_routes": "Mock survey: a usable front exit exists; cylinder storage narrows the secondary passage.",
+      "truck_access": "Mock survey: a 4.5 m road is accessible, with parked delivery vehicles sometimes narrowing the approach.",
+      "human_behavior": "Mock observation: cylinders are moved and exchanged without a documented leak-check routine.",
+      "safeguards": "Mock survey: no maintained gas detector or appropriate inspected extinguisher was recorded in the storage area.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0008": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: handling of volatile materials occurs close to electrical tools or hot work, with no separation barrier.",
+      "fuel_combustibles": "Mock inventory: paints, solvents and used oils are stored in partly unsealed containers without secondary containment.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0009": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock inspection: scorch marks appear at two breaker slots; one breaker is larger than the panel label permits and two trips occurred in a month. There is no active fire.",
+      "fuel_combustibles": "Mock observation: ordinary paper and furnishings are near extension leads; no bulk flammable-liquid storage was recorded.",
+      "proximity_to_people": "Mock scenario: the building contains occupied workspaces and residences, including sleeping rooms upstairs.",
+      "structure_material": "Mock survey: masonry exterior with timber interior partitions; adjacent buildings are approximately 2 m away.",
+      "escape_routes": "Mock survey: two exits are available and their doors open, but cords cross one corridor.",
+      "truck_access": "Mock survey: a 5 m access road reaches the entrance and is clear during the fictional inspection.",
+      "human_behavior": "Mock observation: tenants repeatedly reconnect high-load appliances after breaker trips.",
+      "safeguards": "Mock survey: an extinguisher is serviceable at the entrance, but the affected circuit has no recent professional inspection.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0010": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock survey: no fire, active burning or fixed heat source is present; discarded smoking materials were recorded beside a public path.",
+      "fuel_combustibles": "Mock survey: fully cured cogon and dry surface litter form a continuous patch of vegetation.",
+      "proximity_to_people": "Mock scenario: the nearest occupied dwellings are 80 m from the vegetation edge; a public footpath crosses the margin.",
+      "structure_material": "Mock survey: nearby homes have masonry walls and metal roofs; exposed timber outbuildings sit along the vegetation margin.",
+      "escape_routes": "Mock survey: two clear roads lead away from the site and neither passes through the grass patch.",
+      "truck_access": "Mock survey: a 4 m road runs along the lower edge; apparatus cannot traverse the steep vegetated interior.",
+      "human_behavior": "Mock observation: cigarette litter and occasional waste dumping occur beside the footpath.",
+      "safeguards": "Mock survey: no maintained firebreak separates the patch from adjoining property; a community water point is accessible but its firefighting capacity is unverified.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0011": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: improvised electrical joints and damaged insulation are present; repeated arcing was reported while circuits are in use.",
+      "fuel_combustibles": "Mock observation: wooden framing and stored household goods are within 0.5 m of the affected wiring.",
+      "proximity_to_people": "Mock scenario: rooms are occupied in the evening and some occupants sleep in the affected building.",
+      "structure_material": "Mock survey: mixed timber and masonry structures have gaps of less than 1 m along the affected row.",
+      "escape_routes": "Mock survey: two pedestrian exits exist, but stored goods partially narrow one route.",
+      "truck_access": "Mock survey: the nearest road is 4 m wide; the final 35 m approach is a 1.5 m pedestrian alley.",
+      "human_behavior": "Mock observation: occupants continue using extensions after repeated breaker trips; electrical repairs have been improvised.",
+      "safeguards": "Mock survey: no working smoke alarms were recorded in the affected rooms; one extinguisher has no current service record.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0012": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: cylinders are stored beside a cooking area; no active leak was detected in the fictional inspection, but one hose is visibly deteriorated.",
+      "fuel_combustibles": "Mock inventory: multiple 11 kg LPG cylinders are unsecured and some are horizontal; nearby cardboard adds combustible load.",
+      "proximity_to_people": "Mock scenario: 15 people regularly use the adjoining food and residential spaces.",
+      "structure_material": "Mock survey: storage shares a wall with occupied rooms and has restricted low-level ventilation.",
+      "escape_routes": "Mock survey: a usable front exit exists; cylinder storage narrows the secondary passage.",
+      "truck_access": "Mock survey: a 4.5 m road is accessible, with parked delivery vehicles sometimes narrowing the approach.",
+      "human_behavior": "Mock observation: cylinders are moved and exchanged without a documented leak-check routine.",
+      "safeguards": "Mock survey: no maintained gas detector or appropriate inspected extinguisher was recorded in the storage area.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0013": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: handling of volatile materials occurs close to electrical tools or hot work, with no separation barrier.",
+      "fuel_combustibles": "Mock inventory: paints, solvents and used oils are stored in partly unsealed containers without secondary containment.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0014": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: handling of volatile materials occurs close to electrical tools or hot work, with no separation barrier.",
+      "fuel_combustibles": "Mock inventory: paints, solvents and used oils are stored in partly unsealed containers without secondary containment.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0015": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock active incident: flames are consuming timber structures in the coastal cluster; this is an ongoing fictional fire.",
+      "fuel_combustibles": "Mock survey: timber, plywood and household textiles form a continuous combustible load across closely spaced homes.",
+      "proximity_to_people": "Mock scenario: approximately 45 residents occupy the cluster, including children and older adults; dwellings are used for sleeping.",
+      "structure_material": "Mock survey: timber and tarpaulin units are generally separated by less than 1 m.",
+      "escape_routes": "Mock survey: the main escape alley is 1.2 m wide; a second footpath exists but is narrowed by stored materials.",
+      "truck_access": "Mock survey: apparatus can reach a 4 m road but cannot enter the cluster; the pedestrian approach is 60 m long.",
+      "human_behavior": "Mock observation: cooking and charging devices are left unattended in shared spaces.",
+      "safeguards": "Mock survey: no maintained alarms or extinguishers were recorded; residents have no practised evacuation arrangement.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0016": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: open-flame cooking is carried out beside improvised electrical extensions.",
+      "fuel_combustibles": "Mock survey: timber, plywood and household textiles form a continuous combustible load across closely spaced homes.",
+      "proximity_to_people": "Mock scenario: approximately 45 residents occupy the cluster, including children and older adults; dwellings are used for sleeping.",
+      "structure_material": "Mock survey: timber and tarpaulin units are generally separated by less than 1 m.",
+      "escape_routes": "Mock survey: the main escape alley is 1.2 m wide; a second footpath exists but is narrowed by stored materials.",
+      "truck_access": "Mock survey: apparatus can reach a 4 m road but cannot enter the cluster; the pedestrian approach is 60 m long.",
+      "human_behavior": "Mock observation: cooking and charging devices are left unattended in shared spaces.",
+      "safeguards": "Mock survey: no maintained alarms or extinguishers were recorded; residents have no practised evacuation arrangement.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0017": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: an unattended waste burn has escaped its original footprint and is igniting adjacent vegetation.",
+      "fuel_combustibles": "Mock survey: dry grass and mixed waste form a continuous fuel path toward neighbouring property.",
+      "proximity_to_people": "Mock scenario: the burning vegetation is within 4 m of occupied homes.",
+      "structure_material": "Mock survey: mixed timber and masonry structures border the affected vegetation.",
+      "escape_routes": "Mock survey: two roads lead away from the area; smoke intermittently obscures one approach.",
+      "truck_access": "Mock survey: a 4 m road reaches the site edge, with a 40 m pedestrian approach to the burning pile.",
+      "human_behavior": "Mock observation: waste burning continued without supervision or a cleared perimeter.",
+      "safeguards": "Mock survey: no maintained perimeter break or firefighting equipment was recorded at the burn site.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional incident observation: 31 C, humidity 45%, onshore wind 18 km/h toward the homes; not a current forecast."
+    }
+  },
+  "HZ-0018": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: cylinders are stored beside a cooking area; no active leak was detected in the fictional inspection, but one hose is visibly deteriorated.",
+      "fuel_combustibles": "Mock inventory: multiple 11 kg LPG cylinders are unsecured and some are horizontal; nearby cardboard adds combustible load.",
+      "proximity_to_people": "Mock scenario: 15 people regularly use the adjoining food and residential spaces.",
+      "structure_material": "Mock survey: storage shares a wall with occupied rooms and has restricted low-level ventilation.",
+      "escape_routes": "Mock survey: a usable front exit exists; cylinder storage narrows the secondary passage.",
+      "truck_access": "Mock survey: a 4.5 m road is accessible, with parked delivery vehicles sometimes narrowing the approach.",
+      "human_behavior": "Mock observation: cylinders are moved and exchanged without a documented leak-check routine.",
+      "safeguards": "Mock survey: no maintained gas detector or appropriate inspected extinguisher was recorded in the storage area.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0019": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock inspection: normal electrical and cooking equipment is present; no active arcing, overheating or leak was recorded.",
+      "fuel_combustibles": "Mock observation: cardboard cartons and plastic merchandise obstruct an escape corridor.",
+      "proximity_to_people": "Mock scenario: up to 70 occupants are present at peak periods and would depend on the remaining exit.",
+      "structure_material": "Mock survey: a masonry public-use structure has combustible stall partitions.",
+      "escape_routes": "Mock inspection: the secondary exit cannot be used because of stored goods; the remaining corridor narrows below 1 m.",
+      "truck_access": "Mock survey: a 6 m public road is clear to the main entrance; internal pedestrian congestion can delay evacuation.",
+      "human_behavior": "Mock observation: deliveries repeatedly refill the escape corridor and no one checks it before opening.",
+      "safeguards": "Mock inspection: some exit signs are missing and the emergency-light battery failed its fictional check; extinguishers are present.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0020": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: handling of volatile materials occurs close to electrical tools or hot work, with no separation barrier.",
+      "fuel_combustibles": "Mock inventory: 200 L chemical drums have flammable markings; corrosion and leakage staining occur at several bases.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0021": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Fictional follow-up maintenance log: containment is sound, no leak was detected, and no ignition source is present within the clear corridor.",
+      "fuel_combustibles": "Mock inventory: a fuel pipeline is present; the recorded product remains contained within a sound pipe with accessible professional isolation arrangements.",
+      "proximity_to_people": "Mock survey: the nearest occupied homes are 50 m from the maintained corridor; public entry to the pipe area is restricted.",
+      "structure_material": "Mock survey: the corridor contains metal pipe on noncombustible supports with no direct combustible connection to the homes.",
+      "escape_routes": "Mock survey: two clear pedestrian routes lead away from the corridor and are outside the restricted maintenance area.",
+      "truck_access": "Mock survey: a clear 5 m maintenance road reaches the corridor gate; vehicle access is controlled by the operator.",
+      "human_behavior": "Mock survey: minor encroachment pressure is reported, but no hot work, open burning or tampering was observed during the scenario inspection.",
+      "safeguards": "Mock maintenance log: barriers, signs and the operator inspection routine are present; residents have received the scenario warning information.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 29 C, humidity 68%, wind 5 km/h. No vegetation dryness or extreme heat was recorded in this fictional inspection."
+    }
+  },
+  "HZ-0022": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: open-flame cooking is carried out beside improvised electrical extensions.",
+      "fuel_combustibles": "Mock survey: timber, plywood and household textiles form a continuous combustible load across closely spaced homes.",
+      "proximity_to_people": "Mock scenario: approximately 45 residents occupy the cluster, including children and older adults; dwellings are used for sleeping.",
+      "structure_material": "Mock survey: timber and tarpaulin units are generally separated by less than 1 m.",
+      "escape_routes": "Mock survey: the main escape alley is 1.2 m wide; a second footpath exists but is narrowed by stored materials.",
+      "truck_access": "Mock survey: apparatus can reach a 4 m road but cannot enter the cluster; the pedestrian approach is 60 m long.",
+      "human_behavior": "Mock observation: cooking and charging devices are left unattended in shared spaces.",
+      "safeguards": "Mock survey: no maintained alarms or extinguishers were recorded; residents have no practised evacuation arrangement.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0023": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock inspection: no flame or hot work is present; nearby electrical equipment is unclassified for vapour exposure.",
+      "fuel_combustibles": "Mock inventory records identify approximately 30 drums as flammable solvents. Some drums are uncapped and labels are degraded; secondary containment is absent.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0024": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock survey: no fire, active burning or fixed heat source is present; discarded smoking materials were recorded beside a public path.",
+      "fuel_combustibles": "Mock survey: fully cured cogon and dry surface litter form a continuous patch of vegetation.",
+      "proximity_to_people": "Mock scenario: the nearest occupied dwellings are 80 m from the vegetation edge; a public footpath crosses the margin.",
+      "structure_material": "Mock survey: continuous dry grass covers a slope above occupied dwellings. Terrain may influence spread; no downhill spread rate has been established.",
+      "escape_routes": "Mock survey: two clear roads lead away from the site and neither passes through the grass patch.",
+      "truck_access": "Mock survey: a 4 m road runs along the lower edge; apparatus cannot traverse the steep vegetated interior.",
+      "human_behavior": "Mock observation: cigarette litter and occasional waste dumping occur beside the footpath.",
+      "safeguards": "Mock survey: no maintained firebreak separates the patch from adjoining property; a community water point is accessible but its firefighting capacity is unverified.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0025": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock active incident: an agricultural waste fire is spreading into adjacent cogon. No reliable spread-rate measurement is available.",
+      "fuel_combustibles": "Mock survey: dry grass and mixed waste form a continuous fuel path toward neighbouring property.",
+      "proximity_to_people": "Mock scenario: residents occupy homes near the vegetation edge and pedestrians use the adjacent road.",
+      "structure_material": "Mock survey: mixed timber and masonry structures border the affected vegetation.",
+      "escape_routes": "Mock survey: two roads lead away from the area; smoke intermittently obscures one approach.",
+      "truck_access": "Mock survey: a 4 m road reaches the site edge, with a 40 m pedestrian approach to the burning pile.",
+      "human_behavior": "Mock observation: waste burning continued without supervision or a cleared perimeter.",
+      "safeguards": "Mock survey: no maintained perimeter break or firefighting equipment was recorded at the burn site.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0026": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock survey: no fire, active burning or fixed heat source is present; discarded smoking materials were recorded beside a public path.",
+      "fuel_combustibles": "Mock survey: fully cured cogon and dry surface litter form a continuous patch of vegetation.",
+      "proximity_to_people": "Mock scenario: the nearest occupied dwellings are 80 m from the vegetation edge; a public footpath crosses the margin.",
+      "structure_material": "Mock survey: nearby homes have masonry walls and metal roofs; exposed timber outbuildings sit along the vegetation margin.",
+      "escape_routes": "Mock survey: two clear roads lead away from the site and neither passes through the grass patch.",
+      "truck_access": "Mock survey: a 4 m road runs along the lower edge; apparatus cannot traverse the steep vegetated interior.",
+      "human_behavior": "Mock observation: cigarette litter and occasional waste dumping occur beside the footpath.",
+      "safeguards": "Mock survey: no maintained firebreak separates the patch from adjoining property; a community water point is accessible but its firefighting capacity is unverified.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0027": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock incident follow-up: visible flames have been contained but residual smouldering hotspots remain; re-ignition has not been ruled out.",
+      "fuel_combustibles": "Mock survey: dry grass and mixed waste form a continuous fuel path toward neighbouring property.",
+      "proximity_to_people": "Mock scenario: residents occupy homes near the vegetation edge and pedestrians use the adjacent road.",
+      "structure_material": "Mock survey: mixed timber and masonry structures border the affected vegetation.",
+      "escape_routes": "Mock survey: two roads lead away from the area; smoke intermittently obscures one approach.",
+      "truck_access": "Mock survey: a 4 m road reaches the site edge, with a 40 m pedestrian approach to the burning pile.",
+      "human_behavior": "Mock observation: waste burning continued without supervision or a cleared perimeter.",
+      "safeguards": "Mock survey: no maintained perimeter break or firefighting equipment was recorded at the burn site.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0028": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock survey: no fire, active burning or fixed heat source is present; discarded smoking materials were recorded beside a public path.",
+      "fuel_combustibles": "Mock survey: fully cured cogon and dry surface litter form a continuous patch of vegetation.",
+      "proximity_to_people": "Mock survey: no occupied buildings lie within 200 m of the grass margin; road users pass nearby.",
+      "structure_material": "Mock survey: the grass patch is isolated from occupied structures by more than 200 m of mostly open ground, with no continuous timber-building connection.",
+      "escape_routes": "Mock survey: two clear roads lead away from the site and neither passes through the grass patch.",
+      "truck_access": "Mock survey: an unobstructed 6 m public road adjoins the vegetation margin.",
+      "human_behavior": "Mock survey: smoking litter is occasionally found; active burning was not observed.",
+      "safeguards": "Mock survey: no maintained firebreak separates the patch from adjoining property; a community water point is accessible but its firefighting capacity is unverified.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 32 C, relative humidity 42%, wind 12 km/h. Dry vegetation is present. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0029": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: handling of volatile materials occurs close to electrical tools or hot work, with no separation barrier.",
+      "fuel_combustibles": "Mock inventory: paints, solvents and used oils are stored in partly unsealed containers without secondary containment.",
+      "proximity_to_people": "Mock scenario: six workers occupy the yard; homes are within 15 m of its boundary.",
+      "structure_material": "Mock survey: an open storage yard adjoins a mixed-material workshop and lacks a fire-resisting separation wall.",
+      "escape_routes": "Mock survey: two outward routes exist but one is partly blocked by drums.",
+      "truck_access": "Mock survey: a 5 m road reaches the gate; the internal driveway is partly occupied by stored materials.",
+      "human_behavior": "Mock observation: smoking and hot-work activity take place near the storage area without a permit routine.",
+      "safeguards": "Mock inspection: available extinguishers lack current service records, and spill controls are absent.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "HZ-0030": {
+    "version": 2,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "ignition_sources": "Mock observation: several power strips share one outlet; the plug becomes warm under evening load and breakers trip repeatedly.",
+      "fuel_combustibles": "Mock observation: ordinary paper and furnishings are near extension leads; no bulk flammable-liquid storage was recorded.",
+      "proximity_to_people": "Mock scenario: the building contains occupied workspaces and residences, including sleeping rooms upstairs.",
+      "structure_material": "Mock survey: masonry exterior with timber interior partitions; adjacent buildings are approximately 2 m away.",
+      "escape_routes": "Mock survey: two exits are available and their doors open, but cords cross one corridor.",
+      "truck_access": "Mock survey: a 5 m access road reaches the entrance and is clear during the fictional inspection.",
+      "human_behavior": "Mock observation: tenants repeatedly reconnect high-load appliances after breaker trips.",
+      "safeguards": "Mock survey: an extinguisher is serviceable at the entrance, but the affected circuit has no recent professional inspection.",
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked mock incidents are its only entries. Same-barangay events are background evidence, not proof of a repeat incident at this site.",
+      "weather_seasonal": "Fictional scenario observation at 09:00: 29 C, relative humidity 68%, wind 5 km/h, with no rain during the scenario inspection. These are synthetic scenario values, not current weather."
+    }
+  },
+  "ER-20261103-5A953E": {
+    "version": 3,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 29 C, humidity 65%, wind 5 km/h at the fictional inspection. These are not current weather observations.",
+      "ignition_sources": "Mock inspection: damaged service wiring has exposed joints and intermittent sparking under load.",
+      "fuel_combustibles": "Mock survey: wooden stall frames and ordinary packaged goods are within 1 m of the affected wiring.",
+      "proximity_to_people": "Mock scenario: traders and customers use the adjoining market passage during the day.",
+      "structure_material": "Mock survey: masonry shops contain timber stall partitions with approximately 2 m spacing between the outer structures.",
+      "escape_routes": "Mock survey: one of two pedestrian routes is narrowed by stock; the remaining route is open.",
+      "truck_access": "Mock survey: a 5 m public road reaches the block, with a short pedestrian approach to the affected service connection.",
+      "human_behavior": "Mock observation: temporary leads continue to be used after repeated electrical faults.",
+      "safeguards": "Mock survey: an extinguisher is present but smoke-alarm coverage and routine electrical inspection are incomplete."
+    }
+  },
+  "ER-20261103-8CAAD5": {
+    "version": 3,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 32 C, humidity 42%, wind 15 km/h at the fictional inspection; the bamboo is dry.",
+      "ignition_sources": "Mock observation: an operating grill is 3 m from the bamboo stockpile and sparks are not screened.",
+      "fuel_combustibles": "Mock inventory: a large uncovered pile of fully dried bamboo offcuts is stacked loosely near the grill area.",
+      "proximity_to_people": "Mock scenario: six workers and occasional customers use the adjoining open-air food area.",
+      "structure_material": "Mock survey: timber outbuildings lie 4 m from the pile; the main shop has masonry walls.",
+      "escape_routes": "Mock survey: two exits are usable, but loose offcuts narrow one side of the passage.",
+      "truck_access": "Mock survey: an unobstructed 5 m road reaches the frontage.",
+      "human_behavior": "Mock observation: offcuts continue accumulating beside the operating grill.",
+      "safeguards": "Mock survey: a serviced extinguisher is available at the shop, but a maintained separation area around the pile is absent."
+    }
+  },
+  "ER-20261107-F0FB62": {
+    "version": 3,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 29 C, humidity 65%, wind 5 km/h at the fictional inspection. These are not current weather observations.",
+      "ignition_sources": "Mock report: exposed high-voltage service wiring is accessible beside an alley; its isolation status is unconfirmed.",
+      "fuel_combustibles": "Mock survey: timber fencing and stored goods are close to the reported service equipment.",
+      "proximity_to_people": "Mock scenario: residents and pedestrians use the adjacent alley, including children on their way to nearby homes.",
+      "structure_material": "Mock survey: masonry shops contain timber stall partitions with approximately 2 m spacing between the outer structures.",
+      "escape_routes": "Mock survey: one of two pedestrian routes is narrowed by stock; the remaining route is open.",
+      "truck_access": "Mock survey: apparatus can stage on a 4 m road, but a 1.4 m alley limits the final approach.",
+      "human_behavior": "Mock observation: temporary leads continue to be used after repeated electrical faults.",
+      "safeguards": "Mock survey: the equipment boundary lacks an effective public barrier and qualified inspection has not yet been arranged."
+    }
+  },
+  "ER-20261107-4AF48A": {
+    "version": 3,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 29 C, humidity 65%, wind 5 km/h at the fictional inspection. These are not current weather observations.",
+      "ignition_sources": "Mock report: exposed high-voltage service wiring is accessible beside an alley; its isolation status is unconfirmed.",
+      "fuel_combustibles": "Mock survey: timber fencing and stored goods are close to the reported service equipment.",
+      "proximity_to_people": "Mock scenario: residents and pedestrians use the adjacent alley, including children on their way to nearby homes.",
+      "structure_material": "Mock survey: masonry shops contain timber stall partitions with approximately 2 m spacing between the outer structures.",
+      "escape_routes": "Mock survey: one of two pedestrian routes is narrowed by stock; the remaining route is open.",
+      "truck_access": "Mock survey: apparatus can stage on a 4 m road, but a 1.4 m alley limits the final approach.",
+      "human_behavior": "Mock observation: temporary leads continue to be used after repeated electrical faults.",
+      "safeguards": "Mock survey: the equipment boundary lacks an effective public barrier and qualified inspection has not yet been arranged."
+    }
+  },
+  "ER-20261107-3E67A8": {
+    "version": 3,
+    "source": "mock",
+    "observed_at": "fictional scenario inspection",
+    "fields": {
+      "fire_history": "Fictional scenario log: the demo incident register is complete for 2016-2026; linked demo incidents are its only entries. Nearby events do not establish a repeat incident at this site.",
+      "weather_seasonal": "Synthetic scenario: 29 C, humidity 65%, wind 5 km/h at the fictional inspection. These are not current weather observations.",
+      "ignition_sources": "Mock scenario: a damaged household service connection has cracked insulation; active arcing was not observed.",
+      "fuel_combustibles": "Mock survey: limited ordinary household contents are present nearby; there is no bulk fuel storage.",
+      "proximity_to_people": "Mock scenario: four adults occupy the adjacent masonry residence.",
+      "structure_material": "Mock survey: masonry walls and a metal roof limit structural fuel, with a clear gap to neighbouring homes.",
+      "escape_routes": "Mock survey: two clear doors lead to the open street.",
+      "truck_access": "Mock survey: a clear 5 m street reaches the property.",
+      "human_behavior": "Mock observation: occasional extension-lead use continues pending a scheduled inspection.",
+      "safeguards": "Mock survey: a working alarm and a serviced extinguisher are recorded; the damaged connection still needs qualified repair."
+    }
+  }
+}

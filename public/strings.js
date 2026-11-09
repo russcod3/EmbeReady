@@ -27,7 +27,7 @@ const EN_STRINGS = {
         demoBadge:      'DEMO DATA',
         liveBadge:      'LIVE',
         aiLabel:        'AI-generated',
-        ruleLabel:      'Rule-based estimate'
+        pendingLabel:   'Awaiting Gemini'
     },
 
     // ── Landing / Search ──────────────────────────────────────────────────────
@@ -80,7 +80,7 @@ const EN_STRINGS = {
         photoAlt:       'Hazard site photo',
         photoSlot:      'NO PHOTO RECORDED — FIELD SLOT OPEN',
         historyTitle:   'Fire history at this location',
-        noHistory:      'No recorded fire incidents at this site.',
+        noHistory:      'No incident records supplied for this report.',
         aiSectionTitle: 'Risk Assessment',
         planTitle:      'Preparedness Plan',
         tabBefore:      'Before',
@@ -97,7 +97,7 @@ const EN_STRINGS = {
         scoreLabel:     'Risk score',
         factorScore:    (score, max) => `${score} / ${max}`,
         engineAI:       'AI-generated assessment',
-        engineRule:     'Rule-based estimate',
+        enginePending:  'Gemini assessment unavailable',
     },
 
     // ── Report form ───────────────────────────────────────────────────────────

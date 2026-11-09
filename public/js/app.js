@@ -15,15 +15,16 @@
 
 import S from '../strings.js';
 import { escapeHtml, escapeAttr } from './utils.js';
-import { fetchHazards, fetchBarangays, startLivePolling } from './api.js';
+import { fetchHazards, fetchBarangays, startLivePolling, startAssessments, fetchAssessmentStatus } from './api.js';
 import { search, QUICK_JUMPS, formatLabel } from './search.js';
-import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize, getMapInstance } from './map.js';
+import { initMap, renderHazards, flyTo, highlightLocation, clearSearchMarker, resetView, invalidateSize, getMapInstance } from './map.js';
 import { initDrawer, openDrawer, closeDrawer } from './drawer.js';
-import { initReportForm, refreshMiniMap } from './report.js';
-import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations } from './infrastructure.js';
+import { initReportForm, refreshMiniMap, openReportPanel, closeReportPanel } from './report.js';
+import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations, hideInfrastructure, getLayerVisibility } from './infrastructure.js';
+import { initMapSymbols } from './map-symbols.js';
 
 // State
-let _currentView = 'map'; // 'landing' | 'map'
+let _currentView = 'landing'; // 'landing' | 'map'
 let _currentFilters = {
     risk_level: '',
     status: '',
@@ -31,12 +32,15 @@ let _currentFilters = {
     barangay_id: ''
 };
 let _allHazards = [];
+let _hazardsHidden = false;
+let _hazardLoadVersion = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
 async function initApp() {
+    initMapSymbols();
     // 1. Initialize Map & Detail Drawer
     const map = initMap('map', (hazardId) => {
         openDrawer(hazardId);
@@ -49,7 +53,12 @@ async function initApp() {
     // 2. Initialize Report Form
     initReportForm(async (newHazardId) => {
         showToast('Report saved on the map.', 'success');
-        document.getElementById('report-section').classList.remove('is-open');
+        closeReportPanel();
+        _hazardsHidden = false;
+        _currentFilters = { risk_level:'',status:'',category:'',barangay_id:'' };
+        document.getElementById('filter-barangay-select').value = '';
+        document.getElementById('filter-category-select').value = '';
+        updateFilterChips('all');
         await loadHazards();
         // Open the newly created hazard
         if (newHazardId) {
@@ -86,6 +95,32 @@ async function initApp() {
 
     // 9. Initial hazard fetch
     loadHazards();
+    monitorAssessments(true);
+    window.addEventListener('assessment:requested',()=>monitorAssessments());
+    document.getElementById('assessment-retry').addEventListener('click',()=>monitorAssessments(true,true));
+}
+
+let _assessmentMonitoring=false;
+async function monitorAssessments(start=false,retry=false) {
+    if(_assessmentMonitoring)return;
+    _assessmentMonitoring=true;
+    const box=document.getElementById('assessment-progress'),text=document.getElementById('assessment-progress-text'),button=document.getElementById('assessment-retry');
+    try {
+        let progress=start?await startAssessments(retry):await fetchAssessmentStatus();
+        do {
+            box.hidden=!progress.total;
+            box.dataset.state=progress.queued+progress.processing?'processing':progress.unavailable?'unavailable':'completed';
+            text.textContent=progress.queued+progress.processing?`Assessing hazards · ${progress.completed}/${progress.total}`:progress.unavailable?`${progress.completed} reports ready · ${progress.unavailable} awaiting assessment`:`${progress.completed} assessments ready`;
+            button.hidden=!progress.unavailable||Boolean(progress.queued+progress.processing);
+            await loadHazards();
+            window.dispatchEvent(new CustomEvent('assessment:updated'));
+            if(!progress.queued&&!progress.processing)break;
+            await new Promise(resolve=>setTimeout(resolve,2500));
+            progress=await fetchAssessmentStatus();
+        } while(true);
+    } catch(error) {
+        box.hidden=false;box.dataset.state='unavailable';text.textContent='Could not check assessment progress';button.hidden=false;
+    } finally {_assessmentMonitoring=false;}
 }
 
 /**
@@ -160,9 +195,7 @@ function setupNavigation() {
     // Back to map button in report section
     const backToMapBtn = document.getElementById('back-to-map-btn');
     if (backToMapBtn) {
-        backToMapBtn.addEventListener('click', () => {
-            document.getElementById('report-section').classList.remove('is-open');
-        });
+        backToMapBtn.addEventListener('click', closeReportPanel);
     }
 
     // ── Infrastructure Layer Toggles ─────────────────────────────────────────
@@ -175,7 +208,7 @@ function setupNavigation() {
             const visible = toggleHydrants();
             hydrantBtn.classList.toggle('infra-toggle-active', visible);
             hydrantBtn.setAttribute('aria-pressed', visible);
-            showToast(visible ? '🔵 Fire Hydrants shown' : 'Fire Hydrants hidden', 'info');
+            showToast(visible ? 'Fire Hydrants shown' : 'Fire Hydrants hidden', 'info');
         });
     }
 
@@ -184,7 +217,7 @@ function setupNavigation() {
             const visible = toggleHospitals();
             hospitalBtn.classList.toggle('infra-toggle-active', visible);
             hospitalBtn.setAttribute('aria-pressed', visible);
-            showToast(visible ? '🏥 Hospitals shown' : 'Hospitals hidden', 'info');
+            showToast(visible ? 'Hospitals shown' : 'Hospitals hidden', 'info');
         });
     }
 
@@ -193,7 +226,7 @@ function setupNavigation() {
             const visible = toggleFireStations();
             fireStationBtn.classList.toggle('infra-toggle-active', visible);
             fireStationBtn.setAttribute('aria-pressed', visible);
-            showToast(visible ? '🚒 Fire Stations shown' : 'Fire Stations hidden', 'info');
+            showToast(visible ? 'Fire Stations shown' : 'Fire Stations hidden', 'info');
         });
     }
 }
@@ -202,7 +235,7 @@ function scrollToReport() {
     const reportSection = document.getElementById('report-section');
     if (reportSection) {
         closeDrawer();
-        reportSection.classList.add('is-open');
+        openReportPanel();
         setTimeout(() => refreshMiniMap(), 300);
         setTimeout(() => refreshMiniMap(), 600);
     }
@@ -355,9 +388,15 @@ function setupFilters() {
     const chips = document.querySelectorAll('.filter-bar .filter-chip');
 
     // ── Explicitly reset to "show all" on init (prevents browser form-state restore) ──
-    chips.forEach(c => c.classList.remove('is-active'));
+    chips.forEach(c => {
+        c.classList.remove('is-active');
+        c.setAttribute('aria-pressed', 'false');
+    });
     const allChipInit = document.querySelector('.filter-chip[data-filter="all"]');
-    if (allChipInit) allChipInit.classList.add('is-active');
+    if (allChipInit) {
+        allChipInit.classList.add('is-active');
+        allChipInit.setAttribute('aria-pressed', 'true');
+    }
     const bgySelectInit = document.getElementById('filter-barangay-select');
     const catSelectInit = document.getElementById('filter-category-select');
     if (bgySelectInit) bgySelectInit.value = '';
@@ -365,22 +404,31 @@ function setupFilters() {
     // ────────────────────────────────────────────────────────────────────────────
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
-            chips.forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-
             const filterType = chip.getAttribute('data-filter');
             if (filterType === 'all') {
+                const infrastructureVisible = Object.values(getLayerVisibility()).some(Boolean);
+                const searchMarkerVisible = clearSearchMarker();
+                _hazardsHidden = !_hazardsHidden || infrastructureVisible || searchMarkerVisible;
                 _currentFilters.risk_level = '';
                 _currentFilters.status = '';
+                if (_hazardsHidden) {
+                    // Invalidate in-flight requests so they cannot redraw cleared markers.
+                    _hazardLoadVersion++;
+                    renderHazards([]);
+                    hideInfrastructure();
+                    closeDrawer();
+                }
             } else if (filterType === 'active') {
+                _hazardsHidden = false;
                 _currentFilters.risk_level = '';
                 _currentFilters.status = 'active';
             } else {
+                _hazardsHidden = false;
                 _currentFilters.risk_level = filterType;
                 _currentFilters.status = '';
             }
-
-            loadHazards();
+            updateFilterChips(_hazardsHidden ? null : filterType);
+            if (!_hazardsHidden) loadHazards();
         });
     });
 
@@ -404,26 +452,31 @@ function setupFilters() {
     const resetBtn = document.getElementById('filter-reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
+            _hazardsHidden = false;
             _currentFilters = { risk_level: '', status: '', category: '', barangay_id: '' };
             if (bgySelect) bgySelect.value = '';
             if (catSelect) catSelect.value = '';
-            chips.forEach(c => c.classList.remove('is-active'));
-            const allChip = document.querySelector('.filter-chip[data-filter="all"]');
-            if (allChip) allChip.classList.add('is-active');
+            updateFilterChips('all');
             loadHazards();
         });
     }
 }
 
-function setActiveFilterChip(filterType) {
+function updateFilterChips(filterType) {
     const chips = document.querySelectorAll('.filter-bar .filter-chip');
     chips.forEach(c => {
-        if (c.getAttribute('data-filter') === filterType) {
-            c.classList.add('is-active');
-        } else {
-            c.classList.remove('is-active');
+        const selected = c.getAttribute('data-filter') === filterType;
+        c.classList.toggle('is-active', selected);
+        c.setAttribute('aria-pressed', String(selected));
+        if (c.dataset.filter === 'all') {
+            c.title = _hazardsHidden ? 'Show all hazard markers' : 'Hide all map markers';
         }
     });
+}
+
+function setActiveFilterChip(filterType) {
+    _hazardsHidden = false;
+    updateFilterChips(filterType);
     if (filterType === 'active') {
         _currentFilters.risk_level = '';
         _currentFilters.status = 'active';
@@ -435,8 +488,11 @@ function setActiveFilterChip(filterType) {
  * loadHazards()
  */
 async function loadHazards() {
+    if (_hazardsHidden) return;
+    const version = ++_hazardLoadVersion;
     try {
         const hazards = await fetchHazards(_currentFilters);
+        if (_hazardsHidden || version !== _hazardLoadVersion) return;
         _allHazards = hazards;
         const { total, active } = renderHazards(hazards);
         // Only update citywide active fire badge if no specific sub-filters are hiding it
@@ -444,6 +500,7 @@ async function loadHazards() {
             updateLiveFireCounter(active);
         }
     } catch (err) {
+        if (_hazardsHidden || version !== _hazardLoadVersion) return;
         console.error('[App] Failed to load hazards:', err);
         showToast(S.errors.loadFailed, 'error');
     }

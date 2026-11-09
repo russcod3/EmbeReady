@@ -37,4 +37,4 @@ for (const panel of [hud,drawer]) {
 hud.querySelector('.sheet-tools button').addEventListener('click',()=>setSnap(hud,hud.dataset.snap==='full'?'collapsed':'full'));
 search.querySelector('input').addEventListener('focus',()=>setSnap(hud,'half'));
 new MutationObserver(()=>{if(drawer.classList.contains('is-open'))setSnap(drawer,'half');}).observe(drawer,{attributes:true,attributeFilter:['class']});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){setSnap(hud,'collapsed');document.getElementById('report-section').classList.remove('is-open');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))setSnap(hud,'collapsed');});

@@ -4,14 +4,14 @@
 .ember-puppet .ember-original-fallback{display:block;width:100%;height:100%;object-fit:contain;}
 .ember-brand{display:block;width:44px;height:48px;flex-shrink:0;}
 .map-header-wordmark{display:inline-flex;align-items:center;gap:8px;}
-.ember-companion{margin-top:18px;padding:12px;border:1px solid #e2e6eb;border-radius:14px;background:#fff;}
+.ember-companion{position:relative;margin-top:18px;padding:12px 12px 46px;border:1px solid #e2e6eb;border-radius:14px;background:#fff;}
 .ember-companion-main{display:flex;align-items:center;gap:12px;}
 .ember-pet{width:94px;height:110px;flex-shrink:0;border-radius:12px;cursor:pointer;}
 .ember-companion strong{font-size:14px;color:#26313b;}
 .ember-message{margin-top:4px;font-size:12px;line-height:1.5;color:#65717c;}
-.ember-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.ember-actions button,.ember-motion-toggle{padding:6px 10px;min-height:36px;border-radius:8px;color:#0963cd;background:#eef4fc;font-size:12px;}
-.ember-motion-toggle{margin:8px 0 0 auto;display:block;}
+.ember-motion-toggle{position:absolute;left:12px;bottom:10px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid #dce6f2;border-radius:9px;color:#41617f;background:#f2f6fb;cursor:pointer;}
+.ember-motion-toggle:hover{color:#0963cd;background:#e6effb;}
+.ember-motion-toggle:focus-visible,.ember-pet:focus-visible{outline:3px solid #92bffc;outline-offset:3px;}
 .ember-motion-toggle:disabled{color:#65717c;background:#f1f3f5;}
 .report-heading,.modal-title{display:flex;align-items:center;gap:10px;}
 .ember-head,.ember-tail,.ember-tail-tip,.ember-arm,.ember-forearm,.ember-hand,.ember-leg,.ember-foot,.ember-eye{transform-box:view-box;transform-origin:0 0;}
@@ -59,7 +59,7 @@
 @keyframes ember-cheer-left{0%,100%{transform:rotate(115deg)}50%{transform:rotate(145deg)}}
 @keyframes ember-cheer-right{0%,100%{transform:rotate(-115deg)}50%{transform:rotate(-145deg)}}
 html[data-ember-motion='paused'] .ember-puppet *,.ember-puppet[data-paused='true'] *{animation-play-state:paused !important;}
-@media(max-width:767px){.ember-brand{width:32px;height:36px;}.map-header-wordmark{gap:4px;font-size:17px;}.ember-actions button,.ember-motion-toggle{min-height:44px;}}
+@media(max-width:767px){.ember-brand{width:32px;height:36px;}.map-header-wordmark{gap:4px;font-size:17px;}.ember-motion-toggle{width:36px;height:36px;}.ember-companion{padding-bottom:52px;}}
 @media(prefers-reduced-motion:reduce){.ember-puppet *{animation:none !important;transform:none !important;}}
 
 /* Texture-specific pivots. The head and its two flame tufts are ONE cutout. */

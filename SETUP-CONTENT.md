@@ -1,43 +1,47 @@
-# EmbeReady setup and manual content
+# EmbeReady setup and saved content
 
-## Gemini
+## Assessment lifecycle
 
-Copy `.env.example` to `.env` if you do not already have an environment file. Set:
+Website startup loads saved assessments. It does not evaluate the mock database through Gemini. `server/install-saved-assessments.js` installs prepared mock results only for explicitly listed existing references and restores successful historical Gemini results. Existing successful Gemini results take precedence over any prepared demo fixture.
 
-```dotenv
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your-real-key
-GEMINI_MODEL=gemini-2.5-flash-lite
-GEMINI_TIMEOUT_MS=90000
-```
+The current dataset includes 35 prepared mock assessments and the preserved original Gemini assessment for `ER-20261107-BE6BDA` (40/100, Moderate). The newer community report remains on the real-Gemini path. The original historical Gemini row, factor values, reasoning, confidence and matching precautions are preserved; it is displayed with its original model and earlier rubric.
 
-Use a model available to your Google AI Studio project; `GEMINI_MODEL` is configurable. Stop the existing server with Ctrl+C, then run `npm start` again after editing the environment. The startup banner must say `AI Provider: gemini`. The request timeout defaults to 90 seconds and is configurable with `GEMINI_TIMEOUT_MS`. Never put the key in `public/` or commit `.env`.
+Newly submitted non-live community reports are saved immediately and queued for actual Gemini assessment. Live fire bypasses Gemini. Loading or refreshing the map does not retry failed reports automatically. The Retry control and `npm run reassess` explicitly retry failed community reports; they do not spend quota regenerating prepared demos or successful saved results.
 
-New reports generate a risk assessment and safety plan. The resulting classification controls the marker; a Live fire keeps its Live marker regardless of assessed severity. Database value `heavy` is retained for compatibility and displayed as High. Existing assessments are preserved; this change does not spend API credits reassessing the whole database.
+## Gemini configuration
 
-When Gemini fails or is not configured, reports still save with an explicitly labelled rule-based estimate and template guidance. Scores describe the model's estimate, not verification by responders.
+Keep the existing `.env` and configure `GEMINI_API_KEY`, `GEMINI_MODEL` and optional `GEMINI_TIMEOUT_MS` (120 seconds by default). Restart your manually run server after changing these values or server code. The key remains server-side and must not be committed.
 
-## Photos
+Gemini 3 models use the stateless Interactions API with revision 2026-05-20, low thinking level and schema-constrained JSON. Deprecated sampling parameters are omitted. `GEMINI_API_MODE=generate_content` supports older integrations explicitly. Returned provider statuses are preserved, and a shared authentication, quota or connectivity failure stops queued requests rather than repeatedly consuming quota.
 
-For any hazard ID, add `public/uploads/seed/hazard-01.jpg`, `hazard-02.jpg`, etc. IDs are padded to at least two digits. Both seeded and manually maintained records use this convention when `hazards.photo_url` is empty. Alternatively set that database column to a same-origin path such as `/uploads/seed/my-photo.jpg`. Uploaded report photos take precedence. Missing photos display a neutral placeholder.
+## Prepared mock records
 
-## Contacts
+`server/data/demo-assessments.json` contains complete authored mock outputs, observation profiles and limited content corrections keyed by existing reference codes. It stores explicit factor scores and scenario-specific precautions, not a runtime rule engine. No Gemini request is made to prepare or load those records.
 
-Edit `server/contacts.json`. Keep `is_placeholder: true` and `phone_dialable: null` until you have a verified number. To enable calling, provide `phone_display`, `phone_dialable` (digits with optional leading +), and `is_placeholder: false`.
+Prepared results are labelled Demo assessment/Demo guidance in the same layout used for real Gemini results. New community reports never receive these fixtures based on their category. Mock references are explicitly enumerated so future reports cannot silently inherit fabricated assessments.
 
-Use the exact barangay name from `barangays.name` as `jurisdiction`, or `Citywide` for BFP. Run:
+The installer is idempotent. Unchanged fixtures reuse the existing saved run. It can update descriptions, titles, category and mock severity where explicitly authored, but never changes coordinates, IDs, reference codes, barangay, addresses, photo paths or incident status. Historical rule-based rows remain archived rather than being relabelled as Gemini output.
 
-```powershell
-node server/sync-contacts.js
-```
+`hazard_observations` stores input records; `assessment_runs` stores immutable paired assessments and precautions; `assessment_jobs` points to the active saved result. A server restart marks unfinished community requests as needing an explicit retry instead of leaving stale progress indicators.
 
-This updates matching jurisdiction/facility entries and creates missing barangay placeholders without removing reports. Do not rerun the seed script to update phone numbers. Contact actions stay disabled until configured. Submission records a report; it does not call or dispatch responders.
+## Scoring and evidence
 
-## Run and verify
+The `evidence-v2` prototype allocates 100 points: ignition 20, fuel 15, exposure 15, spread 10, exits 10, responder access 10, history 5, environment 5, practices 5, safeguards 5. Low is 0-39, Moderate 40-64, High 65-100. This is a prioritisation index, not a fire probability or official BFP classification. The preserved historical Gemini result retains its original eight-factor rubric.
 
-```powershell
-npm start
-node --test server/ai/assessment.test.js
-```
+New Gemini assessments must cite supplied evidence IDs. Unknown factors remain null. Their contribution bounds produce a range rather than an invented precise total. A band is shown only when both bounds fit that band. Confidence and action urgency remain separate. Results with invalid references, arithmetic or classifications are rejected; a correction request can repair invalid output using the original evidence. Assessment and matching precautions publish together.
 
-The map opens immediately. On mobile, use the sheet handle or Filters & layers button to expand controls. Hazard details have their own expandable sheet. On desktop, filters sit on the left and the selected hazard appears on the right.
+Mock history and synthetic environmental conditions are identified as fictional. Genuine community reports use reported observations and eligible non-demo history. Actual uploaded files are included as image evidence only when they exist; placeholder filenames never become photographs.
+
+## Photos, contacts and interface
+
+Empty photo slots remain empty; no hazard photos are generated or populated. Existing photo paths are preserved.
+
+Configure verified contacts in `server/contacts.json`, then run `node server/sync-contacts.js`. Alert opens contacts for manual calling; it does not send an emergency message or dispatch responders. Barangay inference uses proximity to centres, not boundary verification.
+
+The report starts with Live fire, High, Moderate or Low. Non-live reports then collect category and observations. Hazard details use the Riff 28 card-shuffle treatment, with each factor score and explanation, arrow/dot navigation, keyboard controls and swipes. Motion respects reduced-motion settings. The redundant right-side legend is removed.
+
+## Checks and local backups
+
+Run `npm test`. Tests use a temporary database and mocked Gemini responses; they do not spend API credits or insert pins in the main database. They cover zero Gemini calls on page load, preservation of genuine saved Gemini results, prepared mock scores, new-report processing, failures and exact coordinate preservation.
+
+The original database/pin snapshot is under `data/backups/assessment-refactor-20261109/`; the later 37-pin snapshot is under `data/backups/new-key-20261109/`. These local recovery files and UI screenshots under `data/qa/` are excluded from Git.

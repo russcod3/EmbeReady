@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS risk_assessments (
     factors_json        TEXT    NOT NULL DEFAULT '{}',
     confidence_level    TEXT    NOT NULL DEFAULT 'medium',  -- low | medium | high
     reasoning_summary   TEXT,
-    engine              TEXT    NOT NULL DEFAULT 'rule_based',-- rule_based | llm
+    engine              TEXT    NOT NULL DEFAULT 'llm',        -- Gemini only
     model_version       TEXT,
     created_at          TEXT    NOT NULL DEFAULT (datetime('now'))
 );
@@ -121,3 +121,29 @@ CREATE INDEX IF NOT EXISTS idx_plans_hazard       ON preparedness_plans(hazard_i
 CREATE INDEX IF NOT EXISTS idx_history_hazard     ON fire_history(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_history_barangay   ON fire_history(barangay_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_jurisdiction ON emergency_contacts(jurisdiction);
+
+-- Evidence and versioned Gemini results. Legacy assessments remain archived.
+CREATE TABLE IF NOT EXISTS hazard_observations (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE,
+    data_json TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS assessment_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    hazard_id INTEGER NOT NULL REFERENCES hazards(id) ON DELETE CASCADE,
+    input_hash TEXT NOT NULL,
+    input_json TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    model_version TEXT NOT NULL,
+    rubric_version TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_runs_hazard ON assessment_runs(hazard_id, id DESC);
+CREATE TABLE IF NOT EXISTS assessment_jobs (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE,
+    state TEXT NOT NULL,
+    input_hash TEXT NOT NULL,
+    run_id INTEGER REFERENCES assessment_runs(id),
+    error_code TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

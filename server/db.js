@@ -13,8 +13,8 @@
 const path    = require('path');
 const fs      = require('fs');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DB_PATH  = path.join(DATA_DIR, 'embeready.db');
+const DB_PATH  = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'embeready.db');
+const DATA_DIR = path.dirname(DB_PATH);
 const SCHEMA_PATH = path.join(__dirname, 'schema.sql');
 
 // Ensure the data directory exists
@@ -79,4 +79,8 @@ db.runTransaction = function runTransaction(fn) {
 
 console.log(`[DB] Connected → ${DB_PATH}`);
 
+require('./load-mock-observations')(db);
+require('./install-saved-assessments')(db);
+// A restarted server cannot resume requests owned by its previous process.
+db.prepare("UPDATE assessment_jobs SET state='unavailable',error_code='AI_RETRY_REQUIRED',updated_at=datetime('now') WHERE state IN ('queued','processing')").run();
 module.exports = db;

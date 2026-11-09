@@ -49,6 +49,13 @@ export async function fetchHazardDetail(id) {
     return data.data;
 }
 
+export async function startAssessments(retry=false) {
+    return (await apiFetch('/api/assessments/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({retry})})).data;
+}
+export async function fetchAssessmentStatus() {
+    return (await apiFetch('/api/assessments/status')).data;
+}
+
 /**
  * fetchActiveHazards() — for 30s polling
  */

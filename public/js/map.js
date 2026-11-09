@@ -7,6 +7,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import { mapSymbolMarkup } from './map-symbols.js';
+
 const BATANGAS_CENTER = [13.7565, 121.0583];
 const DEFAULT_ZOOM = 14;
 
@@ -16,70 +18,7 @@ let _searchMarker = null;
 let _onSelectHazard = null;
 let _miniMap = null;
 let _miniPin = null;
-let _miniPinLastValidLatLng = [...BATANGAS_CENTER];
-
-// ── Water Detection ───────────────────────────────────────────────────────────
-// Simple in-memory cache so we don't re-check the same coordinate twice.
-const _waterCache = new Map();
-
-/**
- * isOnWater(lat, lng) → Promise<boolean>
- * Uses the is-on-water.balbona.me free API (ASTER satellite dataset, 30m precision).
- * Results are cached per rounded coordinate (~11 m grid).
- */
-async function isOnWater(lat, lng) {
-    const key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
-    if (_waterCache.has(key)) return _waterCache.get(key);
-
-    try {
-        const res = await fetch(
-            `https://is-on-water.balbona.me/api/v1/get/${lat}/${lng}`,
-            { signal: AbortSignal.timeout(4000) }
-        );
-        if (!res.ok) { _waterCache.set(key, false); return false; }
-        const data = await res.json();
-        const water = !!data.isWater;
-        _waterCache.set(key, water);
-        return water;
-    } catch {
-        // On network error or timeout, default to allowing placement
-        _waterCache.set(key, false);
-        return false;
-    }
-}
-
-/**
- * showWaterError()
- * Inline toast that does not depend on app.js.
- */
-function showWaterError() {
-    const existing = document.getElementById('water-toast');
-    if (existing) existing.remove();
-
-    const el = document.createElement('div');
-    el.id = 'water-toast';
-    el.setAttribute('role', 'alert');
-    el.style.cssText = [
-        'position:fixed',
-        'bottom:90px',
-        'left:50%',
-        'transform:translateX(-50%)',
-        'background:#1e293b',
-        'color:#f8fafc',
-        'padding:10px 22px',
-        'border-radius:4px',
-        'border-left:3px solid #DC2626',
-        'font-family:var(--font-mono,monospace)',
-        'font-size:13px',
-        'z-index:9999',
-        'white-space:nowrap',
-        'box-shadow:0 4px 20px rgba(0,0,0,0.5)',
-        'pointer-events:none',
-    ].join(';');
-    el.textContent = '\u26A0  Cannot place a fire hazard on water.';
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3500);
-}
+const _hazardMarkers=new Map();
 
 // ── Tile layer factory ────────────────────────────────────────────────────────
 /**
@@ -120,8 +59,26 @@ export function initMap(containerId = 'map', onSelectHazard = null) {
         preferCanvas: true  // canvas renderer — faster marker drawing
     });
 
-    // Custom zoom control in bottom right
-    L.control.zoom({ position: 'bottomright' }).addTo(_map);
+    // Keep zoom controls above the legend, with the current level below them.
+    const zoomControl = L.control.zoom({ position: 'bottomleft' }).addTo(_map);
+    zoomControl.getContainer().classList.add('map-zoom-control');
+    const zoomLevel = document.createElement('output');
+    zoomLevel.className = 'map-zoom-level';
+    zoomLevel.setAttribute('aria-live', 'polite');
+    zoomLevel.setAttribute('aria-atomic', 'true');
+    let zoomNoticeTimer;
+    let previousZoom = _map.getZoom();
+    const updateZoomLevel = () => {
+        const currentZoom = _map.getZoom();
+        if (currentZoom === previousZoom) return;
+        previousZoom = currentZoom;
+        clearTimeout(zoomNoticeTimer);
+        zoomLevel.textContent = `Zoom ${currentZoom}`;
+        zoomLevel.classList.add('is-visible');
+        zoomNoticeTimer = setTimeout(() => zoomLevel.classList.remove('is-visible'), 1000);
+    };
+    zoomControl.getContainer().append(zoomLevel);
+    _map.on('zoomend', updateZoomLevel);
 
     buildTileLayer().addTo(_map);
 
@@ -149,13 +106,9 @@ export function initMap(containerId = 'map', onSelectHazard = null) {
  */
 function createHazardMarker(hazard) {
     const isLive = hazard.status === 'active';
-    const riskClass = `er-marker-${hazard.risk_level || 'moderate'}`;
+    const symbol = isLive ? 'active' : (hazard.risk_level || 'pending');
+    const riskClass = `er-marker-${symbol}`;
     const activeClass = isLive ? 'er-marker-active' : '';
-
-    let glyph = '\u25CF';
-    if (isLive) glyph = '\uD83D\uDD25';
-    else if (hazard.risk_level === 'heavy') glyph = '\u25B2';
-    else if (hazard.risk_level === 'moderate') glyph = '\u25C6';
 
     const pulseHtml = isLive
         ? '<div class="er-pulse-ring"></div><div class="er-pulse-ring er-pulse-ring-2"></div>'
@@ -164,7 +117,7 @@ function createHazardMarker(hazard) {
     const html = `
         <div class="er-marker ${riskClass} ${activeClass}">
             ${pulseHtml}
-            <span>${glyph}</span>
+            ${mapSymbolMarkup(symbol)}
         </div>
     `;
 
@@ -175,14 +128,15 @@ function createHazardMarker(hazard) {
         iconAnchor: [14, 14]
     });
 
-    const marker = L.marker([hazard.lat, hazard.lng], { icon });
+    const marker = L.marker([hazard.lat, hazard.lng], { icon, title: hazard.title, alt: hazard.title });
 
     // Custom tooltip
-    const riskLevelDisplay = (hazard.status === 'active' ? 'Live' : (hazard.risk_level === 'heavy' ? 'High' : (hazard.risk_level || 'moderate'))).toUpperCase();
+    const riskLevelDisplay = (hazard.status === 'active' ? 'Live' : (hazard.risk_level === 'heavy' ? 'High' : (hazard.risk_level || (hazard.ai_status==='unavailable'?'Assessment unavailable':hazard.ai_status==='completed'?'More evidence needed':'Assessing')))).toUpperCase();
+    const sourceLabel=hazard.status!=='active'&&hazard.reported_level&&!hazard.assessed_level?' · REPORTER-SELECTED':'';
     const tooltipContent = `
         <div class="er-tooltip">
             <div class="tooltip-title">${escapeHtml(hazard.title)}</div>
-            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml(riskLevelDisplay)}</div>
+            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml(riskLevelDisplay)}${sourceLabel}</div>
         </div>
     `;
 
@@ -206,15 +160,17 @@ function createHazardMarker(hazard) {
  */
 export function renderHazards(hazardsList = []) {
     if (!_markerGroup) return;
-    _markerGroup.clearLayers();
-
-    let activeCount = 0;
-
-    hazardsList.forEach(h => {
-        if (h.status === 'active') activeCount++;
-        const marker = createHazardMarker(h);
-        _markerGroup.addLayer(marker);
-    });
+    const ids=new Set(hazardsList.map(h=>h.id));
+    for(const [id,item]of _hazardMarkers)if(!ids.has(id)||!_markerGroup.hasLayer(item.marker)){_markerGroup.removeLayer(item.marker);_hazardMarkers.delete(id);}
+    let activeCount=0;
+    for(const h of hazardsList){
+        if(h.status==='active')activeCount++;
+        const key=JSON.stringify([h.lat,h.lng,h.risk_level,h.status,h.title,h.ai_status,h.assessed_level]);
+        const old=_hazardMarkers.get(h.id);
+        if(old?.key===key)continue;
+        if(old)_markerGroup.removeLayer(old.marker);
+        const marker=createHazardMarker(h);_markerGroup.addLayer(marker);_hazardMarkers.set(h.id,{key,marker});
+    }
 
     return { total: hazardsList.length, active: activeCount };
 }
@@ -272,10 +228,12 @@ export function highlightLocation(lat, lng, label = '') {
  * clearSearchMarker()
  */
 export function clearSearchMarker() {
+    const hadMarker = Boolean(_searchMarker);
     if (_searchMarker && _map) {
         _map.removeLayer(_searchMarker);
         _searchMarker = null;
     }
+    return hadMarker;
 }
 
 /**
@@ -321,7 +279,6 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
         _miniMap = null;
     }
 
-    _miniPinLastValidLatLng = [...BATANGAS_CENTER];
 
     _miniMap = L.map(containerId, {
         center: BATANGAS_CENTER,
@@ -347,7 +304,7 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
     _miniPin = L.marker(BATANGAS_CENTER, {
         draggable: true,
         icon: pinIcon
-    }).addTo(_miniMap);
+    });
 
     // Auto-resize observer for mini-map
     if (window.ResizeObserver) {
@@ -359,32 +316,18 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
         ro.observe(el);
     }
 
-    // Initial position trigger
-    if (onLocationChange) {
-        onLocationChange(BATANGAS_CENTER[0], BATANGAS_CENTER[1]);
-    }
+    // Coordinates stay empty until the reporter explicitly pins a location.
 
-    // ── Water guard: drag ─────────────────────────────────────────────────────
-    _miniPin.on('dragend', async (e) => {
+    // ── Explicit pin: drag ─────────────────────────────────────────────────────
+    _miniPin.on('dragend', (e) => {
         const { lat, lng } = e.target.getLatLng();
-        if (await isOnWater(lat, lng)) {
-            // Snap pin back to last valid land position
-            _miniPin.setLatLng(_miniPinLastValidLatLng);
-            showWaterError();
-            return;
-        }
-        _miniPinLastValidLatLng = [lat, lng];
         if (onLocationChange) onLocationChange(lat, lng);
     });
 
-    // ── Water guard: click ────────────────────────────────────────────────────
-    _miniMap.on('click', async (e) => {
+    // ── Explicit pin: click ────────────────────────────────────────────────────
+    _miniMap.on('click', (e) => {
         const { lat, lng } = e.latlng;
-        if (await isOnWater(lat, lng)) {
-            showWaterError();
-            return;
-        }
-        _miniPinLastValidLatLng = [lat, lng];
+        if (!_miniMap.hasLayer(_miniPin)) _miniPin.addTo(_miniMap);
         _miniPin.setLatLng([lat, lng]);
         if (onLocationChange) onLocationChange(lat, lng);
     });
@@ -392,9 +335,11 @@ export function initReportMiniMap(containerId = 'report-minimap', onLocationChan
     setTimeout(() => _miniMap && _miniMap.invalidateSize(), 200);
 
     return {
+        clear: () => { if (_miniMap.hasLayer(_miniPin)) _miniMap.removeLayer(_miniPin); },
+        centerOn: (lat,lng) => _miniMap.panTo([lat,lng]),
         setLatLng: (lat, lng) => {
             if (_miniPin && _miniMap) {
-                _miniPinLastValidLatLng = [lat, lng];
+                        if (!_miniMap.hasLayer(_miniPin)) _miniPin.addTo(_miniMap);
                 _miniPin.setLatLng([lat, lng]);
                 _miniMap.panTo([lat, lng]);
                 if (onLocationChange) onLocationChange(lat, lng);

@@ -15,6 +15,7 @@
 const express = require('express');
 const db      = require('../db');
 const router  = express.Router();
+const assessments = require('../assessment-service');
 
 // ── GET /api/hazards ──────────────────────────────────────────────────────────
 // Query params: status, risk_level, category, barangay_id, is_demo
@@ -23,20 +24,18 @@ router.get('/', (req, res) => {
 
     let sql = `
         SELECT
-            h.id, h.barangay_id, h.ref_code, h.title, h.category, h.risk_level, h.status,
-            h.lat, h.lng, h.address, h.description, h.photo_url, h.is_demo,
-            h.active_started_at, h.created_at, h.updated_at,
-            b.name  AS barangay_name,
-            b.classification AS barangay_classification,
-            ra.overall_score, ra.assessed_level, ra.confidence_level, ra.engine
+            h.id, h.barangay_id, h.ref_code, h.title, h.category,
+            COALESCE(json_extract(ar.result_json,'$.assessment.assessed_level'),rp.reported_level) AS risk_level,
+            rp.reported_level,h.status,h.lat,h.lng,h.address,h.description,h.photo_url,h.is_demo,
+            h.active_started_at,h.created_at,h.updated_at,b.name AS barangay_name,b.classification AS barangay_classification,
+            json_extract(ar.result_json,'$.assessment.overall_score') AS overall_score,
+            json_extract(ar.result_json,'$.assessment.assessed_level') AS assessed_level,
+            COALESCE(j.state,'not_started') AS ai_status
         FROM hazards h
-        JOIN barangays b ON h.barangay_id = b.id
-        LEFT JOIN risk_assessments ra ON ra.hazard_id = h.id
-            AND ra.id = (
-                SELECT id FROM risk_assessments
-                WHERE hazard_id = h.id
-                ORDER BY created_at DESC LIMIT 1
-            )
+        JOIN barangays b ON h.barangay_id=b.id
+        LEFT JOIN reports rp ON rp.id=(SELECT MAX(id) FROM reports WHERE hazard_id=h.id)
+        LEFT JOIN assessment_jobs j ON j.hazard_id=h.id
+        LEFT JOIN assessment_runs ar ON ar.id=j.run_id AND j.state='completed'
         WHERE 1=1
     `;
     const params = [];
@@ -48,7 +47,7 @@ router.get('/', (req, res) => {
         sql += ' AND h.status = ?';
         params.push(status);
     }
-    if (risk_level) { sql += ' AND h.risk_level = ?';  params.push(risk_level); }
+    if (risk_level) { sql += " AND COALESCE(json_extract(ar.result_json,'$.assessment.assessed_level'),rp.reported_level) = ?";  params.push(risk_level); }
     if (category)   { sql += ' AND h.category = ?';    params.push(category);   }
     if (barangay_id){ sql += ' AND h.barangay_id = ?'; params.push(barangay_id);}
     if (is_demo !== undefined) {
@@ -58,7 +57,7 @@ router.get('/', (req, res) => {
 
     sql += ` ORDER BY
         CASE h.status WHEN 'active' THEN 0 WHEN 'potential' THEN 1 WHEN 'contained' THEN 2 WHEN 'resolved' THEN 3 ELSE 4 END,
-        CASE h.risk_level WHEN 'heavy' THEN 0 WHEN 'moderate' THEN 1 WHEN 'low' THEN 2 ELSE 3 END,
+        CASE COALESCE(json_extract(ar.result_json,'$.assessment.assessed_level'),rp.reported_level) WHEN 'heavy' THEN 0 WHEN 'moderate' THEN 1 WHEN 'low' THEN 2 ELSE 3 END,
         h.updated_at DESC`;
 
     try {
@@ -86,29 +85,21 @@ router.get('/:id', (req, res) => {
 
         if (!hazard) return res.status(404).json({ success: false, error: 'Not found' });
 
-        // Latest risk assessment
-        const assessment = db.prepare(`
-            SELECT * FROM risk_assessments
-            WHERE hazard_id = ?
-            ORDER BY created_at DESC LIMIT 1
-        `).get(id);
-
-        // Preparedness plan
-        const plan = db.prepare(`
-            SELECT * FROM preparedness_plans
-            WHERE hazard_id = ?
-            ORDER BY created_at DESC LIMIT 1
-        `).get(id);
+        const {assessment,plan,ai_status,ai_error}=assessments.detail(Number(id));
+        hazard.reported_level=db.prepare('SELECT reported_level FROM reports WHERE hazard_id=? ORDER BY id DESC LIMIT 1').get(id)?.reported_level||null;
+        hazard.risk_level=assessment?.assessed_level||hazard.reported_level||null;
+        hazard.ai_status=hazard.status==='active'&&!hazard.is_demo?'not_requested':ai_status;
+        hazard.ai_error=ai_error;
 
         // Fire history at this hazard or in the same barangay
         const history = db.prepare(`
             SELECT * FROM fire_history
-            WHERE hazard_id = ? OR barangay_id = (
+            WHERE (hazard_id = ? OR barangay_id = (
                 SELECT barangay_id FROM hazards WHERE id = ?
-            )
+            )) AND (is_demo=0 OR ?=1)
             ORDER BY incident_year DESC
             LIMIT 5
-        `).all(id, id);
+        `).all(id, id, hazard.is_demo);
 
         // Emergency contacts for city + this barangay
         const contacts = db.prepare(`
