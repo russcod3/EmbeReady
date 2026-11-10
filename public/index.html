@@ -122,11 +122,19 @@
 
             <!-- Filter Bar -->
             <nav class="filter-bar" aria-label="Hazard Filters">
-                <button type="button" class="filter-chip is-active" data-filter="all" aria-pressed="true" title="Hide all map markers">All</button>
-                <button type="button" class="filter-chip filter-chip-live" data-filter="active" aria-pressed="false"><span data-map-symbol="active"></span>Live</button>
-                <button type="button" class="filter-chip" data-filter="heavy" aria-pressed="false"><span data-map-symbol="heavy"></span>High</button>
-                <button type="button" class="filter-chip" data-filter="moderate" aria-pressed="false"><span data-map-symbol="moderate"></span>Moderate</button>
-                <button type="button" class="filter-chip" data-filter="low" aria-pressed="false"><span data-map-symbol="low"></span>Low</button>
+                <div class="hazard-level-toggles" role="group" aria-label="Hazard levels" aria-describedby="hazard-level-hint">
+                    <button type="button" class="filter-chip is-active" data-filter="all" aria-pressed="true"><span class="filter-check" aria-hidden="true">✓</span><span class="filter-label">All / Lahat</span></button>
+                    <button type="button" class="filter-chip is-active" data-filter="live" aria-pressed="true"><span class="filter-check" aria-hidden="true">✓</span><span data-map-symbol="active" aria-hidden="true"></span><span class="filter-label">Live</span></button>
+                    <button type="button" class="filter-chip is-active" data-filter="high" aria-pressed="true"><span class="filter-check" aria-hidden="true">✓</span><span data-map-symbol="heavy" aria-hidden="true"></span><span class="filter-label">High<small lang="fil">Mataas</small></span></button>
+                    <button type="button" class="filter-chip is-active" data-filter="moderate" aria-pressed="true"><span class="filter-check" aria-hidden="true">✓</span><span data-map-symbol="moderate" aria-hidden="true"></span><span class="filter-label">Moderate<small lang="fil">Katamtaman</small></span></button>
+                    <button type="button" class="filter-chip is-active" data-filter="low" aria-pressed="true"><span class="filter-check" aria-hidden="true">✓</span><span data-map-symbol="low" aria-hidden="true"></span><span class="filter-label">Low<small lang="fil">Mababa</small></span></button>
+                </div>
+                <p id="hazard-level-hint" class="filter-hint">Tap a level to show or hide it. / <span lang="fil">Pindutin ang level para ipakita o itago.</span></p>
+                <div id="filter-first-tip" class="filter-tip" hidden>
+                    <p><strong>Choose what you see</strong><br>✓ means on. Tap any level to switch it on or off. All / Lahat shows every level when any is off; tap it again to hide all.<br><span lang="fil">Ang ✓ ay nakabukas. Puwedeng pumili ng higit sa isang level.</span></p>
+                    <button type="button" id="filter-tip-dismiss" aria-label="Dismiss filter tip / Isara ang tip">Got it / Sige</button>
+                </div>
+                <p id="hazard-empty-state" class="hazard-empty-state" role="status" aria-live="polite" hidden>No hazards shown. Tap a level to see them. / <span lang="fil">Walang ipinapakitang panganib. Pindutin ang isang level para makita.</span></p>
 
                 <div class="filter-divider"></div>
 

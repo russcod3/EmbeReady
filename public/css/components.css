@@ -528,9 +528,7 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     background: var(--color-bone-200);
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    position: static;
 }
 .plan-tabs::-webkit-scrollbar { display: none; }
 

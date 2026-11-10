@@ -17,22 +17,21 @@ import S from '../strings.js';
 import { escapeHtml, escapeAttr } from './utils.js';
 import { fetchHazards, fetchBarangays, startLivePolling, startAssessments, fetchAssessmentStatus } from './api.js';
 import { search, QUICK_JUMPS, formatLabel } from './search.js';
-import { initMap, renderHazards, flyTo, highlightLocation, clearSearchMarker, resetView, invalidateSize, getMapInstance } from './map.js';
+import { initMap, renderHazards, flyTo, highlightLocation, resetView, invalidateSize, getMapInstance } from './map.js';
 import { initDrawer, openDrawer, closeDrawer } from './drawer.js';
 import { initReportForm, refreshMiniMap, openReportPanel, closeReportPanel } from './report.js';
-import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations, hideInfrastructure, getLayerVisibility } from './infrastructure.js';
+import { initInfrastructure, toggleHydrants, toggleHospitals, toggleFireStations } from './infrastructure.js';
 import { initMapSymbols } from './map-symbols.js';
+import { HAZARD_LEVELS, allLevelsActive, toggleLevel, filterHazards } from './hazard-filters.mjs';
 
 // State
 let _currentView = 'landing'; // 'landing' | 'map'
 let _currentFilters = {
-    risk_level: '',
-    status: '',
     category: '',
     barangay_id: ''
 };
-let _allHazards = [];
-let _hazardsHidden = false;
+let _allHazards = null;
+let _activeLevels = new Set(HAZARD_LEVELS);
 let _hazardLoadVersion = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,11 +53,11 @@ async function initApp() {
     initReportForm(async (newHazardId) => {
         showToast('Report saved on the map.', 'success');
         closeReportPanel();
-        _hazardsHidden = false;
-        _currentFilters = { risk_level:'',status:'',category:'',barangay_id:'' };
+        _activeLevels = new Set(HAZARD_LEVELS);
+        _currentFilters = { category:'',barangay_id:'' };
         document.getElementById('filter-barangay-select').value = '';
         document.getElementById('filter-category-select').value = '';
-        updateFilterChips('all');
+        renderFilteredHazards();
         await loadHazards();
         // Open the newly created hazard
         if (newHazardId) {
@@ -84,8 +83,8 @@ async function initApp() {
     // 8. Setup Live Polling (every 30 seconds)
     startLivePolling((activeFires) => {
         updateLiveFireCounter(activeFires.length);
-        // If live filter is active, refresh markers respecting all current filters (e.g. barangay)
-        if (_currentFilters.status === 'active') {
+        // Refresh live markers without changing the user's level switches.
+        if (_activeLevels.has('live')) {
             loadHazards();
         }
     });
@@ -173,7 +172,9 @@ function setupNavigation() {
     if (liveCounter) {
         liveCounter.addEventListener('click', () => {
             switchView('map');
-            setActiveFilterChip('active');
+            _activeLevels = new Set(['live']);
+            renderFilteredHazards();
+            loadHazards();
         });
     }
 
@@ -384,123 +385,93 @@ async function populateBarangayDropdown() {
  * setupFilters()
  */
 function setupFilters() {
-    // Filter chips (All, Live Now, Low, Moderate, Heavy)
-    const chips = document.querySelectorAll('.filter-bar .filter-chip');
+    const chips = document.querySelectorAll('.filter-bar .filter-chip[data-filter]');
+    _activeLevels = new Set(HAZARD_LEVELS);
+    renderFilteredHazards();
+    setupFilterTip();
 
-    // ── Explicitly reset to "show all" on init (prevents browser form-state restore) ──
-    chips.forEach(c => {
-        c.classList.remove('is-active');
-        c.setAttribute('aria-pressed', 'false');
-    });
-    const allChipInit = document.querySelector('.filter-chip[data-filter="all"]');
-    if (allChipInit) {
-        allChipInit.classList.add('is-active');
-        allChipInit.setAttribute('aria-pressed', 'true');
-    }
-    const bgySelectInit = document.getElementById('filter-barangay-select');
-    const catSelectInit = document.getElementById('filter-category-select');
-    if (bgySelectInit) bgySelectInit.value = '';
-    if (catSelectInit) catSelectInit.value = '';
-    // ────────────────────────────────────────────────────────────────────────────
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
-            const filterType = chip.getAttribute('data-filter');
-            if (filterType === 'all') {
-                const infrastructureVisible = Object.values(getLayerVisibility()).some(Boolean);
-                const searchMarkerVisible = clearSearchMarker();
-                _hazardsHidden = !_hazardsHidden || infrastructureVisible || searchMarkerVisible;
-                _currentFilters.risk_level = '';
-                _currentFilters.status = '';
-                if (_hazardsHidden) {
-                    // Invalidate in-flight requests so they cannot redraw cleared markers.
-                    _hazardLoadVersion++;
-                    renderHazards([]);
-                    hideInfrastructure();
-                    closeDrawer();
-                }
-            } else if (filterType === 'active') {
-                _hazardsHidden = false;
-                _currentFilters.risk_level = '';
-                _currentFilters.status = 'active';
-            } else {
-                _hazardsHidden = false;
-                _currentFilters.risk_level = filterType;
-                _currentFilters.status = '';
-            }
-            updateFilterChips(_hazardsHidden ? null : filterType);
-            if (!_hazardsHidden) loadHazards();
+            _activeLevels = toggleLevel(_activeLevels, chip.dataset.filter);
+            renderFilteredHazards();
+            if (!_activeLevels.size) closeDrawer();
         });
     });
 
     // Select dropdowns
     const bgySelect = document.getElementById('filter-barangay-select');
     if (bgySelect) {
+        bgySelect.value = '';
         bgySelect.addEventListener('change', () => {
             _currentFilters.barangay_id = bgySelect.value;
-            loadHazards();
+            renderFilteredHazards();
         });
     }
 
     const catSelect = document.getElementById('filter-category-select');
     if (catSelect) {
+        catSelect.value = '';
         catSelect.addEventListener('change', () => {
             _currentFilters.category = catSelect.value;
-            loadHazards();
+            renderFilteredHazards();
         });
     }
 
     const resetBtn = document.getElementById('filter-reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            _hazardsHidden = false;
-            _currentFilters = { risk_level: '', status: '', category: '', barangay_id: '' };
+            _activeLevels = new Set(HAZARD_LEVELS);
+            _currentFilters = { category: '', barangay_id: '' };
             if (bgySelect) bgySelect.value = '';
             if (catSelect) catSelect.value = '';
-            updateFilterChips('all');
+            renderFilteredHazards();
             loadHazards();
         });
     }
 }
 
-function updateFilterChips(filterType) {
-    const chips = document.querySelectorAll('.filter-bar .filter-chip');
-    chips.forEach(c => {
-        const selected = c.getAttribute('data-filter') === filterType;
-        c.classList.toggle('is-active', selected);
-        c.setAttribute('aria-pressed', String(selected));
-        if (c.dataset.filter === 'all') {
-            c.title = _hazardsHidden ? 'Show all hazard markers' : 'Hide all map markers';
-        }
+function setupFilterTip() {
+    const tip = document.getElementById('filter-first-tip');
+    const storageKey = 'embeready-level-tip-dismissed';
+    try { tip.hidden = localStorage.getItem(storageKey) === '1'; }
+    catch { tip.hidden = false; }
+    document.getElementById('filter-tip-dismiss').addEventListener('click', () => {
+        tip.hidden = true;
+        try { localStorage.setItem(storageKey, '1'); } catch {}
+        document.querySelector('.filter-chip[data-filter="all"]').focus({ preventScroll: true });
     });
 }
 
-function setActiveFilterChip(filterType) {
-    _hazardsHidden = false;
-    updateFilterChips(filterType);
-    if (filterType === 'active') {
-        _currentFilters.risk_level = '';
-        _currentFilters.status = 'active';
-        loadHazards();
-    }
+function renderFilteredHazards() {
+    document.querySelectorAll('.filter-bar .filter-chip[data-filter]').forEach(chip => {
+        const selected = chip.dataset.filter === 'all'
+            ? allLevelsActive(_activeLevels) : _activeLevels.has(chip.dataset.filter);
+        chip.classList.toggle('is-active', selected);
+        chip.setAttribute('aria-pressed', String(selected));
+        chip.querySelector('.filter-check').hidden = !selected;
+        if (chip.dataset.filter === 'all') {
+            chip.title = selected ? 'Hide all hazard levels' : 'Show all hazard levels';
+        }
+    });
+    if (_allHazards === null) return;
+    const visible = filterHazards(_allHazards, _activeLevels, _currentFilters);
+    renderHazards(visible);
+    document.getElementById('hazard-empty-state').hidden = visible.length > 0;
 }
 
 /**
  * loadHazards()
  */
 async function loadHazards() {
-    if (_hazardsHidden) return;
     const version = ++_hazardLoadVersion;
     try {
-        const hazards = await fetchHazards(_currentFilters);
-        if (_hazardsHidden || version !== _hazardLoadVersion) return;
+        const hazards = await fetchHazards();
+        if (version !== _hazardLoadVersion) return;
         _allHazards = hazards;
-        const { total, active } = renderHazards(hazards);
-        // Only update citywide active fire badge if no specific sub-filters are hiding it
-        if (!_currentFilters.risk_level && !_currentFilters.category && !_currentFilters.barangay_id) {
-            updateLiveFireCounter(active);
-        }
+        renderFilteredHazards();
+        updateLiveFireCounter(hazards.filter(hazard => hazard.status === 'active').length);
     } catch (err) {
-        if (_hazardsHidden || version !== _hazardLoadVersion) return;
+        if (version !== _hazardLoadVersion) return;
         console.error('[App] Failed to load hazards:', err);
         showToast(S.errors.loadFailed, 'error');
     }

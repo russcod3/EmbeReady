@@ -37,6 +37,22 @@ html,body,#app {height:100%;overflow:hidden;background:#f5f6f8;}
 .filter-chip,.filter-select,.filter-reset {font-family:var(--font-body);text-transform:none;letter-spacing:0;font-size:13px;}
 .filter-chip {height:38px;border:1px solid #dce2e7;background:white;color:#46515d;border-radius:10px;}
 .filter-chip.is-active {background:#e6efff;color:#0963cd;border-color:#c1d6f6;}
+.hazard-level-toggles {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;}
+.hazard-level-toggles .filter-chip {height:auto;min-height:52px;padding:9px 10px;gap:7px;white-space:normal;justify-content:flex-start;border:2px solid #dce2e7;background:#edf0f3;color:#65717c;}
+.hazard-level-toggles .filter-chip[data-filter='all'] {grid-column:1 / -1;min-height:48px;}
+.hazard-level-toggles .filter-chip.is-active {background:#e6efff;border-color:#3879cb;color:#174d91;}
+.hazard-level-toggles .filter-chip:not(.is-active) [data-map-symbol] {filter:grayscale(1);opacity:.5;}
+.hazard-level-toggles .filter-chip:hover {background:#dde8f6;color:#174d91;}
+.hazard-level-toggles .filter-chip:focus-visible,.filter-tip button:focus-visible {outline:3px solid #0963cd;outline-offset:3px;}
+.filter-check {font-size:17px;font-weight:800;line-height:1;}
+.filter-label {display:grid;gap:2px;text-align:left;line-height:1.3;}
+.filter-label small {font-size:12px;font-weight:500;}
+.filter-hint {width:100%;font-size:12px;line-height:1.5;color:#46515d;margin:0;}
+.filter-tip {width:100%;padding:12px;border:1px solid #bed2ec;border-radius:12px;background:#eef5ff;color:#30475f;font-size:12px;line-height:1.5;}
+.filter-tip p {margin:0 0 8px;}
+.filter-tip button {min-height:44px;padding:8px 12px;border:1px solid #abc7ec;border-radius:8px;background:#fff;color:#174d91;font-weight:650;}
+.hazard-empty-state {width:100%;padding:12px;border:1px solid #d2dae1;border-radius:12px;background:#fff;color:#304050;font-size:13px;line-height:1.5;margin:0;}
+.filter-check[hidden],.filter-tip[hidden],.hazard-empty-state[hidden] {display:none;}
 .filter-select {width:100%;height:44px;background-color:#fff;border:1px solid #dde3e8;border-radius:10px;color:#26313b;}
 .filter-select option {background:white;color:#26313b;}
 .filter-reset {padding:8px 0;color:#0765d2;min-height:40px;}

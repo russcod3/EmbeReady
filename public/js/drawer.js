@@ -305,7 +305,7 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
         ${assessment ? `
             <div class="risk-overview">
                 <div class="risk-overall-value ${assessment.overall_score===null?'is-range':''}">${assessment.overall_score===null?`${assessment.score_range.min}–${assessment.score_range.max}`:assessment.overall_score}<small>/100</small></div>
-                <div class="risk-overview-meta"><strong>${assessment.assessed_level?`${assessment.assessed_level==='heavy'?'High':assessment.assessed_level} risk`:'More evidence needed'}</strong><span>${escapeHtml(assessment.confidence_level)} confidence</span><span>${assessment.engine==='mock'?'Demo assessment':'Gemini assessment'}</span></div>
+                <div class="risk-overview-meta"><strong>${assessment.assessed_level?`${assessment.assessed_level==='heavy'?'High':assessment.assessed_level} risk`:'More evidence needed'}</strong><span>${escapeHtml(assessment.confidence_level)} confidence</span><span>${assessment.engine==='mock'?'Pre-seeded assessment':'Assessed by Gemini'}</span></div>
             </div>
             ${factorsHtml}
             <p class="risk-summary">${escapeHtml(assessment.reasoning_summary)}</p>
@@ -318,7 +318,7 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
         ${plan ? `<div class="drawer-section" style="padding:0;">
             <div style="padding:var(--space-3) var(--space-5);background:var(--color-charcoal-800);color:var(--color-bone-200);display:flex;align-items:center;justify-content:space-between;">
                 <span style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Community Preparedness Plan</span>
-                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${assessment?.engine==='mock'?'Demo guidance':'Gemini guidance'}</span>
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${assessment?.engine==='mock'?'Saved guidance':'Gemini guidance'}</span>
             </div>
             <div class="plan-tabs" role="tablist">
                 <button class="plan-tab is-active" data-tab-target="before">Before</button>
