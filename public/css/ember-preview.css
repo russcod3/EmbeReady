@@ -1,0 +1,8 @@
+body{margin:0;background:#f5f5f0;color:#26313b;font:16px/1.5 system-ui,sans-serif;}
+main{max-width:760px;margin:auto;padding:40px 20px;text-align:center;}
+h1{font-size:36px;letter-spacing:-1px;margin:0;}p{color:#64717a;}
+#puppet-stage{width:min(360px,80vw);height:min(405px,90vw);margin:20px auto;}
+#pose-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+button{border:1px solid #dbe2e7;border-radius:12px;background:white;padding:12px 18px;color:#26313b;font:inherit;cursor:pointer;min-height:44px;}
+button[aria-pressed='true']{background:#146a74;color:white;border-color:#146a74;}
+#pause{margin-top:16px;}a{color:#146a74;}:focus-visible{outline:3px solid #146a74;outline-offset:3px;}

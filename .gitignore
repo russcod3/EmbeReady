@@ -29,3 +29,7 @@ desktop.ini
 # ── Logs ──────────────────────────────────────────────────────────────────────
 logs/
 *.log
+
+# Local recovery snapshots and UI verification artifacts
+data/backups/
+data/qa/

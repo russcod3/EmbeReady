@@ -1,0 +1,66 @@
+/* Compact controls and approved Figma motion adaptations. */
+.welcome-header{flex-wrap:nowrap;gap:14px}.welcome-tools{margin-left:auto;justify-content:flex-end}.welcome-location{margin-left:auto}.welcome-tools .language-switch{flex-shrink:0}
+.homepage-faq{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:800;border-radius:999px;padding:12px 20px;box-shadow:0 5px 22px #2464af25}
+.welcome-footer{padding-bottom:90px}
+.theme-toggle{position:relative;display:block;flex-shrink:0;width:94px;height:44px;border:0;background:transparent;border-radius:24px;padding:0;cursor:pointer;overflow:hidden}
+.theme-toggle:focus-visible{outline:3px solid #3283e0;outline-offset:4px}.eclipse-art{display:block;position:absolute;inset:0;width:940px;height:440px;transform:scale(.1);transform-origin:0 0;pointer-events:none}
+.theme-toggle img{max-width:none}.explore-hud>[data-theme-control]{display:block;margin:0 0 12px auto;width:94px}
+.level-switches{display:flex;flex-wrap:wrap;gap:8px}.level-pill{position:relative;display:inline-flex}
+.level-switches .filter-chip{min-height:38px;height:38px;padding:0 10px;gap:5px;font-size:13px;white-space:nowrap;border-width:1px;border-radius:10px;background:#edf0f3;color:#596674}
+.level-switches .level-pill .filter-chip{padding-right:27px}.level-switches .filter-chip[data-filter='all']{min-height:38px;height:38px;flex:none}
+.level-switches .filter-chip.is-active{border-color:#5a9cf0;background:#edf5ff;color:#164d91;box-shadow:0 0 0 1px #74aff538,0 0 11px #368bf442}
+.filter-remove{position:absolute;right:1px;top:0;width:25px;height:25px;display:grid;place-items:center;font-size:16px;line-height:1;border:0;border-radius:50%;color:#235f9e;background:transparent;cursor:pointer}
+.filter-remove:hover{background:#cbe0fc}.filter-remove:focus-visible{outline:2px solid #0969da;outline-offset:0}
+:lang(tl) .level-switches .filter-chip{font-size:13px;padding-inline:10px}:lang(tl) .level-switches .level-pill .filter-chip{padding-right:27px}
+.faq-dialog[open]{animation:liquid-appear .4s var(--liquid-ease) both}.faq-header{position:sticky;top:0;background:inherit;z-index:1}
+.report-success-hero{position:relative;height:150px;margin:12px 0 -12px;display:grid;place-items:center;isolation:isolate;overflow:hidden}
+.report-success-hero canvas{position:absolute;inset:0;width:100%;height:180px;pointer-events:none;z-index:2}.success-ring{position:absolute;left:calc(50% - 32px);top:43px;width:64px;height:64px}.success-check{width:96px;height:96px;border-radius:50%;background:#34c759;display:grid;place-items:center}.success-check img{width:48px;height:auto}
+:root[data-theme='dark']{color-scheme:dark;--text-primary:#edf2fb;--text-secondary:#bdcadc;--text-muted:#9cadc4;--text-on-light:#e3eafa;--text-on-light-2:#bdcadc;--surface-base:#101b2b;--surface-raised:#1b293d;--surface-card:#23334b;--border-subtle:#354860;--border-light:#354860;--color-bone-200:#e3eafa;--color-bone-300:#26374e;--report-field:#23334b}
+[data-theme='dark'] body,[data-theme='dark'] #app,[data-theme='dark'] #view-landing.welcome-page{background:#101b2b;color:#edf2fb}
+[data-theme='dark'] :is(.map-header,.welcome-header,.explore-hud,#hazard-drawer,#report-section,#report-modal,.modal-box,.faq-dialog){background:#18263a;color:#edf2fb;border-color:#354860}
+[data-theme='dark'] :is(.welcome-copy h1,.welcome-header .topbar-wordmark,.map-header-wordmark,.explore-hud h2,.drawer-title,.drawer-meta-val,.factor-name,.contact-name,.contact-phone,#report-section .report-heading,#report-modal .modal-title,.liquid-trigger,.liquid-options strong){color:#edf2fb}
+[data-theme='dark'] :is(.welcome-copy>p,.welcome-features,.hud-sub,.drawer-section-label,.drawer-meta-key,.form-label,.contacts-intro,.faq-content p,.filter-hint,.welcome-button-note,.risk-summary){color:#b6c5da}
+[data-theme='dark'] :is(.landing-search-input,.filter-select,.form-input,.form-select,.form-textarea,.language-switch,.photo-placeholder,.photo-upload-area,.contact-copy-number,.responder-card,.risk-overview,.assessment-empty,.risk-missing,.factor-field-note,#modal-ai-score-box){background:#23334b;color:#e0e9f8;border-color:#3a4e6a}
+[data-theme='dark'] :is(.filter-select option,.form-select option,.search-autocomplete,.autocomplete-item,.liquid-select.is-open,.liquid-options){background:#23334b;color:#e0e9f8}
+[data-theme='dark'] :is(.filter-chip,.infra-toggle-btn,.faq-button,.language-switch button){background:#25364d;color:#c2d0e5;border-color:#465c79}
+[data-theme='dark'] .level-switches .filter-chip.is-active,[data-theme='dark'] .language-switch button[aria-pressed='true'],[data-theme='dark'] .infra-toggle-active{background:#1e456e;color:#edf6ff;border-color:#72b4ff;box-shadow:0 0 12px #459eff52}
+[data-theme='dark'] .filter-remove{color:#bcddff}[data-theme='dark'] .filter-remove:hover{background:#38618e}
+[data-theme='dark'] :is(.risk-overview-meta strong,.risk-overall-value,.factor-field-note strong,.factor-deck-heading,.plan-step){color:#e2ebfa}
+[data-theme='dark'] :is(.plan-tabs,.plan-local-note,.dialog-close,.faq-close){background:#26374e;color:#d8e6f8}
+[data-theme='dark'] .plan-tab{color:#9eafc5}[data-theme='dark'] .plan-tab.is-active{color:white}
+[data-theme='dark'] :is(.risk-overview,.responder-card,.faq-content details){border-color:#354860}
+[data-theme='dark'] :is(.map-empty-state,.hazard-empty-state){background:#233d5d;color:#e1efff;border-color:#5c80aa}
+[data-theme='dark'] .filter-tip{background:#3a3424;color:#f3dfb6;border-color:#75623a}
+[data-theme='dark'] .leaflet-tile-pane{filter:invert(.9) hue-rotate(180deg) saturate(.65)}
+[data-theme='dark'] .drawer-close{background:#18263a!important}
+@media(min-width:768px){.explore-hud{width:300px}}
+@media(max-width:767px){.welcome-header{padding:14px 16px;flex-wrap:wrap}.welcome-tools{gap:8px}.welcome-location{display:none}.welcome-header .topbar-wordmark{font-size:18px}.welcome-tools .language-switch button{padding-inline:8px}.welcome-copy h1{font-size:clamp(32px,8vw,42px)}.welcome-footer{padding-bottom:92px}.homepage-faq{right:16px;bottom:max(16px,env(safe-area-inset-bottom))}.level-switches .filter-chip{min-height:38px}.level-switches{gap:10px 8px}.explore-hud{--sheet-height:238px}}
+@media(max-width:440px){.welcome-header .topbar-wordmark>span:not(.ember-puppet){display:none}.welcome-header .topbar-wordmark{gap:0}.welcome-tools{margin-left:auto}.welcome-tools .language-switch button{min-height:38px}}
+@media(prefers-reduced-motion:reduce){.faq-dialog[open]{animation:none}.report-success-hero canvas,.success-ring{display:none}.level-switches .filter-chip{transition:none}}
+
+[data-theme='dark'] :is(.filter-reset,.welcome-search){color:#9ccaff}
+[data-theme='dark'] .sheet-tools button{background:#25425f;color:#d9edff}
+
+/* Navigation controls belong to the top bar; help is fixed to the viewport. */
+.nav-toggles{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.map-header .nav-toggles{order:0}.map-header-actions{margin-left:auto}
+.welcome-header .welcome-tools{order:0;margin-left:auto;margin-right:0}
+.welcome-header .welcome-location{margin-left:auto}
+.homepage-faq{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:850}
+.filter-hint{padding:12px;border:1px solid #d7e1ed;border-radius:10px;background:#f0f5fc;font-size:13px;line-height:1.65}
+[data-theme='dark'] .filter-hint{background:#22364e;border-color:#3d5673;color:#d2e3fa}
+@media(max-width:767px){
+ .map-header{display:grid;grid-template-columns:auto 1fr;height:108px;align-content:center;gap:5px 10px;padding:7px 12px}
+ .map-header .nav-toggles{grid-column:2;grid-row:1;justify-self:end;gap:8px}
+ .map-header .map-header-wordmark{grid-column:1;grid-row:1;padding:0}
+ .map-header .map-header-wordmark>span:not(.ember-puppet){display:none}
+ .map-header .map-header-actions{grid-column:1/-1;grid-row:2;justify-content:flex-end;margin-left:0}
+ .map-header .language-switch button{min-height:38px;padding:7px 9px}
+ .welcome-header{flex-wrap:nowrap;gap:8px}.welcome-header .welcome-tools{margin:0 0 0 auto;gap:8px}
+ .welcome-header .topbar-wordmark>span:not(.ember-puppet){display:none}
+ .welcome-header .welcome-tools .language-switch button{min-height:38px}
+ .homepage-faq{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
+ .explore-hud{max-height:calc(100% - 136px)}
+ #hazard-drawer{max-height:calc(100% - 136px)}
+ .map-empty-state{top:132px}
+}

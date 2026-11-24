@@ -1,0 +1,62 @@
+/* Independent level switches; the Set in app.js drives every pressed state. */
+.level-switches {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;}
+.level-switches .filter-chip {display:flex;justify-content:flex-start;gap:7px;min-width:0;min-height:50px;height:auto;padding:10px;font-size:14px;line-height:1.3;white-space:normal;border:2px solid #d7dde4;border-radius:12px;background:#edf0f3;color:#596674;box-shadow:none;}
+.level-switches .filter-chip[data-filter='all'] {grid-column:1/-1;justify-content:center;min-height:48px;}
+.level-switches .filter-chip.is-active {border-color:#3276cb;background:#eaf2ff;color:#164d91;box-shadow:0 1px 3px #284e7710;}
+.level-switches .filter-chip:hover {background:#e3e9f0;color:#344353;border-color:#a8b7c9;}
+.level-switches .filter-chip.is-active:hover {background:#dceaff;border-color:#1c64bf;}
+.level-switches .filter-chip:focus-visible,.filter-tip button:focus-visible,.sidebar-tools button:focus-visible,.faq-dialog button:focus-visible,.faq-content summary:focus-visible {outline:3px solid #0969da;outline-offset:3px;}
+.filter-check {display:grid;place-items:center;flex:0 0 18px;width:18px;height:18px;border:1px solid #8e9bab;border-radius:5px;background:#fff;color:transparent;font:700 13px/1 sans-serif;}
+.is-active>.filter-check {background:#2067bd;border-color:#2067bd;color:white;}
+.level-switches [data-map-symbol] {display:grid;place-items:center;flex-shrink:0;}
+.level-switches [data-map-symbol] .map-symbol {width:17px;height:17px;}
+.level-switches .filter-chip:not(.is-active) [data-map-symbol] {filter:grayscale(1);opacity:.5;}
+.level-switches .filter-chip:not(.is-active) .fire-streak-outer {fill:#7e8a97;}
+.level-switches .filter-chip:not(.is-active) .fire-streak-core {fill:#c3cbd3;}
+:lang(tl) .level-switches .filter-chip {font-size:13px;gap:5px;padding-inline:8px;}
+.filter-hint {width:100%;font-size:13px;line-height:1.5;color:#526579;margin:0 0 4px;}
+.filter-tip {width:100%;padding:14px;background:#fff9eb;border:1px solid #e8d39f;border-radius:12px;font-size:13px;line-height:1.6;color:#61502e;}
+.filter-tip strong {font-size:14px;}
+.filter-tip p {margin:5px 0 8px;}
+.filter-tip button {min-height:44px;padding:8px 14px;background:#fff;border:1px solid #d1b97f;border-radius:9px;color:#61502e;font-weight:650;}
+.hazard-empty-state {width:100%;padding:14px;border:1px solid #bbcde4;border-radius:12px;background:#eef4fc;color:#294a72;font-size:14px;line-height:1.6;margin:0;}
+.map-empty-state {position:absolute;right:20px;top:20px;width:min(330px,calc(100% - 392px));z-index:550;padding:14px 16px;border:1px solid #bbcde4;border-radius:14px;background:#f7fafff5;box-shadow:0 4px 18px #24364614;color:#294a72;font-size:14px;line-height:1.6;margin:0;pointer-events:none;}
+[hidden] {display:none!important;}
+.sidebar-tools {display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 14px;}
+.language-switch {display:flex;padding:3px;background:#e7ecf2;border:1px solid #d7e0e9;border-radius:12px;gap:3px;}
+.language-switch button {min-height:44px;padding:8px 11px;border:0;border-radius:9px;background:transparent;color:#526579;font-size:13px;}
+.language-switch button[aria-pressed='true'] {background:#fff;color:#174f95;box-shadow:0 1px 4px #284e7720;font-weight:700;}
+.faq-button {min-height:48px;min-width:48px;padding:8px 12px;border:1px solid #c3d2e3;border-radius:12px;background:#fff;color:#245b9f;font-size:14px;font-weight:650;}
+.welcome-tools {display:flex;align-items:center;gap:10px;}
+.welcome-copy h1>.welcome-title-line {color:inherit;}
+.infra-toggles::before {content:none;}
+.infra-heading {font-size:14px;font-weight:650;margin-bottom:4px;}
+.faq-dialog {width:min(600px,calc(100% - 24px));max-height:calc(100dvh - 32px);padding:0;margin:auto;border:1px solid #dbe3ec;border-radius:22px;background:#fff;color:#263244;box-shadow:0 20px 70px #15293d40;overflow:auto;overscroll-behavior:contain;}
+.faq-dialog::backdrop {background:#172b485c;backdrop-filter:blur(3px);}
+.faq-header {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 20px 12px;}
+.faq-header h2 {font-size:21px;line-height:1.3;margin:0;}
+.faq-close {flex-shrink:0;width:44px;height:44px;border:0;border-radius:50%;background:#edf1f6;color:#344a62;font-size:26px;}
+.faq-content {padding:0 20px 20px;}
+.faq-content details {border-top:1px solid #e1e7ef;}
+.faq-content summary {padding:17px 4px;min-height:48px;cursor:pointer;font-size:15px;font-weight:650;line-height:1.5;}
+.faq-content p {font-size:14px;line-height:1.8;color:#536579;margin:0 4px 18px;}
+@media(max-width:767px) {
+ .explore-hud {--sheet-height:238px;}
+ .explore-hud .sidebar-tools {margin-top:0;margin-bottom:8px;}
+ .explore-hud .sheet-tools {margin:6px 0;}
+ .explore-hud h2 {margin-top:12px;}
+ .welcome-header {flex-wrap:wrap;gap:12px;}
+ .welcome-location {display:none;}
+ .welcome-tools .language-switch button {padding-inline:8px;}
+ .level-switches .filter-chip {min-height:52px;}
+ .filter-hint {font-size:14px;}
+ .map-empty-state {top:82px;left:16px;right:16px;width:auto;}
+ #view-map:has(.explore-hud[data-snap='full']) .map-empty-state {display:none;}
+ #hazard-drawer .drawer-inner {height:calc(100% - 72px);}
+}
+@media(min-width:768px) {
+ .explore-hud {width:336px;}
+}
+@media(max-width:400px) {
+ :lang(tl) .map-header-wordmark>span:not(.ember-puppet) {display:none;}
+}

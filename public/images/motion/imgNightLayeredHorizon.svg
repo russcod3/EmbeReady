@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Night / layered horizon" opacity="0">
+<path id="Far horizon" d="M0 33.1513C128 -16.8487 235 14.1513 322 34.1513C440 66.1513 550 -16.8487 668 3.15126C753 18.1513 835 9.15126 904 34.1513V107.151H0V33.1513Z" fill="#354F72"/>
+<path id="Near horizon" d="M0 52.3843C137 90.3843 248 25.3843 345 29.3843C430 33.3843 555 80.3843 665 47.3843C761 18.3843 852 8.38428 904 37.3843V112.384H0V52.3843Z" fill="#294260"/>
+</g>
+</svg>

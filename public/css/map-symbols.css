@@ -1,0 +1,51 @@
+.map-symbol {
+    --symbol-color: #dc9410;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--symbol-color);
+    color: #fff;
+    vertical-align: middle;
+}
+.map-symbol svg { display: block; width: 78%; height: 78%; opacity: 1; }
+.map-symbol--heavy { --symbol-color: #dc2626; }
+.map-symbol--moderate { --symbol-color: #ff851b; }
+.map-symbol--low { --symbol-color: #f8cf24; color:#4f3900; }
+.map-symbol--active { --symbol-color: #fff1e6; }
+.map-symbol--hydrant { --symbol-color: #2674d9; }
+.map-symbol--hospital { --symbol-color: #168261; }
+.map-symbol--firestation { --symbol-color: #dc2626; }
+.map-symbol--pending { --symbol-color: #7b8797; }
+.map-symbol--active svg { width:100%;height:100%;overflow:visible; }
+.fire-streak-outer {transform-origin:12px 21px;animation:fire-streak 1.1s ease-in-out infinite alternate;}
+.fire-streak-core {transform-origin:12px 20px;animation:fire-streak .8s ease-in-out -.3s infinite alternate-reverse;}
+.fire-streak-spark {animation:fire-sparks 1.4s ease-out infinite;}
+@keyframes fire-streak {from{transform:scale(.94,.96) rotate(-3deg);}to{transform:scale(1.04,1.08) rotate(3deg);}}
+@keyframes fire-sparks {0%{opacity:0;transform:translateY(3px);}35%{opacity:1;}100%{opacity:0;transform:translateY(-4px);}}
+@media(prefers-reduced-motion:reduce){.map-symbol svg *{animation:none !important;}}
+[data-map-symbol] { display: inline-flex; flex-shrink: 0; }
+.filter-chip [data-map-symbol] .map-symbol { width: 20px; height: 20px; border-width: 1px; }
+.filter-chip[data-filter]::before { content: none; }
+.legend-glyph { width: 24px; height: 24px; border: 0; animation: none !important; }
+.legend-item { cursor: default; letter-spacing: 0; }
+.er-marker, .er-marker-active {
+    position: relative;
+    background: transparent !important;
+    border: 0;
+    box-shadow: none;
+    animation: none;
+}
+.er-marker > .map-symbol { width: 28px; height: 28px; }
+.infra-marker > .map-symbol { width: 32px; height: 32px; }
+.er-marker > .map-symbol, .infra-marker > .map-symbol { box-shadow: 0 2px 7px #15283b50; }
+.infra-popup-icon .map-symbol { width: 30px; height: 30px; }
+.infra-toggle-btn.infra-toggle-active { color: #214e7c; background: #edf4ff; border-color: #adcaf0; }
+.infra-toggle-btn svg { color: inherit; }
+#toggle-hydrants-btn.infra-toggle-active { color: #2163b8; background: #edf4ff; border-color: #adcaf0; }
+#toggle-hospitals-btn.infra-toggle-active { color: #126d50; background: #edf9f4; border-color: #a6d8c6; }
+#toggle-firestations-btn.infra-toggle-active { color: #b91c1c; background: #fff0f0; border-color: #efb3b3; }

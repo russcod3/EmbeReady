@@ -121,10 +121,13 @@ export async function search(query) {
 
     // Prioritize official local barangays & landmarks first
     for (const item of [...localResults, ...onlineResults]) {
-        const key = `${item.label.toLowerCase()}_${item.lat.toFixed(3)}_${item.lng.toFixed(3)}`;
+        const lat = Number(item.lat);
+        const lng = Number(item.lng);
+        if (isNaN(lat) || isNaN(lng)) continue;
+        const key = `${(item.label || '').toLowerCase()}_${lat.toFixed(3)}_${lng.toFixed(3)}`;
         if (!seen.has(key)) {
             seen.add(key);
-            merged.push(item);
+            merged.push({ ...item, lat, lng });
         }
     }
 

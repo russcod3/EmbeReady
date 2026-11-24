@@ -4,6 +4,8 @@
   "description": "EmbeReady — Community fire hazard and risk map for Batangas City, Philippines.",
   "main": "server/index.js",
   "scripts": {
+    "test": "node --test server/ai/assessment.test.js server/report-validation.test.js server/reporting.integration.test.js test/hazard-filters.test.js test/assessment-interface.test.js",
+    "test:ui": "node --test test/hazard-filters.test.js test/assessment-interface.test.js",
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
     "seed": "node server/seed.js",
@@ -18,7 +20,7 @@
     "express-rate-limit": "^7.2.0",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",
-    "sqlite3": "^6.0.1"
+    "better-sqlite3": "^11.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
