@@ -15,3 +15,9 @@ See [SETUP-CONTENT.md](SETUP-CONTENT.md) for configuration. Run `npm start` and 
 Run `npm run test:ui` for the filter walkthrough, all 16 combinations, dropdown interactions, refresh races, tip persistence, translation keys and assessment display checks. This suite uses local fixtures, sends no HTTP/API requests and never opens the application database.
 
 The top navigation places language and the persisted light/dark Eclipse theme control on the right, outside the filter card. A shared FAQ button stays fixed at the lower-right corner on both homepage and map and uses the report liquid reveal. Compact 38px level chips use a glow and separate corner remove buttons. Successful saved reports play the Figma-derived check/rings and a one-shot canvas ember burst; pending or failed saves never trigger it. Motion respects reduced-motion preferences. Figma assets are stored under `public/images/motion/`.
+
+## Report review
+
+Set a unique `ADMIN_PASSWORD` of at least 16 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
+
+The queue contains submitted community reports, with live fires listed first. Reviewers can inspect the submitted location, observations, photo, and any saved Gemini assessment before recording a decision, an optional evaluated risk level, and notes. Notes are required for **Needs verification** and **Dismissed**. Review decisions are internal, and community pins and live-fire responder contacts appear as soon as a report is saved.

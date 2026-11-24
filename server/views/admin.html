@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#18191b">
+    <title>Report review · EmbeReady</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="/js/admin.js" defer></script>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <a class="brand" href="/" aria-label="EmbeReady public site">
+                <img src="/images/embeready-mascot.png" width="36" height="36" alt="">
+                EmbeReady
+            </a>
+            <nav aria-label="Admin navigation">
+                <a href="/">Public site</a>
+                <button id="sign-out" type="button" hidden>Sign out</button>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="page-heading">
+            <h1>Report review</h1>
+            <p>Validate community reports and record your risk evaluation.</p>
+        </div>
+        <p id="page-message" class="message" role="status">Checking admin access…</p>
+        <form id="sign-in" class="panel sign-in" hidden>
+            <h2>Admin sign-in</h2>
+            <label for="password">Admin password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024">
+            <button class="primary" type="submit">Sign in</button>
+        </form>
+        <div id="workspace" hidden>
+            <div id="filters" class="filters" role="group" aria-label="Filter by review decision">
+                <button type="button" data-decision="all" aria-pressed="true">All reports <strong>0</strong></button>
+                <button type="button" data-decision="pending" aria-pressed="false">Pending <strong>0</strong></button>
+                <button type="button" data-decision="needs_verification" aria-pressed="false">Needs verification <strong>0</strong></button>
+                <button type="button" data-decision="validated" aria-pressed="false">Validated <strong>0</strong></button>
+                <button type="button" data-decision="dismissed" aria-pressed="false">Dismissed <strong>0</strong></button>
+            </div>
+            <div class="review-layout">
+                <section class="panel queue" aria-labelledby="queue-heading">
+                    <div class="queue-heading">
+                        <h2 id="queue-heading">Report queue</h2>
+                        <button id="refresh" type="button">Refresh queue</button>
+                    </div>
+                    <form id="search" class="search" role="search">
+                        <label for="search-query">Search reports</label>
+                        <div>
+                            <input id="search-query" type="search" placeholder="Reference, title, or barangay" maxlength="120">
+                            <button type="submit">Search</button>
+                        </div>
+                    </form>
+                    <p id="queue-message" class="muted" role="status"></p>
+                    <ul id="reports" class="report-list"></ul>
+                    <nav id="pagination" class="pagination" aria-label="Report pages" hidden>
+                        <button id="previous" type="button">Previous</button>
+                        <span id="page-number"></span>
+                        <button id="next" type="button">Next</button>
+                    </nav>
+                </section>
+                <section class="panel detail" aria-labelledby="detail-heading">
+                    <h2 id="detail-heading" tabindex="-1">Report details</h2>
+                    <p id="detail-message" class="muted" role="status">Select a report to review its evidence.</p>
+                    <div id="detail-content" hidden>
+                        <div class="detail-meta">
+                            <span id="report-reference" class="reference"></span>
+                            <span id="report-decision" class="badge"></span>
+                        </div>
+                        <dl id="report-facts" class="facts"></dl>
+                        <a id="report-map" class="map-link" target="_blank" rel="noopener noreferrer" hidden>View pin on OpenStreetMap</a>
+                        <div id="report-evidence" class="detail-section">
+                            <h3>Submitted evidence</h3>
+                            <p id="report-description"></p>
+                            <dl id="report-observations" class="observations"></dl>
+                            <a id="photo-link" target="_blank" rel="noopener noreferrer" hidden>
+                                <img id="report-photo" alt="Photo submitted with the report">
+                                Open full photo
+                            </a>
+                        </div>
+                        <div class="detail-section assessment">
+                            <h3>Gemini assessment</h3>
+                            <p id="assessment-summary"></p>
+                            <details id="assessment-details" hidden>
+                                <summary>Risk factors</summary>
+                                <dl id="assessment-factors" class="observations"></dl>
+                            </details>
+                        </div>
+                        <form id="review" class="detail-section">
+                            <h3>Moderator review</h3>
+                            <p>Decisions and notes are visible only here.</p>
+                            <fieldset id="review-fields" aria-label="Review decision and evaluation">
+                                <div class="review-fields">
+                                    <div>
+                                        <label for="decision">Validation decision</label>
+                                        <select id="decision" required>
+                                            <option value="">Choose a decision</option>
+                                            <option value="validated">Validated</option>
+                                            <option value="needs_verification">Needs verification</option>
+                                            <option value="dismissed">Dismissed</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="evaluated-level">Evaluated risk</label>
+                                        <select id="evaluated-level">
+                                            <option value="">Not evaluated</option>
+                                            <option value="low">Low</option>
+                                            <option value="moderate">Moderate</option>
+                                            <option value="heavy">Heavy</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <label for="notes">Review notes <span id="notes-requirement">(optional)</span></label>
+                                <textarea id="notes" rows="4" maxlength="2000" placeholder="Record what you verified or what needs follow-up."></textarea>
+                                <div class="review-actions">
+                                    <button class="primary" type="submit">Save review</button>
+                                    <span id="review-time" class="muted"></span>
+                                </div>
+                            </fieldset>
+                            <p id="review-message" class="message" role="status"></p>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

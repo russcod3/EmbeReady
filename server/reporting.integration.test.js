@@ -1,9 +1,9 @@
 'use strict';
 const {test,before,after}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const os=require('node:os');const path=require('node:path');const express=require('express');
-const testDir=fs.mkdtempSync(path.join(os.tmpdir(),'embeready-report-tests-'));process.env.DB_PATH=path.join(testDir,'reports.db');process.env.RATE_LIMIT_MAX='100';process.env.GEMINI_API_KEY='test-only-key';process.env.GEMINI_MODEL='gemini-test';
+const testDir=fs.mkdtempSync(path.join(os.tmpdir(),'embeready-report-tests-'));process.env.DB_PATH=path.join(testDir,'reports.db');process.env.RATE_LIMIT_MAX='100';process.env.GEMINI_API_KEY='test-only-key';process.env.GEMINI_MODEL='gemini-test';process.env.ADMIN_PASSWORD='integration-test-password';
 const db=require('./db'),ai=require('./ai'),service=require('./assessment-service');let server,base;
 const result=()=>({assessment:{overall_score:75,assessed_level:'heavy',factors_json:'{}',confidence_level:'medium',reasoning_summary:'Test assessment.',engine:'llm',model_version:'gemini-test',score_range:{min:75,max:75},missing_information:[],action_priority:'prompt',evidence_coverage:100},plan:{...Object.fromEntries(['before_steps','during_steps','after_steps','evacuation_tips','prohibited_actions'].map(k=>[k+'_json','["Stay clear.","Contact responders."]'])),local_context_notes:'Test only.'}});
-before(async()=>{db.prepare('INSERT INTO barangays(id,name,classification,center_lat,center_lng) VALUES(1,?,?,?,?)').run('Test barangay','urban',13.7565,121.0583);const app=express();app.use(express.json());app.use('/api/reports',require('./routes/reports'));app.use('/api/hazards',require('./routes/hazards'));app.use('/api/assessments',require('./routes/assessments'));server=await new Promise(resolve=>{const running=app.listen(0,'127.0.0.1',()=>resolve(running));});base=`http://127.0.0.1:${server.address().port}`;});
+before(async()=>{db.prepare('INSERT INTO barangays(id,name,classification,center_lat,center_lng) VALUES(1,?,?,?,?)').run('Test barangay','urban',13.7565,121.0583);const app=express();app.use(express.json());app.use('/api/reports',require('./routes/reports'));app.use('/api/hazards',require('./routes/hazards'));app.use('/api/assessments',require('./routes/assessments'));app.use('/api/admin',require('./routes/admin'));server=await new Promise(resolve=>{const running=app.listen(0,'127.0.0.1',()=>resolve(running));});base=`http://127.0.0.1:${server.address().port}`;});
 after(async()=>{await service.waitForIdle();await new Promise(resolve=>server.close(resolve));db.close();assert.equal(path.dirname(path.resolve(testDir)),path.resolve(os.tmpdir()));assert.ok(path.basename(testDir).startsWith('embeready-report-tests-'));fs.rmSync(testDir,{recursive:true,force:true});});
 const post=async(body,route='/api/reports')=>{const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return{status:r.status,body:await r.json()};};
 const get=async route=>(await(await fetch(base+route)).json()).data;
@@ -46,4 +46,65 @@ test('successful historical Gemini assessment and precautions remain exactly pre
  const original=db.prepare('SELECT * FROM risk_assessments WHERE hazard_id=?').get(id);let calls=0;ai.assessReport=async()=>{calls++;return result();};
  await post({},'/api/assessments/start');service.enqueue(id,{force:true});await service.waitForIdle();const detail=await get('/api/hazards/'+id);
  assert.equal(calls,0);assert.equal(detail.assessment.overall_score,40);assert.equal(detail.assessment.factors_json,factors);assert.equal(detail.assessment.reasoning_summary,'Original Gemini summary.');assert.equal(detail.assessment.model_version,'gemini-2.5-flash-lite');assert.deepEqual(detail.plan.before_steps,JSON.parse(steps));assert.deepEqual(db.prepare('SELECT * FROM risk_assessments WHERE hazard_id=?').get(id),original);
+});
+
+test('admin review is authenticated, persists evaluations, and rejects stale updates', async () => {
+    const root = '/api/admin';
+    const queue = root + '/reports';
+    const admin = (route, method = 'GET', cookie, body) => fetch(base + route, {
+        method,
+        headers: {
+            ...(cookie ? { Cookie: cookie } : {}),
+            ...(body ? { 'Content-Type': 'application/json' } : {})
+        },
+        body: body ? JSON.stringify(body) : undefined
+    });
+
+    assert.equal((await admin(queue)).status, 401);
+    assert.equal((await admin(root + '/login', 'POST', null, { password: 'incorrect' })).status, 401);
+    const login = await admin(root + '/login', 'POST', null, { password: process.env.ADMIN_PASSWORD });
+    assert.equal(login.status, 200);
+    const session = login.headers.get('set-cookie');
+    assert.match(session, /HttpOnly/i);
+    assert.match(session, /SameSite=Strict/i);
+    const cookie = session.split(';')[0];
+
+    ai.assessReport = async () => result();
+    const submitted = await post(report({ description: 'Visible sparks', observation_truck_access: 'Narrow lane' }));
+    await service.waitForIdle();
+    const { ref_number: ref, hazard_id: hazardId } = submitted.body;
+    const route = queue + '/' + ref;
+    const filtered = await (await admin(queue + '?decision=pending&q=' + ref, 'GET', cookie)).json();
+    assert.equal(filtered.total, 1);
+    assert.equal(filtered.data[0].ref_number, ref);
+    const initial = (await (await admin(route, 'GET', cookie)).json()).data;
+    assert.equal(initial.version, 0);
+    assert.equal(initial.description, 'Visible sparks');
+    assert.equal(initial.observations.truck_access, 'Narrow lane');
+    assert.equal(initial.assessment.overall_score, 75);
+    assert.equal('reporter_ip_hash' in initial, false);
+
+    const review = { decision: 'dismissed', evaluated_level: 'moderate', notes: 'Duplicate incident.', version: 0 };
+    assert.equal((await admin(route, 'PUT', null, review)).status, 401);
+    assert.equal((await admin(route, 'PUT', cookie, { ...review, notes: '' })).status, 400);
+    assert.equal((await admin(route, 'PUT', cookie, { ...review, version: 1 })).status, 409);
+    const saved = (await (await admin(route, 'PUT', cookie, review)).json()).data;
+    assert.equal(saved.version, 1);
+    assert.equal((await admin(route, 'PUT', cookie, review)).status, 409);
+    const moderated = (await (await admin(route, 'GET', cookie)).json()).data;
+    assert.equal(moderated.decision, 'dismissed');
+    assert.equal(moderated.evaluated_level, 'moderate');
+    assert.equal(moderated.notes, 'Duplicate incident.');
+    const changed = (await (await admin(route, 'PUT', cookie, {
+        ...review, decision: 'validated', version: 1
+    })).json()).data;
+    assert.equal(changed.version, 2);
+    assert.equal(changed.decision, 'validated');
+    const publicHazard = await get('/api/hazards/' + hazardId);
+    assert.equal(publicHazard.hazard.risk_level, 'heavy');
+    assert.equal(publicHazard.hazard.status, 'potential');
+    assert.equal('notes' in publicHazard.hazard, false);
+
+    assert.equal((await admin(root + '/logout', 'POST', cookie, {})).status, 200);
+    assert.equal((await admin(route, 'GET', cookie)).status, 401);
 });

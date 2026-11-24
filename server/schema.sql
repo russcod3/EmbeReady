@@ -147,3 +147,13 @@ CREATE TABLE IF NOT EXISTS assessment_jobs (
     error_code TEXT,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- Human review is stored separately from submitted evidence and Gemini results.
+CREATE TABLE IF NOT EXISTS report_reviews (
+    report_id       INTEGER PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
+    decision        TEXT NOT NULL CHECK (decision IN ('validated', 'needs_verification', 'dismissed')),
+    evaluated_level TEXT CHECK (evaluated_level IN ('low', 'moderate', 'heavy')),
+    notes           TEXT NOT NULL DEFAULT '' CHECK (length(notes) <= 2000),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    version         INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)
+);
