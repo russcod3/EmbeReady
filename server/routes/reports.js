@@ -244,7 +244,8 @@ router.post('/:ref/action', (req, res) => {
 // ── GET /api/reports/:ref ─────────────────────────────────────────────────────
 router.get('/:ref', (req, res) => {
     try {
-        const report = db.prepare(`SELECT * FROM reports WHERE ref_number = ?
+        const report = db.prepare(`SELECT ref_number, hazard_id, reported_level, selected_action, action_logged_at, created_at
+            FROM reports WHERE ref_number = ? AND honeypot_triggered = 0
             AND NOT EXISTS (SELECT 1 FROM review_demo_hazards WHERE hazard_id = reports.hazard_id)`).get(req.params.ref);
         if (!report) return res.status(404).json({ success: false, error: 'Report not found.' });
         res.json({ success: true, data: report });

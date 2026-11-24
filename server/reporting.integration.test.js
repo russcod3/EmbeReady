@@ -245,10 +245,26 @@ test('private reporter links, attention queue, pin audit and operations summary 
     const adminGet = async route => (await (await send(route, 'GET', undefined, cookie)).json()).data;
     const originalPin = { lat: 13.7567, lng: 121.0583 };
     ai.assessReport = async () => result();
-    const submission = (await post(report(originalPin))).body;
+    const formerAddress = 'Original address';
+    const submission = (await post(report({ ...originalPin, address: formerAddress }))).body;
     await service.waitForIdle();
     const route = '/reports/' + submission.ref_number;
-    const pin = { ...originalPin, lat: 13.757, original_lat: originalPin.lat, original_lng: originalPin.lng, reason: 'Confirmed the building entrance.' };
+    const newBarangay = 'Corrected barangay';
+    const { lastInsertRowid } = db.prepare('INSERT INTO barangays (name, center_lat, center_lng) VALUES (?, ?, ?)')
+        .run(newBarangay, 13.757, 121.0583);
+    db.prepare(`
+        INSERT INTO emergency_contacts (jurisdiction, agency_type, facility_name, phone_display)
+        VALUES (?, 'Barangay', 'Corrected response desk', '0000')
+    `).run(newBarangay);
+    const pin = {
+        ...originalPin, lat: 13.757, pin_revision: 0, barangay_id: Number(lastInsertRowid),
+        address: 'West entrance', reason: 'Confirmed the building entrance.'
+    };
+    const lookup = await get('/api/reports/' + submission.ref_number);
+    assert.equal(lookup.ref_number, submission.ref_number);
+    assert.equal(lookup.hazard_id, submission.hazard_id);
+    assert.equal('reporter_ip_hash' in lookup, false);
+    assert.equal('honeypot_triggered' in lookup, false);
     assert.equal((await send(route + '/pin', 'PUT', pin)).status, 401);
     assert.equal((await send(route + '/pin', 'PUT', { ...pin, lat: 0 }, cookie)).status, 400);
 
@@ -299,9 +315,15 @@ test('private reporter links, attention queue, pin audit and operations summary 
     assert.equal(saved.lat, pin.lat);
     assert.equal(saved.pin_history[0].previous_lat, originalPin.lat);
     assert.equal(saved.pin_history[0].reviewer, 'Shared admin');
+    assert.equal(saved.pin_history[0].previous_address, formerAddress);
+    assert.equal(saved.pin_history[0].barangay, newBarangay);
+    assert.equal(saved.pin_history[0].address, pin.address);
     assert.equal((await send(route + '/pin', 'PUT', pin, cookie)).status, 409);
     const publicDetail = await get('/api/hazards/' + submission.hazard_id);
     assert.equal(publicDetail.hazard.lat, pin.lat);
+    assert.equal(publicDetail.hazard.barangay_name, newBarangay);
+    assert.equal(publicDetail.hazard.address, pin.address);
+    assert.ok(publicDetail.contacts.some(contact => contact.facility_name === 'Corrected response desk'));
     assert.equal('reporter_requests' in publicDetail.hazard, false);
     assert.equal('pin_history' in publicDetail.hazard, false);
     assert.equal((await send(route + '/reporter-requests/' + entry.id, 'PUT', {}, cookie)).status, 200);
@@ -311,4 +333,30 @@ test('private reporter links, attention queue, pin audit and operations summary 
     const expired = await link();
     db.prepare("UPDATE reporter_followups SET expires_at = datetime('now', '-1 minute') WHERE report_id = (SELECT id FROM reports WHERE ref_number = ?) AND replied_at IS NULL").run(submission.ref_number);
     assert.equal((await respond(expired)).status, 404);
+});
+
+test('Needs attention uses the oldest due date and retains the cursor after a review', async () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const send = (route, method = 'GET', body) => fetch(base + '/api/admin' + route, {
+        method, headers, body: body ? JSON.stringify(body) : undefined
+    });
+    const login = await send('/login', 'POST', { password: process.env.ADMIN_PASSWORD });
+    headers.Cookie = login.headers.get('set-cookie').split(';')[0];
+    const search = '/reports?followup=attention&q=Oldest%20attention';
+    const refs = [];
+    for (const [index, due] of ['2000-03-10', '2000-01-10', '2000-02-10'].entries()) {
+        const submitted = (await post(report({ title: 'Oldest attention report ' + index }))).body;
+        refs.push(submitted.ref_number);
+        const saved = await send('/reports/' + submitted.ref_number + '/workflow', 'PUT', {
+            assignee: null, due_on: due, duplicate_ref: null, workflow_version: 0
+        });
+        assert.equal(saved.status, 200);
+    }
+    const list = await (await send(search)).json();
+    assert.deepEqual(list.data.map(row => row.ref_number), [refs[1], refs[2], refs[0]]);
+    assert.equal((await send('/reports/' + refs[1], 'PUT', {
+        decision: 'validated', evaluated_level: null, notes: '', version: 0
+    })).status, 200);
+    const advanced = await (await send(search + '&next_after=' + refs[1] + '&next_priority=2&next_since=2000-01-10')).json();
+    assert.equal(advanced.next_ref, refs[2]);
 });

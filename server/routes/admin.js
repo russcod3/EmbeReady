@@ -35,30 +35,34 @@ const unreadAt = `(SELECT MIN(public_reply.replied_at) FROM reporter_followups p
     WHERE public_reply.report_id = r.id AND public_reply.replied_at IS NOT NULL AND public_reply.read_at IS NULL)`;
 const attentionPriority = `CASE WHEN h.status = 'active' AND v.report_id IS NULL THEN 0
     WHEN ${unreadAt} IS NOT NULL THEN 1 WHEN ${isOverdue} THEN 2 ELSE 3 END`;
+const attentionSince = `CASE ${attentionPriority} WHEN 0 THEN r.created_at
+    WHEN 1 THEN ${unreadAt} WHEN 2 THEN f.due_on ELSE '' END`;
 const regularPriority = "CASE WHEN h.status = 'active' THEN 0 ELSE 1 END";
 const summaryFields = `
     r.ref_number, r.reported_level, r.created_at,
     h.title, h.status AS incident_status, b.name AS barangay,
     COALESCE(v.decision, 'pending') AS decision, e.reason, f.assignee, f.due_on,
     original.ref_number AS duplicate_ref, (demo.hazard_id IS NOT NULL) AS is_training,
-    ${attentionPriority} AS attention_priority, ${unreadAt} AS unread_at,
+    ${attentionPriority} AS attention_priority, ${attentionSince} AS attention_since, ${unreadAt} AS unread_at,
     COALESCE(${isOverdue}, 0) AS is_overdue
 `;
 
 router.get('/reports', (req, res) => {
     const { decision = 'all', reason = 'all', q = '', page = '1',
-        followup = 'all', source = 'community', next_after = '', next_priority = '' } = req.query;
+        followup = 'all', source = 'community', next_after = '', next_priority = '', next_since = '' } = req.query;
     const pageNumber = Number(page);
     if (!['all', 'pending', ...decisions].includes(decision) || !['all', ...reasons].includes(reason) || typeof q !== 'string' ||
         !['community', 'demo'].includes(source) || !['all', 'mine', 'overdue', 'attention'].includes(followup) ||
-        !['', '0', '1', '2'].includes(next_priority) || typeof next_after !== 'string' || next_after.length > 64 || typeof page !== 'string' || !Number.isSafeInteger(pageNumber) || pageNumber < 1) {
+        !['', '0', '1', '2'].includes(next_priority) || typeof next_after !== 'string' || next_after.length > 64 ||
+        typeof next_since !== 'string' || next_since.length > 32 || typeof page !== 'string' || !Number.isSafeInteger(pageNumber) || pageNumber < 1) {
         return fail(res, 400, 'Invalid report filters.');
     }
 
     const training = Number(source === 'demo');
     const sourceFilter = 'AND (demo.hazard_id IS NOT NULL) = ?';
     const priorityExpression = followup === 'attention' ? attentionPriority : regularPriority;
-    const order = followup === 'attention' ? `${attentionPriority}, r.id DESC` : queueOrder;
+    const sinceExpression = followup === 'attention' ? attentionSince : "''";
+    const order = followup === 'attention' ? `${attentionPriority}, ${attentionSince}, r.id DESC` : queueOrder;
     const counts = { all: 0, pending: 0, needs_verification: 0, validated: 0, dismissed: 0 };
     const grouped = db.prepare(`SELECT COALESCE(v.decision, 'pending') AS decision, COUNT(*) AS total
         ${reports} ${sourceFilter} GROUP BY COALESCE(v.decision, 'pending')`).all(training);
@@ -85,14 +89,15 @@ router.get('/reports', (req, res) => {
         const priority = followup === 'attention'
             ? (next_priority === '' ? current.attention_priority : Number(next_priority))
             : Number(current.incident_status !== 'active');
+        const since = followup === 'attention' ? next_since || current.attention_since : '';
         const candidate = db.prepare(`
             SELECT ref_number, row_number_in_queue FROM (
-                SELECT r.id, r.ref_number, ${priorityExpression} AS priority,
+                SELECT r.id, r.ref_number, ${priorityExpression} AS priority, ${sinceExpression} AS queued_since,
                     ROW_NUMBER() OVER (ORDER BY ${order}) AS row_number_in_queue
                 ${reports} ${filters}
-            ) WHERE priority > ? OR (priority = ? AND id < ?)
+            ) WHERE priority > ? OR (priority = ? AND (queued_since > ? OR (queued_since = ? AND id < ?)))
             ORDER BY row_number_in_queue LIMIT 1
-        `).get(...params, priority, priority, current.id);
+        `).get(...params, priority, priority, since, since, current.id);
         if (candidate) {
             nextRef = candidate.ref_number;
             currentPage = Math.ceil(candidate.row_number_in_queue / pageSize);
@@ -106,7 +111,8 @@ router.get('/reports', (req, res) => {
 });
 
 const reportDetail = db.prepare(`
-    SELECT ${summaryFields}, r.id, r.hazard_id, h.category, h.description, h.address,
+    SELECT ${summaryFields}, r.id, r.hazard_id, h.category, h.description, h.address, h.barangay_id,
+           COALESCE((SELECT MAX(id) FROM report_pin_changes WHERE hazard_id = h.id), 0) AS pin_revision,
            h.lat, h.lng, h.photo_url, o.data_json AS observations_json,
            (h.active_started_at IS NOT NULL OR h.status = 'active') AS was_live,
            COALESCE(f.version, 0) AS workflow_version, e.reviewer AS decision_by,
@@ -155,6 +161,7 @@ router.get('/reports/:ref', (req, res) => {
     data.nearby = nearby(report);
     data.history = reviewHistory.all(id);
     data.pin_history = pins.list.all(hazard_id);
+    data.barangays = pins.barangays.all();
     data.reporter_requests = reporterFollowups.list.all(id);
     data.reviewer = req.reviewer;
     data.has_location = hazard_id !== null;

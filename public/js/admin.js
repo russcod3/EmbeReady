@@ -166,11 +166,11 @@ function reportCard(report) {
     return item;
 }
 
-async function loadQueue(nextAfter = '', nextPriority = '') {
+async function loadQueue(nextAfter = '', nextPriority = '', nextSince = '') {
     const sequence = ++state.queueRequest;
     const query = new URLSearchParams({
         decision: state.decision, q: state.query, reason: state.reason, page: state.page,
-        followup: state.followup, source: state.source, next_after: nextAfter, next_priority: nextPriority
+        followup: state.followup, source: state.source, next_after: nextAfter, next_priority: nextPriority, next_since: nextSince
     });
     element('reports').setAttribute('aria-busy', 'true');
     message('queue-message', 'Loading reports…');
@@ -456,7 +456,8 @@ function hasUnsavedWork() {
     const review = reviewInput();
     if (report.decision === 'pending' && !review.decision) review.decision = 'pending';
     const pinDraft = report.has_location && (element('pin-reason').value ||
-        Number(element('pin-lat').value) !== report.lat || Number(element('pin-lng').value) !== report.lng);
+        Number(element('pin-lat').value) !== report.lat || Number(element('pin-lng').value) !== report.lng ||
+        Number(element('pin-barangay').value) !== report.barangay_id || element('pin-address').value !== (report.address || ''));
     return changed(review, { ...report, notes: report.notes || '' }) || changed(workflowInput(), report)
         || Boolean(pinDraft || element('correction-reason').value || element('reporter-question').value.trim());
 }
@@ -493,7 +494,7 @@ element('review').addEventListener('submit', async event => {
         message('review-message', 'Review saved.');
         const priority = goNext && state.followup === 'attention' && report.attention_priority < 3
             ? String(report.attention_priority) : '';
-        const nextRef = await loadQueue(goNext ? report.ref_number : '', priority);
+        const nextRef = await loadQueue(goNext ? report.ref_number : '', priority, priority ? report.attention_since : '');
         if (goNext && state.report === report) {
             fields.disabled = false;
             if (nextRef) await selectReport(nextRef);
@@ -863,6 +864,11 @@ function renderPins(report) {
     element('pin-lat').value = report.lat ?? '';
     element('pin-lng').value = report.lng ?? '';
     element('pin-reason').value = '';
+    const barangay = element('pin-barangay');
+    barangay.replaceChildren(new Option('Confirm the barangay', ''));
+    for (const option of report.barangays) barangay.add(new Option(option.name, option.id));
+    barangay.value = report.barangay_id || '';
+    element('pin-address').value = report.address || '';
     element('pin-fields').disabled = false;
     element('pin-history').replaceChildren(...report.pin_history.map(entry => {
         const row = document.createElement('li');
@@ -871,13 +877,31 @@ function renderPins(report) {
             textNode('p', `${entry.previous_lat}, ${entry.previous_lng} → ${entry.lat}, ${entry.lng}`, 'muted'),
             textNode('p', entry.reason)
         );
+        if (entry.barangay && entry.previous_barangay !== entry.barangay) {
+            row.append(textNode('p', `${entry.previous_barangay || '—'} → ${entry.barangay}`, 'muted'));
+        }
+        if (entry.barangay && entry.previous_address !== entry.address) {
+            row.append(textNode('p', `${entry.previous_address || 'No address'} → ${entry.address || 'No address'}`, 'muted'));
+        }
         return row;
     }));
 }
 
+function confirmPinLocation() {
+    const report = state.report;
+    if (!report) return;
+    if (Number(element('pin-lat').value) !== report.lat || Number(element('pin-lng').value) !== report.lng) {
+        element('pin-barangay').value = '';
+        element('pin-address').value = '';
+    }
+}
+
+for (const id of ['pin-lat', 'pin-lng']) element(id).addEventListener('input', confirmPinLocation);
+
 function fillPin(lat, lng) {
     element('pin-lat').value = Number(lat).toFixed(6);
     element('pin-lng').value = Number(lng).toFixed(6);
+    confirmPinLocation();
     if (!previewPins) return;
     if (draftPin) previewPins.removeLayer(draftPin);
     draftPin = L.circleMarker([lat, lng], { radius: 9, color: '#fff', fillColor: '#7256a6', fillOpacity: 1 })
@@ -901,14 +925,18 @@ element('pin-form').addEventListener('submit', async event => {
     try {
         const { data } = await request(path + '/pin', 'PUT', {
             lat: Number(element('pin-lat').value), lng: Number(element('pin-lng').value),
-            original_lat: report.lat, original_lng: report.lng, reason: element('pin-reason').value
+            pin_revision: report.pin_revision, barangay_id: Number(element('pin-barangay').value),
+            address: element('pin-address').value, reason: element('pin-reason').value
         });
         if (state.report !== report) return;
         Object.assign(report, data);
+        element('detail-heading').textContent = report.title;
+        renderFacts(report);
         renderPins(report);
         renderLocation(report);
         renderAssessment(report);
         message('pin-message', 'Pin corrected.');
+        loadQueue();
     } catch (error) {
         if (error.status === 401) showSignedOut(error.message);
         else if (state.report === report) message('pin-message', error.message, true);

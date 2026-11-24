@@ -169,7 +169,11 @@
                                             <div><label for="pin-lat">Pin latitude</label><input id="pin-lat" type="number" step="any" required></div>
                                             <div><label for="pin-lng">Pin longitude</label><input id="pin-lng" type="number" step="any" required></div>
                                         </div>
-                                        <label for="pin-reason">Reason for moving the pin</label>
+                                        <div class="review-fields">
+                                            <div><label for="pin-barangay">Confirmed barangay</label><select id="pin-barangay" required></select></div>
+                                            <div><label for="pin-address">Corrected address (optional)</label><input id="pin-address" maxlength="500"></div>
+                                        </div>
+                                        <label for="pin-reason">Reason for moving or correcting the pin</label>
                                         <input id="pin-reason" maxlength="500" required>
                                         <button type="submit">Save pin correction</button>
                                     </fieldset>

@@ -251,3 +251,11 @@ CREATE TABLE IF NOT EXISTS reporter_followups (
 CREATE INDEX IF NOT EXISTS idx_reporter_followups_report ON reporter_followups(report_id, id DESC);
 CREATE INDEX IF NOT EXISTS idx_reporter_followups_unread ON reporter_followups(report_id, replied_at)
     WHERE replied_at IS NOT NULL AND read_at IS NULL;
+
+CREATE TABLE IF NOT EXISTS report_pin_location_details (
+    change_id         INTEGER PRIMARY KEY REFERENCES report_pin_changes(id) ON DELETE CASCADE,
+    previous_barangay TEXT,
+    barangay          TEXT NOT NULL,
+    previous_address  TEXT,
+    address           TEXT
+);
