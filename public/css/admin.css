@@ -336,3 +336,79 @@ summary { cursor: pointer; font-weight: 600; }
     #reviewer-identity, .admin-header nav a { display: none; }
     .risk-comparison > div { padding: .5rem .4rem; }
 }
+
+.workspace-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .7rem;
+    margin-bottom: 1rem;
+}
+.mode-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    width: fit-content;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: .25rem;
+    margin: 0;
+    background: #eaf0f4;
+}
+.mode-switch label { position: relative; margin: 0; cursor: pointer; }
+.mode-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.mode-switch span {
+    display: block;
+    padding: .35rem .65rem;
+    border-radius: 8px;
+    color: var(--admin-muted);
+}
+.mode-switch :checked + span {
+    background: white;
+    color: #0b5860;
+    box-shadow: 0 1px 4px #12355224;
+}
+.mode-switch :focus-visible + span { outline: 2px solid var(--admin-accent); }
+.sign-in .mode-switch { margin-bottom: .75rem; }
+#sign-in-help, #username-field { margin-bottom: .75rem; }
+.demo-notice {
+    margin-bottom: 1rem;
+    padding: .65rem .85rem;
+    border: 1px solid #e7d4a3;
+    border-radius: 10px;
+    background: #fff7df;
+    color: #604b10;
+}
+#demo-badge { background: #fff0c9; color: #734a03; }
+.queue-task { grid-column: 1 / -1; font-size: .8rem; color: var(--admin-muted); }
+#workflow {
+    background: #f0f7f9;
+    border: 1px solid #d2e5eb;
+    padding: .85rem 1rem;
+    border-radius: 12px;
+}
+#workflow-fields { border: 0; min-width: 0; margin: 0; padding: 0; }
+#workflow .review-fields { align-items: start; }
+#duplicate-help { color: var(--admin-muted); }
+#open-original { display: block; margin-top: .35rem; }
+#workflow-message { margin: .45rem 0 0; }
+#workflow-log { margin-top: .7rem; }
+#review, #workflow, #history-heading { scroll-margin-top: 1rem; }
+
+@media (max-width: 440px) {
+    .workspace-toolbar { align-items: flex-start; }
+    .mode-switch span { padding-inline: .45rem; }
+    #workflow { padding-inline: .65rem; }
+}
+
+body:has(#sign-in:not([hidden])) main {
+    max-width: 28rem;
+    padding-top: clamp(2rem, 8vh, 5rem);
+}
+body:has(#sign-in:not([hidden])) h1 { font-size: clamp(2.65rem, 6vw, 3.45rem); }
+body:has(#sign-in:not([hidden])) .sign-in {
+    max-width: none;
+    border-top-color: #6ba7aa;
+}
+.sign-in button { width: 100%; }

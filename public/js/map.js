@@ -132,7 +132,8 @@ function createHazardMarker(hazard) {
     const marker = L.marker([hazard.lat, hazard.lng], { icon, title: hazard.title, alt: hazard.title });
 
     // Custom tooltip
-    const riskLevelDisplay = (isLive ? S.map.filterLive : (S.map[hazard.risk_level] || (hazard.ai_status==='unavailable'?S.drawer.unavailable:hazard.ai_status==='completed'?S.drawer.moreEvidence:S.drawer.assessing))).toUpperCase();
+    const previousFire = hazard.active_started_at && S.statuses[hazard.status];
+    const riskLevelDisplay = (isLive ? S.map.filterLive : previousFire || (S.map[hazard.risk_level] || (hazard.ai_status==='unavailable'?S.drawer.unavailable:hazard.ai_status==='completed'?S.drawer.moreEvidence:S.drawer.assessing))).toUpperCase();
     const sourceLabel=hazard.status!=='active'&&hazard.reported_level&&!hazard.assessed_level?' · '+S.drawer.reporterSelected.toUpperCase():'';
     const verification = S.drawer.verification?.[hazard.verification_status];
     const tooltipContent = `

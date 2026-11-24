@@ -24,7 +24,8 @@ let _contentEl = null;
 let _activeTimerInterval = null;
 let _currentHazardId=null, _requestVersion=0, _cleanupCards=()=>{}, _assessmentKey="";
 let _currentData = null;
-const resultKey=data=>`${data.hazard.ai_status}:${data.assessment?.id||""}:${data.hazard.ai_error||""}`;
+let _refreshVersion = 0;
+const resultKey=data=>`${data.hazard.status}:${data.hazard.verification_status}:${data.hazard.ai_status}:${data.assessment?.id||""}:${data.hazard.ai_error||""}`;
 
 /**
  * initDrawer()
@@ -48,12 +49,12 @@ export function initDrawer() {
         }
     });
 
-    window.addEventListener('assessment:updated', async()=>{
+    window.addEventListener('hazards:updated', async()=>{
         if(!_currentHazardId||!isDrawerOpen())return;
-        const id=_currentHazardId,version=_requestVersion;
+        const id = _currentHazardId, version = _requestVersion, refresh = ++_refreshVersion;
         try {
             const data=await fetchHazardDetail(id);
-            if(id!==_currentHazardId||version!==_requestVersion||resultKey(data)===_assessmentKey)return;
+            if (id !== _currentHazardId || version !== _requestVersion || refresh !== _refreshVersion || resultKey(data) === _assessmentKey) return;
             const scroll=_contentEl.scrollTop,index=Number(_contentEl.querySelector('.factor-carousel')?.dataset.index||0);
             renderHazardContent(data,index);_contentEl.scrollTop=scroll;
         } catch {}
@@ -144,6 +145,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
     }
 
     const isLive = hazard.status === 'active';
+    const wasLive = Boolean(hazard.active_started_at) || isLive;
     const isDemo = hazard.is_demo === 1 || assessment?.engine === 'mock';
     const prepared = isPreparedAssessment(assessment);
     const confidenceLabel = {high:S.drawer.confidenceHigh,medium:S.drawer.confidenceMed,low:S.drawer.confidenceLow}[assessment?.confidence_level] || assessment?.confidence_level || '';
@@ -258,7 +260,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
         <!-- HEADER -->
         <div class="drawer-header">
             <div class="drawer-badges">
-                ${!isLive ? `<span class="badge badge-${hazard.risk_level || 'pending'}">${S.map[hazard.risk_level] || (assessment ? S.drawer.moreEvidence : S.drawer.unavailable)}</span>` : ''}
+                ${!wasLive ? `<span class="badge badge-${hazard.risk_level || 'pending'}">${S.map[hazard.risk_level] || (assessment ? S.drawer.moreEvidence : S.drawer.unavailable)}</span>` : ''}
 ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-demo">${S.drawer.reporterSelected}</span>`:''}
                 <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? S.map.filterLive : S.statuses[hazard.status] || hazard.status}</span>
 

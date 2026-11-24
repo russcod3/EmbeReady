@@ -132,7 +132,6 @@ async function monitorAssessments(start=false,retry=false) {
             _assessmentProgress=progress;renderAssessmentProgress();
             button.hidden=!progress.unavailable||Boolean(progress.queued+progress.processing);
             await loadHazards();
-            window.dispatchEvent(new CustomEvent('assessment:updated'));
             if(!progress.queued&&!progress.processing)break;
             await new Promise(resolve=>setTimeout(resolve,2500));
             progress=await fetchAssessmentStatus();
@@ -503,6 +502,7 @@ async function loadHazards() {
         _hazardsLoaded = true;
         renderFilteredHazards();
         updateLiveFireCounter(hazards.filter(hazard => hazard.status === 'active').length);
+        window.dispatchEvent(new Event('hazards:updated'));
     } catch (err) {
         if (version !== _hazardLoadVersion) return;
         console.error('[App] Failed to load hazards:', err);

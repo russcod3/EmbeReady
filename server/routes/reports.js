@@ -232,7 +232,7 @@ router.post('/:ref/action', (req, res) => {
     try {
         db.prepare(`
             UPDATE reports SET selected_action = ?, action_logged_at = datetime('now')
-            WHERE ref_number = ?
+            WHERE ref_number = ? AND NOT EXISTS (SELECT 1 FROM review_demo_hazards WHERE hazard_id = reports.hazard_id)
         `).run(action, ref);
         res.json({ success: true });
     } catch (err) {
@@ -244,7 +244,8 @@ router.post('/:ref/action', (req, res) => {
 // ── GET /api/reports/:ref ─────────────────────────────────────────────────────
 router.get('/:ref', (req, res) => {
     try {
-        const report = db.prepare('SELECT * FROM reports WHERE ref_number = ?').get(req.params.ref);
+        const report = db.prepare(`SELECT * FROM reports WHERE ref_number = ?
+            AND NOT EXISTS (SELECT 1 FROM review_demo_hazards WHERE hazard_id = reports.hazard_id)`).get(req.params.ref);
         if (!report) return res.status(404).json({ success: false, error: 'Report not found.' });
         res.json({ success: true, data: report });
     } catch (err) {

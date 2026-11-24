@@ -20,6 +20,7 @@ for (const id of ['reason-filter', 'review-reason']) {
 let previewMap;
 let previewPins;
 const assessmentStatuses = {
+    demo: 'No Gemini assessment is requested for demo reports.',
     queued: 'The Gemini assessment is queued.',
     processing: 'Gemini is assessing this report.',
     unavailable: 'The Gemini assessment is unavailable.',
@@ -32,8 +33,9 @@ const dateFormat = new Intl.DateTimeFormat('en-PH', {
 });
 
 const filters = [...element('filters').querySelectorAll('button')];
+const defaultQueue = { decision: 'all', reason: 'all', followup: 'all', query: '', page: 1 };
 const state = {
-    decision: 'all', reason: 'all', query: '', page: 1, current: null, report: null,
+    ...defaultQueue, source: 'community', current: null, report: null,
     queueRequest: 0, detailRequest: 0
 };
 
@@ -86,7 +88,7 @@ function showSignedOut(text = '', failed = false, configured = true) {
     element('report-map').removeAttribute('href');
     for (const id of ['report-reference', 'report-facts', 'report-description', 'report-observations',
         'assessment-summary', 'assessment-factors', 'risk-comparison', 'missing-information',
-        'nearby-reports', 'review-history', 'reviewer-list']) {
+        'nearby-reports', 'review-history', 'reviewer-list', 'workflow-history', 'nearby-references', 'assignee']) {
         element(id).replaceChildren();
     }
     element('notes').value = '';
@@ -128,23 +130,32 @@ function reportCard(report) {
         textNode('span', meta.filter(Boolean).join(' · '), 'muted')
     );
     if (report.reason) button.append(textNode('span', reasonLabels[report.reason], 'queue-reason'));
+    if (report.assignee || report.due_on) {
+        const assignment = [report.assignee, report.due_on && 'Due ' + report.due_on].filter(Boolean);
+        button.append(textNode('span', assignment.join(' · '), 'queue-task'));
+    }
+    if (report.duplicate_ref) button.append(textNode('span', 'Duplicate of ' + report.duplicate_ref, 'queue-task'));
     if (isLive) button.classList.add('live-report');
     item.append(button);
     return item;
 }
 
-async function loadQueue() {
+async function loadQueue(nextAfter = '') {
     const sequence = ++state.queueRequest;
-    const query = new URLSearchParams({ decision: state.decision, q: state.query, reason: state.reason, page: state.page });
+    const query = new URLSearchParams({
+        decision: state.decision, q: state.query, reason: state.reason, page: state.page,
+        followup: state.followup, source: state.source, next_after: nextAfter
+    });
     element('reports').setAttribute('aria-busy', 'true');
     message('queue-message', 'Loading reports…');
     element('refresh').disabled = true;
     element('previous').disabled = true;
     element('next').disabled = true;
     try {
-        const { data, counts, page, pages, total, reviewer } = await request('/reports?' + query);
+        const { data, counts, page, pages, total, reviewer, next_ref } = await request('/reports?' + query);
         if (sequence !== state.queueRequest) return;
         state.page = page;
+        rememberQueue();
         element('sign-in').hidden = true;
         element('sign-out').hidden = false;
         element('reviewer-identity').textContent = reviewer.username;
@@ -161,7 +172,8 @@ async function loadQueue() {
         element('page-number').textContent = `${page} of ${pages}`;
         element('previous').disabled = page === 1;
         element('next').disabled = page === pages;
-        message('queue-message', total ? `${total} ${total === 1 ? 'report' : 'reports'}` : 'No community reports match this view.');
+        message('queue-message', total ? `${total} ${total === 1 ? 'report' : 'reports'}` : 'No reports match this view.');
+        return next_ref;
     } catch (error) {
         if (sequence !== state.queueRequest) return;
         if (error.status === 401) showSignedOut();
@@ -232,10 +244,9 @@ function renderAssessment(report) {
     }));
 }
 
-function renderReport(report) {
-    const isLive = report.incident_status === 'active';
-    element('detail-heading').textContent = report.title || 'Report details unavailable';
-    element('report-reference').textContent = report.ref_number;
+function renderFacts(report) {
+    const isLive = report.was_live;
+
     renderPairs('report-facts', [
         ['Barangay', report.barangay || '—'],
         ['Submitted', date(report.created_at)],
@@ -244,7 +255,16 @@ function renderReport(report) {
         ['Reported risk', isLive ? 'Live fire' : label(report.reported_level)],
         ['Address', report.address || '—']
     ]);
+}
 
+function renderReport(report) {
+    element('detail-heading').textContent = report.title || 'Report details unavailable';
+    element('report-reference').textContent = report.ref_number;
+    element('demo-badge').hidden = !report.is_training;
+    element('review-context').textContent = report.is_training
+        ? 'Practice reviews stay in the demo queue.'
+        : 'Validation displays a Verified label on the public map. Review notes stay private.';
+    renderFacts(report);
     const observations = Object.entries(report.observations || {});
     renderPairs('report-observations', observations.map(([name, value]) => [label(name), value]));
     const photo = element('report-photo');
@@ -257,6 +277,7 @@ function renderReport(report) {
 
     renderAssessment(report);
     renderReview(report);
+    renderWorkflow(report);
     element('review-fields').disabled = false;
     element('detail-content').hidden = false;
     renderLocation(report);
@@ -264,6 +285,7 @@ function renderReport(report) {
 }
 
 async function selectReport(ref) {
+    if (!canLeaveReport()) return;
     const sequence = ++state.detailRequest;
     state.current = ref;
     state.report = null;
@@ -274,6 +296,7 @@ async function selectReport(ref) {
     element('detail-heading').textContent = 'Report details';
     element('detail-content').hidden = true;
     message('review-message');
+    message('workflow-message');
     message('detail-message', 'Loading report…');
     try {
         const { data } = await request('/reports/' + encodeURIComponent(ref));
@@ -294,10 +317,12 @@ element('sign-in').addEventListener('submit', async event => {
     const password = element('password');
     button.disabled = true;
     try {
-        await request('/login', 'POST', { username: element('username').value, password: password.value });
+        await request('/login', 'POST', { username: element('username').disabled ? '' : element('username').value, password: password.value });
         await loadQueue();
     } catch (error) {
-        message('page-message', error.message, true);
+        message('page-message', error.status === 401 && !element('username').disabled
+            ? 'Reviewer sign-in failed. Use an account created under Reviewers, or switch to Shared admin.'
+            : error.message, true);
     } finally {
         password.value = '';
         button.disabled = false;
@@ -305,6 +330,7 @@ element('sign-in').addEventListener('submit', async event => {
 });
 
 element('sign-out').addEventListener('click', async () => {
+    if (!canLeaveReport()) return;
     try {
         await request('/logout', 'POST', {});
         showSignedOut('Signed out.');
@@ -340,7 +366,7 @@ element('nearby-reports').addEventListener('click', event => {
     if (button) selectReport(button.dataset.reference);
 });
 
-element('refresh').addEventListener('click', loadQueue);
+element('refresh').addEventListener('click', () => loadQueue());
 
 element('previous').addEventListener('click', () => {
     state.page--;
@@ -356,28 +382,72 @@ element('reports').addEventListener('click', event => {
 });
 element('decision').addEventListener('change', updateNotesRequirement);
 
+function reviewInput() {
+    const decision = element('decision').value;
+    return {
+        decision,
+        evaluated_level: element('evaluated-level').value || null,
+        reason: decision === 'needs_verification' ? element('review-reason').value || null : null,
+        notes: element('notes').value.trim()
+    };
+}
+
+function workflowInput() {
+    return {
+        assignee: element('assignee').value || null,
+        due_on: element('due-on').value || null,
+        duplicate_ref: element('original-reference').value.trim().toUpperCase() || null,
+        incident_status: element('incident-status').value || null
+    };
+}
+
+function changed(input, report) {
+    return Object.entries(input).some(([key, value]) => value !== (report[key] ?? null));
+}
+
+function hasUnsavedWork() {
+    const report = state.report;
+    if (!report) return false;
+    const review = reviewInput();
+    if (report.decision === 'pending' && !review.decision) review.decision = 'pending';
+    return changed(review, { ...report, notes: report.notes || '' }) || changed(workflowInput(), report);
+}
+
+function canLeaveReport() {
+    if (element('review-fields').disabled || element('workflow-fields').disabled) {
+        if (state.report) return false;
+    }
+    return !hasUnsavedWork() || window.confirm('This report has unsaved changes. Leave it anyway?');
+}
+
+window.addEventListener('beforeunload', event => {
+    if (!hasUnsavedWork()) return;
+    event.preventDefault();
+    event.returnValue = true;
+});
+
 element('review').addEventListener('submit', async event => {
     event.preventDefault();
     const report = state.report;
     if (!report) return;
     const fields = element('review-fields');
-    const payload = {
-        decision: element('decision').value,
-        evaluated_level: element('evaluated-level').value || null,
-        reason: element('decision').value === 'needs_verification' ? element('review-reason').value : null,
-        notes: element('notes').value.trim(),
-        version: report.version
-    };
+    const goNext = event.submitter?.id === 'save-next';
     fields.disabled = true;
     message('review-message', 'Saving review…');
     try {
-        const { data } = await request('/reports/' + encodeURIComponent(report.ref_number), 'PUT', payload);
-        if (state.report === report) {
-            Object.assign(report, data);
-            renderReview(report);
-            message('review-message', 'Review saved.');
+        const { data } = await request('/reports/' + encodeURIComponent(report.ref_number), 'PUT', {
+            ...reviewInput(), version: report.version
+        });
+        if (state.report !== report) return;
+        Object.assign(report, data);
+        renderReview(report);
+        message('review-message', 'Review saved.');
+        const nextRef = await loadQueue(goNext ? report.ref_number : '');
+        if (goNext && state.report === report) {
+            fields.disabled = false;
+            if (nextRef) await selectReport(nextRef);
+            else if (nextRef === null) message('review-message', 'Review saved. No later reports match the current filters.');
         }
-        if (!element('workspace').hidden) loadQueue();
     } catch (error) {
         if (error.status === 401) showSignedOut(error.message);
         else if (state.report === report) message('review-message', error.message, true);
@@ -386,9 +456,79 @@ element('review').addEventListener('submit', async event => {
     }
 });
 
+const workflowLabels = {
+    assignee: 'Assigned reviewer', due_on: 'Due date', duplicate_ref: 'Original report', incident_status: 'Incident status'
+};
+
+function renderWorkflow(report) {
+    const options = new Set(report.assignees);
+    if (report.assignee) options.add(report.assignee);
+    const assignee = element('assignee');
+    assignee.replaceChildren(new Option('Unassigned', ''));
+    for (const name of options) assignee.add(new Option(name, name));
+    assignee.value = report.assignee || '';
+    element('due-on').value = report.due_on || '';
+    element('original-reference').value = report.duplicate_ref || '';
+    element('open-original').hidden = !report.duplicate_ref;
+    element('nearby-references').replaceChildren(...report.nearby.map(row => new Option(row.title, row.ref_number)));
+    const status = element('incident-status');
+    const statuses = report.was_live ? ['active', 'contained', 'resolved'] : ['potential', 'resolved'];
+    if (report.incident_status) statuses.push(report.incident_status);
+    status.replaceChildren(...[...new Set(statuses)].map(value => new Option(label(value), value)));
+    status.disabled = !report.has_location;
+    if (status.disabled) status.replaceChildren(new Option('No linked incident', ''));
+    status.value = report.incident_status || '';
+    element('workflow-fields').disabled = false;
+    const history = report.workflow_history;
+    element('workflow-log').hidden = !history.length;
+    element('workflow-history').replaceChildren(...history.map(event => {
+        const item = document.createElement('li');
+        const header = document.createElement('div');
+        header.append(textNode('strong', event.reviewer), textNode('span', date(event.recorded_at), 'muted'));
+        item.append(header);
+        for (const { field, from, to } of event.changes) {
+            item.append(textNode('p', `${workflowLabels[field]}: ${from || '—'} → ${to || '—'}`));
+        }
+        return item;
+    }));
+}
+
+element('open-original').addEventListener('click', () => {
+    if (state.report?.duplicate_ref) selectReport(state.report.duplicate_ref);
+});
+
+element('workflow').addEventListener('submit', async event => {
+    event.preventDefault();
+    const report = state.report;
+    if (!report) return;
+    const fields = element('workflow-fields');
+    const { incident_status, ...input } = workflowInput();
+    const payload = { ...input, workflow_version: report.workflow_version };
+    if (incident_status !== report.incident_status) {
+        payload.incident_status = incident_status;
+        payload.previous_incident_status = report.incident_status;
+    }
+    fields.disabled = true;
+    message('workflow-message', 'Saving follow-up…');
+    try {
+        const { data } = await request('/reports/' + encodeURIComponent(report.ref_number) + '/workflow', 'PUT', payload);
+        if (state.report !== report) return;
+        Object.assign(report, data);
+        renderFacts(report);
+        renderWorkflow(report);
+        message('workflow-message', 'Follow-up saved.');
+        await loadQueue();
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.report === report) message('workflow-message', error.message, true);
+    } finally {
+        if (state.report === report) fields.disabled = false;
+    }
+});
+
 function renderRiskComparison(report) {
     const sources = [
-        ['Reported', report.incident_status === 'active' ? 'live' : report.reported_level, 'No rating'],
+        ['Reported', report.was_live ? 'live' : report.reported_level, 'No rating'],
         ['Gemini', report.assessment?.assessed_level, report.assessment ? 'Undetermined' : 'No assessment'],
         ['Moderator', report.evaluated_level, 'Not evaluated']
     ];
@@ -538,4 +678,78 @@ element('reviewer-list').addEventListener('click', async event => {
     }
 });
 
+function rememberQueue() {
+    const { decision, reason, followup, query, page, source } = state;
+    try {
+        sessionStorage.setItem('embeready-admin-queue-' + source, JSON.stringify({ decision, reason, followup, query, page }));
+        sessionStorage.setItem('embeready-admin-source', source);
+    } catch {}
+}
+
+function restoreQueue(source) {
+    let settings = defaultQueue;
+    try {
+        settings = JSON.parse(sessionStorage.getItem('embeready-admin-queue-' + source)) || defaultQueue;
+    } catch {}
+    Object.assign(state, defaultQueue, settings, { source });
+    element('queue-source').querySelector(`[value="${source}"]`).checked = true;
+    element('search-query').value = state.query;
+    element('reason-filter').value = state.reason;
+    element('followup-filter').value = state.followup;
+    element('load-demo').hidden = source !== 'demo';
+    element('demo-notice').hidden = source !== 'demo';
+}
+
+element('queue-source').addEventListener('change', event => {
+    if (!canLeaveReport()) {
+        element('queue-source').querySelector(`[value="${state.source}"]`).checked = true;
+        return;
+    }
+    state.detailRequest++;
+    state.report = null;
+    state.current = null;
+    restoreQueue(event.target.value);
+    element('detail-heading').textContent = 'Report details';
+    element('detail-content').hidden = true;
+    element('reports').replaceChildren();
+    message('detail-message', 'Select a report to review its evidence.');
+    loadQueue();
+});
+
+element('followup-filter').addEventListener('change', event => {
+    state.followup = event.target.value;
+    state.page = 1;
+    loadQueue();
+});
+
+element('load-demo').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+        await request('/demo', 'POST', {});
+        if (state.source === 'demo') await loadQueue();
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.source === 'demo') message('queue-message', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+});
+
+element('sign-in').addEventListener('change', event => {
+    if (event.target.name !== 'account-mode') return;
+    const named = event.target.value === 'reviewer';
+    element('username-field').hidden = !named;
+    element('username').disabled = !named;
+    element('username').required = named;
+    element('password-label').textContent = named ? 'Reviewer password' : 'Admin password';
+    element('sign-in-help').textContent = named
+        ? 'Use the credentials your EmbeReady administrator created for you.'
+        : 'Enter the admin password configured for EmbeReady.';
+});
+let initialSource = 'community';
+try {
+    if (sessionStorage.getItem('embeready-admin-source') === 'demo') initialSource = 'demo';
+} catch {}
+restoreQueue(initialSource);
 loadQueue();

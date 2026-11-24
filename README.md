@@ -22,8 +22,12 @@ On Node 24, EmbeReady uses built-in SQLite. Run `npm ci --omit=optional` to inst
 
 Set a unique `ADMIN_PASSWORD` of at least 8 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
 
-Sign in with the shared admin password and leave the username blank. Open **Reviewers** to add named accounts or disable access. Reviewers sign in with their own username and password. Disabling an account ends its active sessions. The review history attributes new decisions to the account used to sign in. The most recent decision for older reviews is labeled **Legacy review**.
+Choose **Shared admin** and enter the password configured in `.env`. Open **Reviewers** to add named accounts or disable access. Reviewers choose **Named reviewer** and enter the username and password created for them. Disabling an account ends its active sessions. The review history attributes new decisions to the account used to sign in. The most recent decision for older reviews is labeled **Legacy review**.
 
 The queue puts live fires first. Reviewers can inspect the report pin and up to five other community reports within 500 m, review submitted evidence, and compare reported, Gemini, and moderator risk. **Needs verification** requires both a follow-up reason and notes. The queue can filter by reason. **Dismissed** requires notes.
 
 The public map shows a **Verified** badge when a moderator validates a community report. Other community reports remain **Unverified**. Pins and responder contacts appear as soon as a submission is saved. Review notes and reviewer names stay private.
+
+Use **Follow-up & incident** to assign a reviewer, set a due date, link or unlink a duplicate, and update incident status. **Assigned to me** and **Overdue** show open follow-ups, with overdue dates evaluated in Batangas City time. Incident status is separate from the review decision. Linking a duplicate preserves both submissions and their history.
+
+**Save and open next** advances within the current filters. The community and demo queues each remember their filters in the current browser tab. Switch to **Demo queue** and use **Load sample reports** to install four practice cases when barangay data is available. Demo reports stay out of the public map and do not call Gemini.

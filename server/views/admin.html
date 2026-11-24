@@ -30,14 +30,21 @@
     <main>
         <div class="page-heading">
             <h1>Report review</h1>
-            <p>Validate community reports and record your risk evaluation.</p>
+            <p>Review evidence, coordinate follow-up, and keep incident status current.</p>
         </div>
         <p id="page-message" class="message" role="status">Checking admin access…</p>
         <form id="sign-in" class="panel sign-in" hidden>
             <h2>Admin sign-in</h2>
-            <label for="username">Username <span class="muted">(optional for shared admin)</span></label>
-            <input id="username" name="username" autocomplete="username" maxlength="32" autocapitalize="none" spellcheck="false">
-            <label for="password">Admin password</label>
+            <fieldset class="mode-switch" aria-label="Account type">
+                <label><input type="radio" name="account-mode" value="shared" checked><span>Shared admin</span></label>
+                <label><input type="radio" name="account-mode" value="reviewer"><span>Named reviewer</span></label>
+            </fieldset>
+            <p id="sign-in-help" class="muted">Enter the admin password configured for EmbeReady.</p>
+            <div id="username-field" hidden>
+                <label for="username">Reviewer username</label>
+                <input id="username" name="username" autocomplete="username" maxlength="32" autocapitalize="none" spellcheck="false" disabled>
+            </div>
+            <label for="password" id="password-label">Admin password</label>
             <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024">
             <button class="primary" type="submit">Sign in</button>
         </form>
@@ -63,6 +70,14 @@
             <ul id="reviewer-list" class="account-list"></ul>
         </dialog>
         <div id="workspace" hidden>
+            <div class="workspace-toolbar">
+                <fieldset id="queue-source" class="mode-switch" aria-label="Report queue source">
+                    <label><input type="radio" name="queue-source" value="community" checked><span>Community reports</span></label>
+                    <label><input type="radio" name="queue-source" value="demo"><span>Demo queue</span></label>
+                </fieldset>
+                <button id="load-demo" type="button" hidden>Load sample reports</button>
+            </div>
+            <p id="demo-notice" class="demo-notice" hidden>Practice reports stay in this demo queue and never appear on the public map.</p>
             <div id="filters" class="filters" role="group" aria-label="Filter by review decision">
                 <button type="button" data-decision="all" aria-pressed="true">All reports <strong>0</strong></button>
                 <button type="button" data-decision="pending" aria-pressed="false">Pending <strong>0</strong></button>
@@ -87,6 +102,14 @@
                         <label for="reason-filter">Follow-up reason</label>
                         <select id="reason-filter"><option value="all">All reasons</option></select>
                     </div>
+                    <div class="follow-up-filter">
+                        <label for="followup-filter">Follow-up workload</label>
+                        <select id="followup-filter">
+                            <option value="all">All follow-ups</option>
+                            <option value="mine">Assigned to me</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
                     <p id="queue-message" class="muted" role="status"></p>
                     <ul id="reports" class="report-list"></ul>
                     <nav id="pagination" class="pagination" aria-label="Report pages" hidden>
@@ -100,11 +123,13 @@
                     <p id="detail-message" class="muted" role="status">Select a report to review its evidence.</p>
                     <div id="detail-content" hidden>
                         <div class="detail-meta">
+                            <span id="demo-badge" class="badge" hidden>Demo report</span>
                             <span id="report-reference" class="reference"></span>
                             <span id="report-decision" class="badge"></span>
                         </div>
                         <nav class="detail-links" aria-label="Jump within report">
                             <a href="#review">Moderator review</a>
+                            <a href="#workflow">Follow-up &amp; incident</a>
                             <a href="#history-heading">Review history</a>
                             <a class="back-to-queue" href="#queue-heading">Back to queue</a>
                         </nav>
@@ -147,7 +172,7 @@
                         </div>
                         <form id="review" class="detail-section">
                             <h3>Moderator review</h3>
-                            <p>Validation displays a Verified label on the public map. Review notes stay private.</p>
+                            <p id="review-context">Validation displays a Verified label on the public map. Review notes stay private.</p>
                             <fieldset id="review-fields" aria-label="Review decision and evaluation">
                                 <div class="review-fields">
                                     <div>
@@ -177,15 +202,48 @@
                                 <textarea id="notes" rows="4" maxlength="2000" placeholder="Record what you verified or what needs follow-up."></textarea>
                                 <div class="review-actions">
                                     <button class="primary" type="submit">Save review</button>
+                                    <button id="save-next" type="submit">Save and open next</button>
                                     <span id="review-time" class="muted"></span>
                                 </div>
                             </fieldset>
                             <p id="review-message" class="message" role="status"></p>
                         </form>
+                        <form id="workflow" class="detail-section">
+                            <h3>Follow-up &amp; incident</h3>
+                            <fieldset id="workflow-fields" aria-label="Follow-up and incident status">
+                                <div class="review-fields">
+                                    <div>
+                                        <label for="assignee">Assigned reviewer</label>
+                                        <select id="assignee"></select>
+                                    </div>
+                                    <div>
+                                        <label for="due-on">Due date</label>
+                                        <input id="due-on" type="date">
+                                    </div>
+                                    <div>
+                                        <label for="original-reference">Original report reference</label>
+                                        <input id="original-reference" list="nearby-references" maxlength="64" placeholder="Enter or choose a reference" aria-describedby="duplicate-help">
+                                        <datalist id="nearby-references"></datalist>
+                                        <small id="duplicate-help">Clear the reference to undo a duplicate link.</small>
+                                        <button id="open-original" type="button" hidden>Open linked original</button>
+                                    </div>
+                                    <div>
+                                        <label for="incident-status">Incident status</label>
+                                        <select id="incident-status"></select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="primary">Save follow-up</button>
+                            </fieldset>
+                            <p id="workflow-message" class="message" role="status"></p>
+                        </form>
                         <section class="detail-section" aria-labelledby="history-heading">
                             <h3 id="history-heading">Review history</h3>
                             <p id="history-empty" class="muted">No decisions recorded yet.</p>
                             <ol id="review-history" class="timeline"></ol>
+                            <details id="workflow-log" hidden>
+                                <summary>Follow-up and incident changes</summary>
+                                <ol id="workflow-history" class="timeline"></ol>
+                            </details>
                         </section>
                     </div>
                 </section>

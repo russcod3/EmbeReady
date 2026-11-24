@@ -541,7 +541,7 @@ function seed() {
         DELETE FROM preparedness_plans WHERE hazard_id IN (SELECT id FROM hazards WHERE is_demo=1);
         DELETE FROM risk_assessments   WHERE hazard_id IN (SELECT id FROM hazards WHERE is_demo=1);
         DELETE FROM fire_history       WHERE is_demo=1;
-        DELETE FROM hazards            WHERE is_demo=1;
+        DELETE FROM hazards WHERE is_demo=1 AND id NOT IN (SELECT hazard_id FROM review_demo_hazards);
         DELETE FROM emergency_contacts;
     `);
     console.log('[seed] Cleared existing demo data.');

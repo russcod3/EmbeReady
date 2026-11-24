@@ -53,6 +53,7 @@ try {
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 db.pragma('synchronous = NORMAL');
+db.pragma('busy_timeout = 2500');
 db.pragma('cache_size = -8000');   // 8 MB page cache
 
 // Apply schema (CREATE TABLE IF NOT EXISTS — safe to run every startup)
@@ -65,8 +66,8 @@ db.exec(schemaSql);
  * Use for multi-statement writes that must be atomic.
  * NOTE: Keep fn() synchronous — the write lock is held for the entire duration.
  */
-db.runTransaction = function runTransaction(fn) {
-    db.exec('BEGIN');
+db.runTransaction = function runTransaction(fn, { immediate = false } = {}) {
+    db.exec(immediate ? 'BEGIN IMMEDIATE' : 'BEGIN');
     try {
         const result = fn();
         db.exec('COMMIT');

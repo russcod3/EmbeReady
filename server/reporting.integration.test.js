@@ -147,3 +147,81 @@ test('admin review accepts an 8-character password, persists evaluations, and re
     assert.equal((await admin(root + '/logout', 'POST', cookie, {})).status, 200);
     assert.equal((await admin(route, 'GET', cookie)).status, 401);
 });
+
+test('workflow keeps follow-ups, duplicates, incident status and practice reports consistent', async () => {
+    const adminRoot = '/api/admin';
+    const send = (route, method = 'GET', body, cookie) => fetch(base + adminRoot + route, {
+        method,
+        headers: {
+            ...(cookie ? { Cookie: cookie } : {}),
+            ...(body ? { 'Content-Type': 'application/json' } : {})
+        },
+        body: body ? JSON.stringify(body) : undefined
+    });
+    const login = await send('/login', 'POST', { password: process.env.ADMIN_PASSWORD });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const adminGet = async route => (await (await send(route, 'GET', undefined, cookie)).json()).data;
+
+    const first = (await post({ report_type: 'live_fire', lat: 13.7566, lng: 121.0584 })).body;
+    const second = (await post({ report_type: 'live_fire', lat: 13.7567, lng: 121.0585 })).body;
+    const original = first.ref_number;
+    const duplicate = second.ref_number;
+    const save = (ref, body) => send('/reports/' + ref + '/workflow', 'PUT', body, cookie);
+    const fields = {
+        workflow_version: 0, assignee: 'Shared admin', due_on: '2000-01-01',
+        duplicate_ref: original, incident_status: 'contained'
+    };
+
+    assert.equal((await save(duplicate, { ...fields, due_on: '2026-02-30' })).status, 400);
+    assert.equal((await save(duplicate, { ...fields, duplicate_ref: duplicate })).status, 400);
+    assert.equal((await save(duplicate, { ...fields, assignee: 'missing-reviewer' })).status, 400);
+    const saved = (await (await save(duplicate, fields)).json()).data;
+    assert.equal(saved.workflow_version, 1);
+    assert.equal(saved.incident_status, 'contained');
+    assert.equal(saved.duplicate_ref, original);
+    assert.equal(saved.workflow_history[0].reviewer, 'Shared admin');
+    assert.equal(saved.workflow_history[0].changes.length, 4);
+    assert.equal((await save(duplicate, fields)).status, 409);
+    const unchanged = (await (await save(duplicate, { ...fields, workflow_version: 1 })).json()).data;
+    assert.equal(unchanged.workflow_version, 1);
+    assert.equal(unchanged.workflow_history.length, 1);
+    assert.equal((await save(original, { ...fields, duplicate_ref: duplicate })).status, 400);
+    assert.ok((await adminGet('/reports?followup=mine')).some(row => row.ref_number === duplicate));
+    assert.ok((await adminGet('/reports?followup=overdue')).some(row => row.ref_number === duplicate));
+    const publicDetail = await get('/api/hazards/' + second.hazard_id);
+    assert.equal(publicDetail.hazard.status, 'contained');
+    assert.equal(publicDetail.hazard.ai_status, 'not_requested');
+    assert.equal('duplicate_ref' in publicDetail.hazard, false);
+    assert.ok(!(await get('/api/hazards?active_only=1')).some(row => row.id === second.hazard_id));
+
+    assert.equal((await save(duplicate, {
+        ...fields, workflow_version: 1, previous_incident_status: 'active', incident_status: 'resolved'
+    })).status, 409);
+    const resolved = (await (await save(duplicate, {
+        ...fields, workflow_version: 1, duplicate_ref: null, incident_status: 'resolved'
+    })).json()).data;
+    assert.equal(resolved.incident_status, 'resolved');
+    assert.equal(resolved.duplicate_ref, null);
+    assert.ok(!(await adminGet('/reports?followup=overdue')).some(row => row.ref_number === duplicate));
+
+    assert.equal((await send('/demo', 'POST', {})).status, 401);
+    let assessmentCalls = 0;
+    ai.assessReport = async () => { assessmentCalls++; return result(); };
+    assert.equal((await send('/demo', 'POST', {}, cookie)).status, 200);
+    assert.equal((await send('/demo', 'POST', {}, cookie)).status, 200);
+    const demo = await adminGet('/reports?source=demo');
+    assert.equal(demo.length, 4);
+    assert.equal(assessmentCalls, 0);
+    assert.ok(demo.every(row => row.is_training === 1));
+    const next = await (await send('/reports?source=demo&next_after=' + demo[0].ref_number, 'GET', undefined, cookie)).json();
+    assert.equal(next.next_ref, demo[1].ref_number);
+    const trainingDetail = await adminGet('/reports/DEMO-REVIEW-101');
+    assert.ok(trainingDetail.nearby.some(row => row.ref_number === 'DEMO-REVIEW-102'));
+    assert.ok(trainingDetail.nearby.every(row => row.is_training === 1));
+    assert.equal((await save(duplicate, { ...fields, workflow_version: 2, duplicate_ref: demo[0].ref_number })).status, 400);
+    const trainingHazard = db.prepare('SELECT id FROM hazards WHERE ref_code = ?').get(demo[0].ref_number);
+    assert.equal((await fetch(base + '/api/hazards/' + trainingHazard.id)).status, 404);
+    assert.equal((await fetch(base + '/api/reports/' + demo[0].ref_number)).status, 404);
+    assert.ok(!(await get('/api/hazards')).some(row => row.ref_code.startsWith('DEMO-REVIEW-')));
+    assert.ok(!(await adminGet('/reports')).some(row => row.is_training));
+});

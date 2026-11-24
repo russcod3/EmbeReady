@@ -16,6 +16,7 @@ const express = require('express');
 const db      = require('../db');
 const router  = express.Router();
 const assessments = require('../assessment-service');
+const { publicHazard } = require('../report-workflow');
 
 // ── GET /api/hazards ──────────────────────────────────────────────────────────
 // Query params: status, risk_level, category, barangay_id, is_demo
@@ -40,7 +41,7 @@ router.get('/', (req, res) => {
         LEFT JOIN report_reviews rv ON rv.report_id = rp.id
         LEFT JOIN assessment_jobs j ON j.hazard_id=h.id
         LEFT JOIN assessment_runs ar ON ar.id=j.run_id AND j.state='completed'
-        WHERE 1=1
+        WHERE ${publicHazard}
     `;
     const params = [];
 
@@ -84,7 +85,7 @@ router.get('/:id', (req, res) => {
                    b.evacuation_center_name
             FROM hazards h
             JOIN barangays b ON h.barangay_id = b.id
-            WHERE h.id = ?
+            WHERE h.id = ? AND ${publicHazard}
         `).get(id);
 
         if (!hazard) return res.status(404).json({ success: false, error: 'Not found' });
@@ -99,7 +100,7 @@ router.get('/:id', (req, res) => {
         hazard.verification_status = !hazard.is_demo && latestReport
             ? (latestReport.decision === 'validated' ? 'verified' : 'unverified') : null;
         hazard.risk_level=assessment?.assessed_level||hazard.reported_level||null;
-        hazard.ai_status=hazard.status==='active'&&!hazard.is_demo?'not_requested':ai_status;
+        hazard.ai_status=(hazard.status === 'active' || hazard.active_started_at) && !hazard.is_demo?'not_requested':ai_status;
         hazard.ai_error=ai_error;
 
         // Fire history at this hazard or in the same barangay
@@ -209,7 +210,7 @@ router.get('/meta/geocode', (req, res) => {
             hazards = db.prepare(`
                 SELECT h.title AS name, h.lat, h.lng, 'Hazard' AS type, b.name AS barangay_name
                 FROM hazards h JOIN barangays b ON h.barangay_id = b.id
-                WHERE lower(h.title) LIKE ? ESCAPE '\\'
+                WHERE ${publicHazard} AND lower(h.title) LIKE ? ESCAPE '\\'
                 LIMIT 2
             `).all(`%${qEsc}%`);
         }

@@ -185,3 +185,25 @@ FROM report_reviews;
 
 CREATE INDEX IF NOT EXISTS idx_reports_hazard ON reports(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_hazards_location ON hazards(lat, lng);
+
+CREATE TABLE IF NOT EXISTS review_demo_hazards (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS report_followups (
+    report_id    INTEGER PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
+    assignee     TEXT,
+    due_on       TEXT,
+    duplicate_of INTEGER REFERENCES reports(id) ON DELETE SET NULL,
+    version      INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_followups_duplicates ON report_followups(duplicate_of);
+
+CREATE TABLE IF NOT EXISTS report_workflow_history (
+    id          INTEGER PRIMARY KEY,
+    report_id   INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    reviewer    TEXT NOT NULL,
+    changes     TEXT NOT NULL,
+    recorded_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_history_report ON report_workflow_history(report_id, id DESC);
