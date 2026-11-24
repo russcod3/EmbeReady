@@ -91,6 +91,7 @@ const EN_STRINGS = {
 
     // ── Detail drawer ─────────────────────────────────────────────────────────
     drawer: {
+        verification: { verified: 'Verified', unverified: 'Unverified' },
         closeBtn:       'Close',
         reportedLevel:  'Reported level',
         assessedLevel:  'AI-assessed level',
@@ -266,6 +267,7 @@ const TL_STRINGS = {
         ready:n => `${n} pagsusuri ang handa`, progressError:'Hindi matingnan ang pag-usad ng pagsusuri'
     },
     drawer: {
+        verification: { verified: 'Naberipika', unverified: 'Hindi pa beripikado' },
         ...EN_STRINGS.drawer,
         closeBtn:'Isara', barangayLabel:'Barangay', addressLabel:'Tirahan', categoryLabel:'Uri ng panganib', descLabel:'Paglalarawan',
         historyTitle:'Kasaysayan ng sunog sa lokasyong ito', noHistory:'Walang tala ng insidente para sa ulat na ito.', contactsTitle:'Mga contact sa emergency',

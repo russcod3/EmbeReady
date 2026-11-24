@@ -69,6 +69,12 @@
 }
 
 /* Demo data badge */
+.badge-verified {
+    background: #daf4e7;
+    color: #075941;
+    border: 1px solid #a7dbc7;
+}
+
 .badge-demo {
     color: var(--color-charcoal-400);
     background: var(--color-bone-300);

@@ -30,10 +30,14 @@ router.get('/', (req, res) => {
             h.active_started_at,h.created_at,h.updated_at,b.name AS barangay_name,b.classification AS barangay_classification,
             json_extract(ar.result_json,'$.assessment.overall_score') AS overall_score,
             json_extract(ar.result_json,'$.assessment.assessed_level') AS assessed_level,
-            COALESCE(j.state,'not_started') AS ai_status
+            COALESCE(j.state,'not_started') AS ai_status,
+            CASE WHEN h.is_demo = 0 AND rp.id IS NOT NULL
+                THEN CASE WHEN rv.decision = 'validated' THEN 'verified' ELSE 'unverified' END
+            END AS verification_status
         FROM hazards h
         JOIN barangays b ON h.barangay_id=b.id
         LEFT JOIN reports rp ON rp.id=(SELECT MAX(id) FROM reports WHERE hazard_id=h.id)
+        LEFT JOIN report_reviews rv ON rv.report_id = rp.id
         LEFT JOIN assessment_jobs j ON j.hazard_id=h.id
         LEFT JOIN assessment_runs ar ON ar.id=j.run_id AND j.state='completed'
         WHERE 1=1
@@ -86,7 +90,14 @@ router.get('/:id', (req, res) => {
         if (!hazard) return res.status(404).json({ success: false, error: 'Not found' });
 
         const {assessment,plan,ai_status,ai_error}=assessments.detail(Number(id));
-        hazard.reported_level=db.prepare('SELECT reported_level FROM reports WHERE hazard_id=? ORDER BY id DESC LIMIT 1').get(id)?.reported_level||null;
+        const latestReport = db.prepare(`
+            SELECT r.reported_level, v.decision FROM reports r
+            LEFT JOIN report_reviews v ON v.report_id = r.id
+            WHERE r.hazard_id = ? ORDER BY r.id DESC LIMIT 1
+        `).get(id);
+        hazard.reported_level = latestReport?.reported_level || null;
+        hazard.verification_status = !hazard.is_demo && latestReport
+            ? (latestReport.decision === 'validated' ? 'verified' : 'unverified') : null;
         hazard.risk_level=assessment?.assessed_level||hazard.reported_level||null;
         hazard.ai_status=hazard.status==='active'&&!hazard.is_demo?'not_requested':ai_status;
         hazard.ai_error=ai_error;

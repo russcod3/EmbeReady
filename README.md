@@ -22,4 +22,8 @@ On Node 24, EmbeReady uses built-in SQLite. Run `npm ci --omit=optional` to inst
 
 Set a unique `ADMIN_PASSWORD` of at least 8 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
 
-The queue contains submitted community reports, with live fires listed first. Reviewers can inspect the submitted location, observations, photo, and any saved Gemini assessment before recording a decision, an optional evaluated risk level, and notes. Notes are required for **Needs verification** and **Dismissed**. Review decisions are internal, and community pins and live-fire responder contacts appear as soon as a report is saved.
+Sign in with the shared admin password and leave the username blank. Open **Reviewers** to add named accounts or disable access. Reviewers sign in with their own username and password. Disabling an account ends its active sessions. The review history attributes new decisions to the account used to sign in. The most recent decision for older reviews is labeled **Legacy review**.
+
+The queue puts live fires first. Reviewers can inspect the report pin and up to five other community reports within 500 m, review submitted evidence, and compare reported, Gemini, and moderator risk. **Needs verification** requires both a follow-up reason and notes. The queue can filter by reason. **Dismissed** requires notes.
+
+The public map shows a **Verified** badge when a moderator validates a community report. Other community reports remain **Unverified**. Pins and responder contacts appear as soon as a submission is saved. Review notes and reviewer names stay private.

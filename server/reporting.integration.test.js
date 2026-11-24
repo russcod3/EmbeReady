@@ -69,6 +69,15 @@ test('admin review accepts an 8-character password, persists evaluations, and re
     assert.match(session, /SameSite=Strict/i);
     const cookie = session.split(';')[0];
 
+    const credentials = { username: 'reviewer-one', password: 'named-reviewer-test' };
+    assert.equal((await admin(root + '/reviewers', 'POST', null, credentials)).status, 401);
+    assert.equal((await admin(root + '/reviewers', 'POST', cookie, credentials)).status, 201);
+    assert.equal((await admin(root + '/reviewers', 'POST', cookie, credentials)).status, 409);
+    const namedLogin = await admin(root + '/login', 'POST', null, credentials);
+    assert.equal(namedLogin.status, 200);
+    const namedCookie = namedLogin.headers.get('set-cookie').split(';')[0];
+    assert.equal((await admin(root + '/reviewers', 'GET', namedCookie)).status, 403);
+
     ai.assessReport = async () => result();
     const submitted = await post(report({ description: 'Visible sparks', observation_truck_access: 'Narrow lane' }));
     await service.waitForIdle();
@@ -83,6 +92,11 @@ test('admin review accepts an 8-character password, persists evaluations, and re
     assert.equal(initial.observations.truck_access, 'Narrow lane');
     assert.equal(initial.assessment.overall_score, 75);
     assert.equal('reporter_ip_hash' in initial, false);
+    assert.ok(initial.nearby.some(item => item.incident_status === 'active' && item.distance < 100));
+    assert.ok(initial.nearby.every(item => item.ref_number !== ref && item.distance <= 500));
+    assert.deepEqual(initial.history, []);
+    const beforeReview = await get('/api/hazards/' + hazardId);
+    assert.equal(beforeReview.hazard.verification_status, 'unverified');
 
     const review = { decision: 'dismissed', evaluated_level: 'moderate', notes: 'Duplicate incident.', version: 0 };
     assert.equal((await admin(route, 'PUT', null, review)).status, 401);
@@ -95,15 +109,40 @@ test('admin review accepts an 8-character password, persists evaluations, and re
     assert.equal(moderated.decision, 'dismissed');
     assert.equal(moderated.evaluated_level, 'moderate');
     assert.equal(moderated.notes, 'Duplicate incident.');
-    const changed = (await (await admin(route, 'PUT', cookie, {
-        ...review, decision: 'validated', version: 1
+    const followUp = { ...review, decision: 'needs_verification', version: 1 };
+    assert.equal((await admin(route, 'PUT', namedCookie, followUp)).status, 400);
+    const followUpSaved = (await (await admin(route, 'PUT', namedCookie, {
+        ...followUp, reason: 'possible_duplicate'
     })).json()).data;
-    assert.equal(changed.version, 2);
+    assert.equal(followUpSaved.history[0].reviewer, credentials.username);
+    assert.equal(followUpSaved.history[0].reason, 'possible_duplicate');
+    assert.equal(followUpSaved.history[1].reviewer, 'Shared admin');
+    const matching = (await (await admin(queue + '?reason=possible_duplicate', 'GET', cookie)).json()).data;
+    assert.deepEqual(matching.map(row => row.ref_number), [ref]);
+    const changed = (await (await admin(route, 'PUT', namedCookie, {
+        ...review, decision: 'validated', version: 2
+    })).json()).data;
+    assert.equal(changed.version, 3);
     assert.equal(changed.decision, 'validated');
+    assert.equal(changed.reason, null);
+    assert.equal(changed.history.length, 3);
     const publicHazard = await get('/api/hazards/' + hazardId);
     assert.equal(publicHazard.hazard.risk_level, 'heavy');
     assert.equal(publicHazard.hazard.status, 'potential');
     assert.equal('notes' in publicHazard.hazard, false);
+    assert.equal('reviewer' in publicHazard.hazard, false);
+    assert.equal(publicHazard.hazard.verification_status, 'verified');
+    const publicList = await get('/api/hazards');
+    assert.equal(publicList.find(row => row.id === hazardId).verification_status, 'verified');
+    assert.ok(publicList.some(row => row.status === 'active' && row.verification_status === 'unverified'));
+    assert.ok(publicList.filter(row => row.is_demo).every(row => row.verification_status === null));
+
+    const accountRoute = root + '/reviewers/' + credentials.username;
+    assert.equal((await admin(accountRoute, 'PUT', cookie, { enabled: false })).status, 200);
+    assert.equal((await admin(route, 'GET', namedCookie)).status, 401);
+    assert.equal((await admin(root + '/login', 'POST', null, credentials)).status, 401);
+    assert.equal((await admin(accountRoute, 'PUT', cookie, { enabled: true })).status, 200);
+    assert.equal((await admin(root + '/login', 'POST', null, credentials)).status, 200);
 
     assert.equal((await admin(root + '/logout', 'POST', cookie, {})).status, 200);
     assert.equal((await admin(route, 'GET', cookie)).status, 401);

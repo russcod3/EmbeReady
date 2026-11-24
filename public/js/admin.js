@@ -7,6 +7,18 @@ const decisionLabels = {
     validated: 'Validated',
     dismissed: 'Dismissed'
 };
+const reasonLabels = {
+    unclear_location: 'Unclear location',
+    possible_duplicate: 'Possible duplicate',
+    insufficient_evidence: 'Insufficient evidence',
+    other: 'Other'
+};
+for (const id of ['reason-filter', 'review-reason']) {
+    for (const [value, text] of Object.entries(reasonLabels)) element(id).add(new Option(text, value));
+}
+
+let previewMap;
+let previewPins;
 const assessmentStatuses = {
     queued: 'The Gemini assessment is queued.',
     processing: 'Gemini is assessing this report.',
@@ -21,7 +33,7 @@ const dateFormat = new Intl.DateTimeFormat('en-PH', {
 
 const filters = [...element('filters').querySelectorAll('button')];
 const state = {
-    decision: 'all', query: '', page: 1, current: null, report: null,
+    decision: 'all', reason: 'all', query: '', page: 1, current: null, report: null,
     queueRequest: 0, detailRequest: 0
 };
 
@@ -62,13 +74,19 @@ function showSignedOut(text = '', failed = false, configured = true) {
     state.detailRequest++;
     state.current = null;
     state.report = null;
+    element('reviewer-dialog').close();
+    element('add-reviewer').reset();
+    element('manage-reviewers').hidden = true;
+    element('reviewer-identity').hidden = true;
+    previewPins?.clearLayers();
     element('reports').replaceChildren();
     element('detail-content').hidden = true;
     element('report-photo').removeAttribute('src');
     element('photo-link').removeAttribute('href');
     element('report-map').removeAttribute('href');
     for (const id of ['report-reference', 'report-facts', 'report-description', 'report-observations',
-        'assessment-summary', 'assessment-factors']) {
+        'assessment-summary', 'assessment-factors', 'risk-comparison', 'missing-information',
+        'nearby-reports', 'review-history', 'reviewer-list']) {
         element(id).replaceChildren();
     }
     element('notes').value = '';
@@ -109,6 +127,7 @@ function reportCard(report) {
         status,
         textNode('span', meta.filter(Boolean).join(' · '), 'muted')
     );
+    if (report.reason) button.append(textNode('span', reasonLabels[report.reason], 'queue-reason'));
     if (isLive) button.classList.add('live-report');
     item.append(button);
     return item;
@@ -116,18 +135,21 @@ function reportCard(report) {
 
 async function loadQueue() {
     const sequence = ++state.queueRequest;
-    const query = new URLSearchParams({ decision: state.decision, q: state.query, page: state.page });
+    const query = new URLSearchParams({ decision: state.decision, q: state.query, reason: state.reason, page: state.page });
     element('reports').setAttribute('aria-busy', 'true');
     message('queue-message', 'Loading reports…');
     element('refresh').disabled = true;
     element('previous').disabled = true;
     element('next').disabled = true;
     try {
-        const { data, counts, page, pages, total } = await request('/reports?' + query);
+        const { data, counts, page, pages, total, reviewer } = await request('/reports?' + query);
         if (sequence !== state.queueRequest) return;
         state.page = page;
         element('sign-in').hidden = true;
         element('sign-out').hidden = false;
+        element('reviewer-identity').textContent = reviewer.username;
+        element('reviewer-identity').hidden = false;
+        element('manage-reviewers').hidden = !reviewer.owner;
         element('workspace').hidden = false;
         message('page-message');
         for (const button of filters) {
@@ -167,6 +189,8 @@ function renderPairs(id, pairs) {
 function updateNotesRequirement() {
     const decision = element('decision').value;
     const required = Boolean(decision && decision !== 'validated');
+    element('review-reason-field').hidden = decision !== 'needs_verification';
+    element('review-reason').required = decision === 'needs_verification';
     element('notes').required = required;
     element('notes-requirement').textContent = required ? '(required)' : '(optional)';
 }
@@ -176,8 +200,11 @@ function renderReview(report) {
     element('decision').value = report.decision === 'pending' ? '' : report.decision;
     element('evaluated-level').value = report.evaluated_level || '';
     element('notes').value = report.notes || '';
+    element('review-reason').value = report.reason || '';
     element('review-time').textContent = report.reviewed_at ? `Updated ${date(report.reviewed_at)}` : '';
     updateNotesRequirement();
+    renderHistory(report.history);
+    renderRiskComparison(report);
 }
 
 function renderAssessment(report) {
@@ -193,6 +220,9 @@ function renderAssessment(report) {
         summary = [parts.join(' · '), assessment.reasoning_summary].filter(Boolean).join('\n');
     }
     element('assessment-summary').textContent = summary;
+    const missing = Array.isArray(assessment?.missing_information) ? assessment.missing_information : [];
+    element('assessment-missing').hidden = !missing.length;
+    element('missing-information').replaceChildren(...missing.map(item => textNode('li', item)));
     const factors = Object.entries(assessment?.factors || {});
     element('assessment-details').hidden = !factors.length;
     element('assessment-details').open = false;
@@ -215,13 +245,6 @@ function renderReport(report) {
         ['Address', report.address || '—']
     ]);
 
-    const map = element('report-map');
-    map.hidden = !Number.isFinite(report.lat) || !Number.isFinite(report.lng);
-    if (!map.hidden) {
-        const { lat, lng } = report;
-        map.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
-    }
-
     const observations = Object.entries(report.observations || {});
     renderPairs('report-observations', observations.map(([name, value]) => [label(name), value]));
     const photo = element('report-photo');
@@ -236,6 +259,7 @@ function renderReport(report) {
     renderReview(report);
     element('review-fields').disabled = false;
     element('detail-content').hidden = false;
+    renderLocation(report);
     message('detail-message');
 }
 
@@ -270,7 +294,7 @@ element('sign-in').addEventListener('submit', async event => {
     const password = element('password');
     button.disabled = true;
     try {
-        await request('/login', 'POST', { password: password.value });
+        await request('/login', 'POST', { username: element('username').value, password: password.value });
         await loadQueue();
     } catch (error) {
         message('page-message', error.message, true);
@@ -306,6 +330,16 @@ element('search').addEventListener('submit', event => {
     loadQueue();
 });
 
+element('reason-filter').addEventListener('change', event => {
+    state.reason = event.target.value;
+    state.page = 1;
+    loadQueue();
+});
+element('nearby-reports').addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (button) selectReport(button.dataset.reference);
+});
+
 element('refresh').addEventListener('click', loadQueue);
 
 element('previous').addEventListener('click', () => {
@@ -330,6 +364,7 @@ element('review').addEventListener('submit', async event => {
     const payload = {
         decision: element('decision').value,
         evaluated_level: element('evaluated-level').value || null,
+        reason: element('decision').value === 'needs_verification' ? element('review-reason').value : null,
         notes: element('notes').value.trim(),
         version: report.version
     };
@@ -348,6 +383,158 @@ element('review').addEventListener('submit', async event => {
         else if (state.report === report) message('review-message', error.message, true);
     } finally {
         if (state.report === report) fields.disabled = false;
+    }
+});
+
+function renderRiskComparison(report) {
+    const sources = [
+        ['Reported', report.incident_status === 'active' ? 'live' : report.reported_level, 'No rating'],
+        ['Gemini', report.assessment?.assessed_level, report.assessment ? 'Undetermined' : 'No assessment'],
+        ['Moderator', report.evaluated_level, 'Not evaluated']
+    ];
+    element('risk-comparison').replaceChildren(...sources.map(([source, risk, fallback]) => {
+        const item = document.createElement('div');
+        if (risk) item.dataset.risk = risk;
+        item.append(textNode('dt', source), textNode('dd', risk === 'live' ? 'Live fire' : risk ? label(risk) : fallback));
+        return item;
+    }));
+}
+
+function renderHistory(history = []) {
+    element('history-empty').hidden = history.length > 0;
+    element('review-history').replaceChildren(...history.map(review => {
+        const item = document.createElement('li');
+        const heading = document.createElement('div');
+        const decision = textNode('span', '', 'badge');
+        badge(decision, review.decision);
+        heading.append(decision, textNode('strong', review.reviewer), textNode('span', date(review.reviewed_at), 'muted'));
+        item.append(heading);
+        const context = [
+            review.evaluated_level && label(review.evaluated_level) + ' risk',
+            reasonLabels[review.reason]
+        ].filter(Boolean).join(' · ');
+        if (context) item.append(textNode('p', context, 'muted'));
+        if (review.notes) item.append(textNode('p', review.notes));
+        return item;
+    }));
+}
+
+function renderLocation(report) {
+    const valid = Number.isFinite(report.lat) && Number.isFinite(report.lng);
+    const link = element('report-map');
+    const frame = element('map-preview');
+    const nearby = report.nearby || [];
+    link.hidden = !valid;
+    frame.hidden = !valid || !window.L;
+    element('map-legend').hidden = frame.hidden;
+    message('map-message', valid && !window.L ? 'Map preview unavailable. Use the OpenStreetMap link to view this pin.' : '');
+    previewPins?.clearLayers();
+    element('location-message').textContent = valid
+        ? (nearby.length ? 'Closest reports within 500 m' : 'No other community reports within 500 m.')
+        : 'This report has no saved location.';
+    element('nearby-reports').replaceChildren(...nearby.map(row => {
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.reference = row.ref_number;
+        button.append(textNode('strong', row.title), textNode('span', `${row.distance} m · ${decisionLabels[row.decision]}`, 'muted'));
+        item.append(button);
+        return item;
+    }));
+    if (!valid) return;
+    const { lat, lng } = report;
+    link.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
+    if (!window.L) return;
+
+    if (!previewMap) {
+        previewMap = L.map(frame, { scrollWheelZoom: false });
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).on('tileerror', () => {
+            message('map-message', 'Some map tiles could not load. The pins are still shown.');
+        }).addTo(previewMap);
+        previewPins = L.layerGroup().addTo(previewMap);
+    }
+    for (const row of [...nearby, report]) {
+        const selected = row === report;
+        L.circleMarker([row.lat, row.lng], {
+            radius: selected ? 9 : 6, color: '#fff', weight: 2,
+            fillColor: selected ? '#ce4b2c' : '#1a6e75', fillOpacity: 1
+        }).bindTooltip(textNode('span', selected ? 'Selected report' : row.ref_number)).addTo(previewPins);
+    }
+    previewMap.invalidateSize();
+    previewMap.fitBounds([[lat, lng], ...nearby.map(row => [row.lat, row.lng])], { maxZoom: 17, padding: [32, 32], animate: false });
+}
+
+const reviewerDialog = element('reviewer-dialog');
+
+async function loadReviewers() {
+    const { data } = await request('/reviewers');
+    if (!reviewerDialog.open) return;
+    element('reviewer-list').replaceChildren(...data.map(account => {
+        const item = document.createElement('li');
+        const info = textNode('span', account.username);
+        info.append(textNode('small', account.enabled ? 'Active' : 'Disabled', 'muted'));
+        const button = textNode('button', account.enabled ? 'Disable' : 'Enable');
+        button.type = 'button';
+        button.dataset.account = account.username;
+        button.dataset.enabled = String(!account.enabled);
+        button.setAttribute('aria-label', `${button.textContent} ${account.username}`);
+        item.append(info, button);
+        return item;
+    }));
+}
+
+function reviewerError(error) {
+    if (error.status === 401) showSignedOut(error.message);
+    else message('reviewers-message', error.message, true);
+}
+
+element('manage-reviewers').addEventListener('click', () => {
+    message('reviewers-message', 'Loading reviewers…');
+    reviewerDialog.showModal();
+    loadReviewers().then(() => message('reviewers-message')).catch(reviewerError);
+});
+
+reviewerDialog.addEventListener('close', () => element('add-reviewer').reset());
+
+element('add-reviewer').addEventListener('submit', async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector('button');
+    button.disabled = true;
+    try {
+        await request('/reviewers', 'POST', {
+            username: element('new-username').value,
+            password: element('new-password').value
+        });
+        form.reset();
+        message('reviewers-message', 'Reviewer added.');
+        await loadReviewers();
+    } catch (error) {
+        reviewerError(error);
+    } finally {
+        button.disabled = false;
+    }
+});
+
+element('reviewer-list').addEventListener('click', async event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    button.disabled = true;
+    try {
+        const enabled = button.dataset.enabled === 'true';
+        await request('/reviewers/' + encodeURIComponent(button.dataset.account), 'PUT', { enabled });
+        await loadReviewers();
+        message('reviewers-message', enabled ? 'Reviewer enabled.' : 'Reviewer disabled.');
+        for (const current of element('reviewer-list').querySelectorAll('button')) {
+            if (current.dataset.account === button.dataset.account) current.focus();
+        }
+    } catch (error) {
+        reviewerError(error);
+    } finally {
+        button.disabled = false;
     }
 });
 

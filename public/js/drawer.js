@@ -253,6 +253,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
         `;
     }
 
+    const verification = S.drawer.verification?.[hazard.verification_status];
     _contentEl.innerHTML = `
         <!-- HEADER -->
         <div class="drawer-header">
@@ -261,6 +262,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
 ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-demo">${S.drawer.reporterSelected}</span>`:''}
                 <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? S.map.filterLive : S.statuses[hazard.status] || hazard.status}</span>
 
+                ${verification ? `<span class="badge badge-${hazard.verification_status === 'verified' ? 'verified' : 'demo'}">${escapeHtml(verification)}</span>` : ''}
                 ${isDemo ? '<span class="badge badge-demo">DEMO DATA</span>' : ''}
             </div>
             <h2 class="drawer-title">${escapeHtml(hazard.title)}</h2>

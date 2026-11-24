@@ -134,10 +134,11 @@ function createHazardMarker(hazard) {
     // Custom tooltip
     const riskLevelDisplay = (isLive ? S.map.filterLive : (S.map[hazard.risk_level] || (hazard.ai_status==='unavailable'?S.drawer.unavailable:hazard.ai_status==='completed'?S.drawer.moreEvidence:S.drawer.assessing))).toUpperCase();
     const sourceLabel=hazard.status!=='active'&&hazard.reported_level&&!hazard.assessed_level?' · '+S.drawer.reporterSelected.toUpperCase():'';
+    const verification = S.drawer.verification?.[hazard.verification_status];
     const tooltipContent = `
         <div class="er-tooltip">
             <div class="tooltip-title">${escapeHtml(hazard.title)}</div>
-            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml(riskLevelDisplay)}${sourceLabel}</div>
+            <div class="tooltip-meta">${escapeHtml(hazard.barangay_name || '')} &bull; ${escapeHtml(riskLevelDisplay)}${sourceLabel}${verification ? ' · ' + escapeHtml(verification) : ''}</div>
         </div>
     `;
 
@@ -166,7 +167,7 @@ export function renderHazards(hazardsList = []) {
     let activeCount=0;
     for(const h of hazardsList){
         if(h.status==='active')activeCount++;
-        const key=JSON.stringify([h.lat,h.lng,h.risk_level,h.status,h.title,h.ai_status,h.assessed_level,h.reported_level,h.barangay_name,getLanguage()]);
+        const key=JSON.stringify([h.lat,h.lng,h.risk_level,h.status,h.title,h.ai_status,h.assessed_level,h.reported_level,h.barangay_name,h.verification_status,getLanguage()]);
         const old=_hazardMarkers.get(h.id);
         if(old?.key===key)continue;
         if(old)_markerGroup.removeLayer(old.marker);

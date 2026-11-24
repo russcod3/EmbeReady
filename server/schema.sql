@@ -157,3 +157,31 @@ CREATE TABLE IF NOT EXISTS report_reviews (
     updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
     version         INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)
 );
+
+CREATE TABLE IF NOT EXISTS reviewer_accounts (
+    username       TEXT PRIMARY KEY COLLATE NOCASE,
+    password_hash  TEXT NOT NULL,
+    enabled        INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
+    created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS report_review_history (
+    report_id       INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    version         INTEGER NOT NULL,
+    decision        TEXT NOT NULL,
+    evaluated_level TEXT,
+    reason          TEXT CHECK (reason IN ('unclear_location', 'possible_duplicate', 'insufficient_evidence', 'other')),
+    notes           TEXT NOT NULL,
+    reviewer        TEXT NOT NULL,
+    reviewed_at     TEXT NOT NULL,
+    PRIMARY KEY (report_id, version)
+);
+
+-- Retain the last saved state of reviews that predate reviewer history.
+INSERT OR IGNORE INTO report_review_history
+    (report_id, version, decision, evaluated_level, notes, reviewer, reviewed_at)
+SELECT report_id, version, decision, evaluated_level, notes, 'Legacy review', updated_at
+FROM report_reviews;
+
+CREATE INDEX IF NOT EXISTS idx_reports_hazard ON reports(hazard_id);
+CREATE INDEX IF NOT EXISTS idx_hazards_location ON hazards(lat, lng);

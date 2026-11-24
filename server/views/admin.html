@@ -7,7 +7,9 @@
     <title>Report review · EmbeReady</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="/css/admin.css">
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="/js/admin.js" defer></script>
 </head>
 <body>
@@ -19,6 +21,8 @@
             </a>
             <nav aria-label="Admin navigation">
                 <a href="/">Public site</a>
+                <button id="manage-reviewers" type="button" hidden>Reviewers</button>
+                <span id="reviewer-identity" hidden></span>
                 <button id="sign-out" type="button" hidden>Sign out</button>
             </nav>
         </div>
@@ -31,10 +35,33 @@
         <p id="page-message" class="message" role="status">Checking admin access…</p>
         <form id="sign-in" class="panel sign-in" hidden>
             <h2>Admin sign-in</h2>
+            <label for="username">Username <span class="muted">(optional for shared admin)</span></label>
+            <input id="username" name="username" autocomplete="username" maxlength="32" autocapitalize="none" spellcheck="false">
             <label for="password">Admin password</label>
             <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024">
             <button class="primary" type="submit">Sign in</button>
         </form>
+        <dialog id="reviewer-dialog" class="panel">
+            <div class="queue-heading">
+                <h2>Reviewer accounts</h2>
+                <form method="dialog"><button>Close</button></form>
+            </div>
+            <form id="add-reviewer">
+                <div class="review-fields">
+                    <div>
+                        <label for="new-username">Username</label>
+                        <input id="new-username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9._\-]{2,31}" autocapitalize="none" spellcheck="false">
+                    </div>
+                    <div>
+                        <label for="new-password">Password</label>
+                        <input id="new-password" type="password" required minlength="8" maxlength="1024" autocomplete="new-password">
+                    </div>
+                </div>
+                <button class="primary" type="submit">Add reviewer</button>
+            </form>
+            <p id="reviewers-message" class="message" role="status"></p>
+            <ul id="reviewer-list" class="account-list"></ul>
+        </dialog>
         <div id="workspace" hidden>
             <div id="filters" class="filters" role="group" aria-label="Filter by review decision">
                 <button type="button" data-decision="all" aria-pressed="true">All reports <strong>0</strong></button>
@@ -56,6 +83,10 @@
                             <button type="submit">Search</button>
                         </div>
                     </form>
+                    <div class="follow-up-filter">
+                        <label for="reason-filter">Follow-up reason</label>
+                        <select id="reason-filter"><option value="all">All reasons</option></select>
+                    </div>
                     <p id="queue-message" class="muted" role="status"></p>
                     <ul id="reports" class="report-list"></ul>
                     <nav id="pagination" class="pagination" aria-label="Report pages" hidden>
@@ -72,8 +103,25 @@
                             <span id="report-reference" class="reference"></span>
                             <span id="report-decision" class="badge"></span>
                         </div>
+                        <nav class="detail-links" aria-label="Jump within report">
+                            <a href="#review">Moderator review</a>
+                            <a href="#history-heading">Review history</a>
+                            <a class="back-to-queue" href="#queue-heading">Back to queue</a>
+                        </nav>
                         <dl id="report-facts" class="facts"></dl>
-                        <a id="report-map" class="map-link" target="_blank" rel="noopener noreferrer" hidden>View pin on OpenStreetMap</a>
+                        <section class="detail-section location" aria-labelledby="location-heading">
+                            <div class="section-heading">
+                                <h3 id="location-heading">Location &amp; nearby reports</h3>
+                                <a id="report-map" target="_blank" rel="noopener noreferrer" hidden>OpenStreetMap</a>
+                            </div>
+                            <div id="map-preview" aria-label="Report location and nearby report pins" hidden></div>
+                            <div id="map-legend" class="map-legend muted" hidden>
+                                <span>Selected pin</span><span>Nearby report</span>
+                            </div>
+                            <p id="map-message" class="muted" role="status"></p>
+                            <p id="location-message" class="muted"></p>
+                            <ul id="nearby-reports" class="nearby-list"></ul>
+                        </section>
                         <div id="report-evidence" class="detail-section">
                             <h3>Submitted evidence</h3>
                             <p id="report-description"></p>
@@ -84,8 +132,14 @@
                             </a>
                         </div>
                         <div class="detail-section assessment">
-                            <h3>Gemini assessment</h3>
+                            <h3>Risk comparison</h3>
+                            <dl id="risk-comparison" class="risk-comparison"></dl>
+                            <h4>Gemini assessment</h4>
                             <p id="assessment-summary"></p>
+                            <div id="assessment-missing" hidden>
+                                <h4>Missing information</h4>
+                                <ul id="missing-information"></ul>
+                            </div>
                             <details id="assessment-details" hidden>
                                 <summary>Risk factors</summary>
                                 <dl id="assessment-factors" class="observations"></dl>
@@ -93,7 +147,7 @@
                         </div>
                         <form id="review" class="detail-section">
                             <h3>Moderator review</h3>
-                            <p>Decisions and notes are visible only here.</p>
+                            <p>Validation displays a Verified label on the public map. Review notes stay private.</p>
                             <fieldset id="review-fields" aria-label="Review decision and evaluation">
                                 <div class="review-fields">
                                     <div>
@@ -115,6 +169,10 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div id="review-reason-field" hidden>
+                                    <label for="review-reason">Follow-up reason</label>
+                                    <select id="review-reason"><option value="">Select a reason</option></select>
+                                </div>
                                 <label for="notes">Review notes <span id="notes-requirement">(optional)</span></label>
                                 <textarea id="notes" rows="4" maxlength="2000" placeholder="Record what you verified or what needs follow-up."></textarea>
                                 <div class="review-actions">
@@ -124,6 +182,11 @@
                             </fieldset>
                             <p id="review-message" class="message" role="status"></p>
                         </form>
+                        <section class="detail-section" aria-labelledby="history-heading">
+                            <h3 id="history-heading">Review history</h3>
+                            <p id="history-empty" class="muted">No decisions recorded yet.</p>
+                            <ol id="review-history" class="timeline"></ol>
+                        </section>
                     </div>
                 </section>
             </div>
