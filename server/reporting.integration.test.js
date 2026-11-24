@@ -3,7 +3,7 @@ const {test,before,after}=require('node:test');const assert=require('node:assert
 const testDir=fs.mkdtempSync(path.join(os.tmpdir(),'embeready-report-tests-'));process.env.DB_PATH=path.join(testDir,'reports.db');process.env.RATE_LIMIT_MAX='100';process.env.GEMINI_API_KEY='test-only-key';process.env.GEMINI_MODEL='gemini-test';process.env.ADMIN_PASSWORD='test-8pw';
 const db=require('./db'),ai=require('./ai'),service=require('./assessment-service');let server,base;
 const result=()=>({assessment:{overall_score:75,assessed_level:'heavy',factors_json:'{}',confidence_level:'medium',reasoning_summary:'Test assessment.',engine:'llm',model_version:'gemini-test',score_range:{min:75,max:75},missing_information:[],action_priority:'prompt',evidence_coverage:100},plan:{...Object.fromEntries(['before_steps','during_steps','after_steps','evacuation_tips','prohibited_actions'].map(k=>[k+'_json','["Stay clear.","Contact responders."]'])),local_context_notes:'Test only.'}});
-before(async()=>{db.prepare('INSERT INTO barangays(id,name,classification,center_lat,center_lng) VALUES(1,?,?,?,?)').run('Test barangay','urban',13.7565,121.0583);const app=express();app.use(express.json());app.use('/api/reports',require('./routes/reports'));app.use('/api/hazards',require('./routes/hazards'));app.use('/api/assessments',require('./routes/assessments'));app.use('/api/admin',require('./routes/admin'));server=await new Promise(resolve=>{const running=app.listen(0,'127.0.0.1',()=>resolve(running));});base=`http://127.0.0.1:${server.address().port}`;});
+before(async()=>{db.prepare('INSERT INTO barangays(id,name,classification,center_lat,center_lng) VALUES(1,?,?,?,?)').run('Test barangay','urban',13.7565,121.0583);const app=express();app.use(express.json());app.use('/api/reports',require('./routes/reports'));app.use('/api/hazards',require('./routes/hazards'));app.use('/api/assessments',require('./routes/assessments'));app.use('/api/admin',require('./routes/admin'));app.use('/api/report-follow-up',require('./reporter-followups').publicRouter);server=await new Promise(resolve=>{const running=app.listen(0,'127.0.0.1',()=>resolve(running));});base=`http://127.0.0.1:${server.address().port}`;});
 after(async()=>{await service.waitForIdle();await new Promise(resolve=>server.close(resolve));db.close();assert.equal(path.dirname(path.resolve(testDir)),path.resolve(os.tmpdir()));assert.ok(path.basename(testDir).startsWith('embeready-report-tests-'));fs.rmSync(testDir,{recursive:true,force:true});});
 const post=async(body,route='/api/reports')=>{const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return{status:r.status,body:await r.json()};};
 const get=async route=>(await(await fetch(base+route)).json()).data;
@@ -111,9 +111,13 @@ test('admin review accepts an 8-character password, persists evaluations, and re
     assert.equal(moderated.notes, 'Duplicate incident.');
     const followUp = { ...review, decision: 'needs_verification', version: 1 };
     assert.equal((await admin(route, 'PUT', namedCookie, followUp)).status, 400);
+    assert.equal((await admin(route, 'PUT', namedCookie, { ...followUp, reason: 'possible_duplicate' })).status, 403);
+    assert.equal((await admin(root + '/reviewers/' + credentials.username, 'PUT', cookie, { role: 'supervisor' })).status, 200);
+    assert.equal((await admin(route, 'PUT', namedCookie, { ...followUp, reason: 'possible_duplicate' })).status, 400);
     const followUpSaved = (await (await admin(route, 'PUT', namedCookie, {
-        ...followUp, reason: 'possible_duplicate'
+        ...followUp, reason: 'possible_duplicate', correction_reason: 'Location differs from the original.'
     })).json()).data;
+    assert.equal(followUpSaved.history[0].correction_reason, 'Location differs from the original.');
     assert.equal(followUpSaved.history[0].reviewer, credentials.username);
     assert.equal(followUpSaved.history[0].reason, 'possible_duplicate');
     assert.equal(followUpSaved.history[1].reviewer, 'Shared admin');
@@ -224,4 +228,87 @@ test('workflow keeps follow-ups, duplicates, incident status and practice report
     assert.equal((await fetch(base + '/api/reports/' + demo[0].ref_number)).status, 404);
     assert.ok(!(await get('/api/hazards')).some(row => row.ref_code.startsWith('DEMO-REVIEW-')));
     assert.ok(!(await adminGet('/reports')).some(row => row.is_training));
+});
+
+test('private reporter links, attention queue, pin audit and operations summary work together', async () => {
+    const adminRoot = '/api/admin';
+    const send = (route, method = 'GET', body, cookie) => fetch(base + adminRoot + route, {
+        method,
+        headers: {
+            ...(cookie ? { Cookie: cookie } : {}),
+            ...(body ? { 'Content-Type': 'application/json' } : {})
+        },
+        body: body ? JSON.stringify(body) : undefined
+    });
+    const login = await send('/login', 'POST', { password: process.env.ADMIN_PASSWORD });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const adminGet = async route => (await (await send(route, 'GET', undefined, cookie)).json()).data;
+    const originalPin = { lat: 13.7567, lng: 121.0583 };
+    ai.assessReport = async () => result();
+    const submission = (await post(report(originalPin))).body;
+    await service.waitForIdle();
+    const route = '/reports/' + submission.ref_number;
+    const pin = { ...originalPin, lat: 13.757, original_lat: originalPin.lat, original_lng: originalPin.lng, reason: 'Confirmed the building entrance.' };
+    assert.equal((await send(route + '/pin', 'PUT', pin)).status, 401);
+    assert.equal((await send(route + '/pin', 'PUT', { ...pin, lat: 0 }, cookie)).status, 400);
+
+    const question = { question: 'Which building entrance is nearest? <b>test</b>' };
+    assert.equal((await send(route + '/reporter-requests', 'POST', question)).status, 401);
+    const link = async () => (await (await send(route + '/reporter-requests', 'POST', question, cookie)).json()).path.split('#')[1];
+    const token1 = await link();
+    const token2 = await link();
+    const respond = (token, body) => fetch(base + '/api/report-follow-up', {
+        headers: { Authorization: 'Bearer ' + token }, method: body ? 'POST' : 'GET', body
+    });
+    assert.equal((await respond(token1)).status, 404);
+    const probe = await respond(token2);
+    assert.equal(probe.status, 200);
+    const context = (await probe.json()).data;
+    assert.equal(context.question, question.question);
+    assert.equal('report_id' in context, false);
+
+    const form = new FormData();
+    form.set('reply', 'The entrance near the blue gate.');
+    form.set('lat', String(pin.lat));
+    assert.equal((await respond(token2, form)).status, 400);
+    form.set('lng', String(pin.lng));
+    form.set('photo', new Blob(['invalid'], { type: 'image/png' }), 'photo.png');
+    assert.equal((await respond(token2, form)).status, 400);
+    const photo = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVQImWNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=', 'base64');
+    form.set('photo', new Blob([photo], { type: 'image/png' }), 'photo.png');
+    assert.equal((await respond(token2, form)).status, 201);
+    assert.equal((await respond(token2, form)).status, 409);
+
+    let queue = await adminGet('/reports?followup=attention');
+    const attention = queue.find(row => row.ref_number === submission.ref_number);
+    assert.equal(attention.attention_priority, 1);
+    assert.ok(attention.unread_at);
+    assert.ok((await adminGet('/operations')).needs_attention >= 1);
+    assert.ok((await adminGet('/operations')).submitted >= 1);
+    const detail = await adminGet(route);
+    const entry = detail.reporter_requests[0];
+    assert.equal(entry.reply_lat, pin.lat);
+    assert.equal(entry.has_photo, 1);
+    const photoRoute = route + '/reporter-requests/' + entry.id + '/photo';
+    assert.equal((await send(photoRoute)).status, 401);
+    const privatePhoto = await send(photoRoute, 'GET', undefined, cookie);
+    assert.match(privatePhoto.headers.get('content-type'), /^image\/png/);
+    assert.deepEqual(Buffer.from(await privatePhoto.arrayBuffer()), photo);
+
+    const saved = (await (await send(route + '/pin', 'PUT', pin, cookie)).json()).data;
+    assert.equal(saved.lat, pin.lat);
+    assert.equal(saved.pin_history[0].previous_lat, originalPin.lat);
+    assert.equal(saved.pin_history[0].reviewer, 'Shared admin');
+    assert.equal((await send(route + '/pin', 'PUT', pin, cookie)).status, 409);
+    const publicDetail = await get('/api/hazards/' + submission.hazard_id);
+    assert.equal(publicDetail.hazard.lat, pin.lat);
+    assert.equal('reporter_requests' in publicDetail.hazard, false);
+    assert.equal('pin_history' in publicDetail.hazard, false);
+    assert.equal((await send(route + '/reporter-requests/' + entry.id, 'PUT', {}, cookie)).status, 200);
+    queue = await adminGet('/reports?followup=attention');
+    assert.ok(!queue.some(row => row.ref_number === submission.ref_number));
+
+    const expired = await link();
+    db.prepare("UPDATE reporter_followups SET expires_at = datetime('now', '-1 minute') WHERE report_id = (SELECT id FROM reports WHERE ref_number = ?) AND replied_at IS NULL").run(submission.ref_number);
+    assert.equal((await respond(expired)).status, 404);
 });

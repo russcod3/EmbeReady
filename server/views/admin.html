@@ -64,12 +64,24 @@
                         <input id="new-password" type="password" required minlength="8" maxlength="1024" autocomplete="new-password">
                     </div>
                 </div>
-                <button class="primary" type="submit">Add reviewer</button>
+                <div id="new-role-field" hidden>
+                    <label for="new-role">Account role</label>
+                    <select id="new-role"><option value="reviewer">Reviewer</option><option value="supervisor">Supervisor</option></select>
+                </div>
+                <button class="primary" type="submit">Add account</button>
             </form>
             <p id="reviewers-message" class="message" role="status"></p>
             <ul id="reviewer-list" class="account-list"></ul>
         </dialog>
         <div id="workspace" hidden>
+            <section id="operations" class="operations" aria-labelledby="operations-heading">
+                <div class="section-heading">
+                    <div><h2 id="operations-heading">Operations overview</h2><p class="muted">Community workload and reports received in the last 7 days.</p></div>
+                    <button id="show-attention" type="button">Needs attention</button>
+                </div>
+                <dl id="operations-metrics"></dl>
+                <p id="operations-message" class="message" role="status"></p>
+            </section>
             <div class="workspace-toolbar">
                 <fieldset id="queue-source" class="mode-switch" aria-label="Report queue source">
                     <label><input type="radio" name="queue-source" value="community" checked><span>Community reports</span></label>
@@ -106,6 +118,7 @@
                         <label for="followup-filter">Follow-up workload</label>
                         <select id="followup-filter">
                             <option value="all">All follow-ups</option>
+                            <option value="attention">Needs attention</option>
                             <option value="mine">Assigned to me</option>
                             <option value="overdue">Overdue</option>
                         </select>
@@ -130,6 +143,7 @@
                         <nav class="detail-links" aria-label="Jump within report">
                             <a href="#review">Moderator review</a>
                             <a href="#workflow">Follow-up &amp; incident</a>
+                            <a id="reporter-jump" href="#reporter-contact">Reporter replies</a>
                             <a href="#history-heading">Review history</a>
                             <a class="back-to-queue" href="#queue-heading">Back to queue</a>
                         </nav>
@@ -146,6 +160,23 @@
                             <p id="map-message" class="muted" role="status"></p>
                             <p id="location-message" class="muted"></p>
                             <ul id="nearby-reports" class="nearby-list"></ul>
+                            <details id="pin-editor" class="case-panel">
+                                <summary>Correct report pin</summary>
+                                <p class="muted">Click the map to choose a new pin or enter coordinates below. Previous coordinates stay in the history.</p>
+                                <form id="pin-form">
+                                    <fieldset id="pin-fields">
+                                        <div class="review-fields">
+                                            <div><label for="pin-lat">Pin latitude</label><input id="pin-lat" type="number" step="any" required></div>
+                                            <div><label for="pin-lng">Pin longitude</label><input id="pin-lng" type="number" step="any" required></div>
+                                        </div>
+                                        <label for="pin-reason">Reason for moving the pin</label>
+                                        <input id="pin-reason" maxlength="500" required>
+                                        <button type="submit">Save pin correction</button>
+                                    </fieldset>
+                                </form>
+                                <p id="pin-message" class="message" role="status"></p>
+                                <ol id="pin-history" class="timeline"></ol>
+                            </details>
                         </section>
                         <div id="report-evidence" class="detail-section">
                             <h3>Submitted evidence</h3>
@@ -198,6 +229,10 @@
                                     <label for="review-reason">Follow-up reason</label>
                                     <select id="review-reason"><option value="">Select a reason</option></select>
                                 </div>
+                                <div id="correction-field" hidden>
+                                    <label for="correction-reason">Reason for correcting the prior review</label>
+                                    <input id="correction-reason" maxlength="500">
+                                </div>
                                 <label for="notes">Review notes <span id="notes-requirement">(optional)</span></label>
                                 <textarea id="notes" rows="4" maxlength="2000" placeholder="Record what you verified or what needs follow-up."></textarea>
                                 <div class="review-actions">
@@ -206,6 +241,7 @@
                                     <span id="review-time" class="muted"></span>
                                 </div>
                             </fieldset>
+                            <p id="review-access" class="muted" hidden>A supervisor can change another reviewer’s decision.</p>
                             <p id="review-message" class="message" role="status"></p>
                         </form>
                         <form id="workflow" class="detail-section">
@@ -236,6 +272,24 @@
                             </fieldset>
                             <p id="workflow-message" class="message" role="status"></p>
                         </form>
+                        <section id="reporter-contact" class="detail-section" aria-labelledby="reporter-heading">
+                            <div class="section-heading">
+                                <h3 id="reporter-heading">Reporter follow-up</h3>
+                                <button id="refresh-replies" type="button">Refresh replies</button>
+                            </div>
+                            <p>Create a private link to share with the reporter. It expires in 7 days or when you create a replacement.</p>
+                            <form id="ask-reporter">
+                                <label for="reporter-question">Question for the reporter</label>
+                                <textarea id="reporter-question" rows="2" maxlength="1000" required placeholder="Ask for a landmark, corrected map coordinates, or a photo."></textarea>
+                                <button type="submit">Create private reply link</button>
+                            </form>
+                            <div id="reply-link-field" class="review-actions" hidden>
+                                <div><label for="reply-link">Private reply link</label><input id="reply-link" readonly></div>
+                                <button id="copy-link" type="button">Copy link</button>
+                            </div>
+                            <p id="reporter-message" class="message" role="status"></p>
+                            <ol id="reporter-replies" class="timeline"></ol>
+                        </section>
                         <section class="detail-section" aria-labelledby="history-heading">
                             <h3 id="history-heading">Review history</h3>
                             <p id="history-empty" class="muted">No decisions recorded yet.</p>

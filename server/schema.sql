@@ -207,3 +207,47 @@ CREATE TABLE IF NOT EXISTS report_workflow_history (
     recorded_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_workflow_history_report ON report_workflow_history(report_id, id DESC);
+
+CREATE TABLE IF NOT EXISTS supervisor_accounts (
+    username TEXT PRIMARY KEY COLLATE NOCASE REFERENCES reviewer_accounts(username) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS review_corrections (
+    report_id INTEGER NOT NULL,
+    version   INTEGER NOT NULL,
+    reason    TEXT NOT NULL,
+    PRIMARY KEY (report_id, version),
+    FOREIGN KEY (report_id, version) REFERENCES report_review_history(report_id, version) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS report_pin_changes (
+    id           INTEGER PRIMARY KEY,
+    hazard_id    INTEGER NOT NULL REFERENCES hazards(id) ON DELETE CASCADE,
+    reviewer     TEXT NOT NULL,
+    previous_lat REAL NOT NULL,
+    previous_lng REAL NOT NULL,
+    lat          REAL NOT NULL,
+    lng          REAL NOT NULL,
+    reason       TEXT NOT NULL,
+    changed_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+CREATE INDEX IF NOT EXISTS idx_pin_changes_hazard ON report_pin_changes(hazard_id, id DESC);
+
+CREATE TABLE IF NOT EXISTS reporter_followups (
+    id           INTEGER PRIMARY KEY,
+    report_id    INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    token_hash   TEXT NOT NULL UNIQUE,
+    requested_by TEXT NOT NULL,
+    question     TEXT NOT NULL,
+    requested_at TEXT NOT NULL DEFAULT (datetime('now')),
+    expires_at   TEXT NOT NULL DEFAULT (datetime('now', '+7 days')),
+    cancelled_at TEXT,
+    replied_at   TEXT,
+    reply        TEXT,
+    reply_lat    REAL,
+    reply_lng    REAL,
+    photo_mime   TEXT,
+    photo        BLOB,
+    read_at      TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_reporter_followups_report ON reporter_followups(report_id, id DESC);
+CREATE INDEX IF NOT EXISTS idx_reporter_followups_unread ON reporter_followups(report_id, replied_at)
+    WHERE replied_at IS NOT NULL AND read_at IS NULL;

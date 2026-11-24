@@ -57,6 +57,11 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'admin.html'));
 });
 
+app.get('/report-follow-up', (req, res) => {
+    res.set({ 'X-Robots-Tag': 'noindex', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store' });
+    res.sendFile(path.join(__dirname, 'views', 'report-follow-up.html'));
+});
+
 // ── Static files ──────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -66,6 +71,7 @@ app.use('/api/reports',  reportRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/assessments', require('./routes/assessments'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/report-follow-up', require('./reporter-followups').publicRouter);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

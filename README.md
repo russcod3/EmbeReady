@@ -31,3 +31,7 @@ The public map shows a **Verified** badge when a moderator validates a community
 Use **Follow-up & incident** to assign a reviewer, set a due date, link or unlink a duplicate, and update incident status. **Assigned to me** and **Overdue** show open follow-ups, with overdue dates evaluated in Batangas City time. Incident status is separate from the review decision. Linking a duplicate preserves both submissions and their history.
 
 **Save and open next** advances within the current filters. The community and demo queues each remember their filters in the current browser tab. Switch to **Demo queue** and use **Load sample reports** to install four practice cases when barangay data is available. Demo reports stay out of the public map and do not call Gemini.
+
+Use **Operations overview** for the current community workload and the last seven days of submissions. **Needs attention** prioritizes unreviewed live fires, unread reporter replies, and overdue cases. Reviewers can create a private reply link and share it directly with a reporter. It accepts one reply with text, coordinates, or a photo, and expires after seven days. Links created on localhost are reachable only on the local machine.
+
+The shared admin can appoint named supervisors under **Reviewers**. Supervisors can manage standard reviewer accounts and correct another reviewer’s decision with a documented reason. **Correct report pin** saves the previous and new coordinates and the reason for the move. Reporter replies and pin-change history stay in the workspace.

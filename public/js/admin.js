@@ -19,6 +19,7 @@ for (const id of ['reason-filter', 'review-reason']) {
 
 let previewMap;
 let previewPins;
+let draftPin;
 const assessmentStatuses = {
     demo: 'No Gemini assessment is requested for demo reports.',
     queued: 'The Gemini assessment is queued.',
@@ -36,17 +37,32 @@ const filters = [...element('filters').querySelectorAll('button')];
 const defaultQueue = { decision: 'all', reason: 'all', followup: 'all', query: '', page: 1 };
 const state = {
     ...defaultQueue, source: 'community', current: null, report: null,
-    queueRequest: 0, detailRequest: 0
+    queueRequest: 0, detailRequest: 0, reviewer: null, operationsRequest: 0
 };
 
 function label(value) {
     return value ? value.replace(/_/g, ' ').replace(/^./, char => char.toUpperCase()) : '—';
 }
 
+function dateMillis(value) {
+    return Date.parse(value.includes('T') ? value : value.replace(' ', 'T') + 'Z');
+}
+
 function date(value) {
     if (!value) return '—';
-    const parsed = new Date(value.includes('T') ? value : value.replace(' ', 'T') + 'Z');
+    const parsed = new Date(dateMillis(value));
     return Number.isNaN(parsed.getTime()) ? '—' : dateFormat.format(parsed);
+}
+
+function waitTime(timestamp) {
+    if (!timestamp) return '';
+    const time = Date.parse(timestamp.includes('T') ? timestamp : timestamp.replace(' ', 'T') + 'Z');
+    if (!Number.isFinite(time)) return '';
+    const minutes = Math.max(0, Math.floor((Date.now() - time) / 60000));
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return minutes + 'm';
+    if (minutes < 1440) return Math.floor(minutes / 60) + 'h';
+    return Math.floor(minutes / 1440) + 'd';
 }
 
 function message(id, text = '', error = false) {
@@ -76,6 +92,9 @@ function showSignedOut(text = '', failed = false, configured = true) {
     state.detailRequest++;
     state.current = null;
     state.report = null;
+    state.reviewer = null;
+    state.operationsRequest++;
+    clearReporterDraft();
     element('reviewer-dialog').close();
     element('add-reviewer').reset();
     element('manage-reviewers').hidden = true;
@@ -88,7 +107,7 @@ function showSignedOut(text = '', failed = false, configured = true) {
     element('report-map').removeAttribute('href');
     for (const id of ['report-reference', 'report-facts', 'report-description', 'report-observations',
         'assessment-summary', 'assessment-factors', 'risk-comparison', 'missing-information',
-        'nearby-reports', 'review-history', 'reviewer-list', 'workflow-history', 'nearby-references', 'assignee']) {
+        'nearby-reports', 'review-history', 'reviewer-list', 'workflow-history', 'nearby-references', 'assignee', 'operations-metrics', 'reporter-replies', 'pin-history']) {
         element(id).replaceChildren();
     }
     element('notes').value = '';
@@ -135,16 +154,23 @@ function reportCard(report) {
         button.append(textNode('span', assignment.join(' · '), 'queue-task'));
     }
     if (report.duplicate_ref) button.append(textNode('span', 'Duplicate of ' + report.duplicate_ref, 'queue-task'));
+    if (report.attention_priority < 3) {
+        const tags = [];
+        if (report.attention_priority === 0) tags.push('Unreviewed live fire · ' + waitTime(report.created_at));
+        if (report.unread_at) tags.push('New reporter reply · ' + waitTime(report.unread_at));
+        if (report.is_overdue) tags.push('Overdue · ' + waitTime(report.due_on + 'T00:00:00+08:00'));
+        button.append(textNode('span', tags.join('  /  '), 'attention-tag'));
+    }
     if (isLive) button.classList.add('live-report');
     item.append(button);
     return item;
 }
 
-async function loadQueue(nextAfter = '') {
+async function loadQueue(nextAfter = '', nextPriority = '') {
     const sequence = ++state.queueRequest;
     const query = new URLSearchParams({
         decision: state.decision, q: state.query, reason: state.reason, page: state.page,
-        followup: state.followup, source: state.source, next_after: nextAfter
+        followup: state.followup, source: state.source, next_after: nextAfter, next_priority: nextPriority
     });
     element('reports').setAttribute('aria-busy', 'true');
     message('queue-message', 'Loading reports…');
@@ -160,7 +186,11 @@ async function loadQueue(nextAfter = '') {
         element('sign-out').hidden = false;
         element('reviewer-identity').textContent = reviewer.username;
         element('reviewer-identity').hidden = false;
-        element('manage-reviewers').hidden = !reviewer.owner;
+        state.reviewer = reviewer;
+        element('manage-reviewers').hidden = !reviewer.supervisor;
+        element('new-role-field').hidden = !reviewer.owner;
+        element('show-attention').setAttribute('aria-pressed', String(state.source === 'community' && state.followup === 'attention'));
+        loadOperations();
         element('workspace').hidden = false;
         message('page-message');
         for (const button of filters) {
@@ -212,6 +242,13 @@ function renderReview(report) {
     element('decision').value = report.decision === 'pending' ? '' : report.decision;
     element('evaluated-level').value = report.evaluated_level || '';
     element('notes').value = report.notes || '';
+    element('correction-reason').value = '';
+    const previousReviewer = report.history[0]?.reviewer;
+    const differentReviewer = previousReviewer && previousReviewer !== report.reviewer.username;
+    element('review-access').hidden = !differentReviewer || report.reviewer.supervisor;
+    element('correction-field').hidden = !differentReviewer || !report.reviewer.supervisor;
+    element('correction-reason').required = !element('correction-field').hidden;
+    element('review-fields').disabled = !element('review-access').hidden;
     element('review-reason').value = report.reason || '';
     element('review-time').textContent = report.reviewed_at ? `Updated ${date(report.reviewed_at)}` : '';
     updateNotesRequirement();
@@ -229,7 +266,11 @@ function renderAssessment(report) {
         else if (range) score = `${range.min}–${range.max}/100 estimated range`;
         const parts = [assessment.assessed_level ? `${label(assessment.assessed_level)} risk` : 'Risk level undetermined',
             score, `${label(assessment.confidence_level)} confidence`];
-        summary = [parts.join(' · '), assessment.reasoning_summary].filter(Boolean).join('\n');
+        const moved = report.pin_history?.[0]?.changed_at;
+        const assessed = assessment.created_at;
+        const locationNote = moved && (!assessed || dateMillis(moved) > dateMillis(assessed))
+            ? 'This saved assessment predates the latest pin correction.' : '';
+        summary = [parts.join(' · '), assessment.reasoning_summary, locationNote].filter(Boolean).join('\n');
     }
     element('assessment-summary').textContent = summary;
     const missing = Array.isArray(assessment?.missing_information) ? assessment.missing_information : [];
@@ -278,7 +319,8 @@ function renderReport(report) {
     renderAssessment(report);
     renderReview(report);
     renderWorkflow(report);
-    element('review-fields').disabled = false;
+    renderPins(report);
+    renderReporterRequests(report);
     element('detail-content').hidden = false;
     renderLocation(report);
     message('detail-message');
@@ -289,6 +331,9 @@ async function selectReport(ref) {
     const sequence = ++state.detailRequest;
     state.current = ref;
     state.report = null;
+    clearReporterDraft();
+    element('pin-editor').open = false;
+    message('pin-message');
     for (const button of element('reports').querySelectorAll('button')) {
         if (button.dataset.reference === ref) button.setAttribute('aria-current', 'true');
         else button.removeAttribute('aria-current');
@@ -410,11 +455,15 @@ function hasUnsavedWork() {
     if (!report) return false;
     const review = reviewInput();
     if (report.decision === 'pending' && !review.decision) review.decision = 'pending';
-    return changed(review, { ...report, notes: report.notes || '' }) || changed(workflowInput(), report);
+    const pinDraft = report.has_location && (element('pin-reason').value ||
+        Number(element('pin-lat').value) !== report.lat || Number(element('pin-lng').value) !== report.lng);
+    return changed(review, { ...report, notes: report.notes || '' }) || changed(workflowInput(), report)
+        || Boolean(pinDraft || element('correction-reason').value || element('reporter-question').value.trim());
 }
 
 function canLeaveReport() {
-    if (element('review-fields').disabled || element('workflow-fields').disabled) {
+    if ((element('review-fields').disabled && element('review-access').hidden) ||
+        element('workflow-fields').disabled || element('pin-fields').disabled || element('ask-reporter').querySelector('button').disabled) {
         if (state.report) return false;
     }
     return !hasUnsavedWork() || window.confirm('This report has unsaved changes. Leave it anyway?');
@@ -436,13 +485,15 @@ element('review').addEventListener('submit', async event => {
     message('review-message', 'Saving review…');
     try {
         const { data } = await request('/reports/' + encodeURIComponent(report.ref_number), 'PUT', {
-            ...reviewInput(), version: report.version
+            ...reviewInput(), correction_reason: element('correction-reason').value.trim(), version: report.version
         });
         if (state.report !== report) return;
         Object.assign(report, data);
         renderReview(report);
         message('review-message', 'Review saved.');
-        const nextRef = await loadQueue(goNext ? report.ref_number : '');
+        const priority = goNext && state.followup === 'attention' && report.attention_priority < 3
+            ? String(report.attention_priority) : '';
+        const nextRef = await loadQueue(goNext ? report.ref_number : '', priority);
         if (goNext && state.report === report) {
             fields.disabled = false;
             if (nextRef) await selectReport(nextRef);
@@ -555,6 +606,7 @@ function renderHistory(history = []) {
         ].filter(Boolean).join(' · ');
         if (context) item.append(textNode('p', context, 'muted'));
         if (review.notes) item.append(textNode('p', review.notes));
+        if (review.correction_reason) item.append(textNode('p', 'Correction: ' + review.correction_reason, 'muted'));
         return item;
     }));
 }
@@ -595,6 +647,10 @@ function renderLocation(report) {
             message('map-message', 'Some map tiles could not load. The pins are still shown.');
         }).addTo(previewMap);
         previewPins = L.layerGroup().addTo(previewMap);
+        previewMap.on('click', event => {
+            if (!state.report || !element('pin-editor').open || element('pin-fields').disabled) return;
+            fillPin(event.latlng.lat, event.latlng.lng);
+        });
     }
     for (const row of [...nearby, report]) {
         const selected = row === report;
@@ -615,13 +671,28 @@ async function loadReviewers() {
     element('reviewer-list').replaceChildren(...data.map(account => {
         const item = document.createElement('li');
         const info = textNode('span', account.username);
-        info.append(textNode('small', account.enabled ? 'Active' : 'Disabled', 'muted'));
+        info.append(textNode('small', label(account.role) + ' · ' + (account.enabled ? 'Active' : 'Disabled'), 'muted'));
+        if (account.role === 'supervisor' && !state.reviewer.owner) {
+            item.append(info);
+            return item;
+        }
         const button = textNode('button', account.enabled ? 'Disable' : 'Enable');
         button.type = 'button';
         button.dataset.account = account.username;
         button.dataset.enabled = String(!account.enabled);
         button.setAttribute('aria-label', `${button.textContent} ${account.username}`);
-        item.append(info, button);
+        const actions = document.createElement('div');
+        actions.className = 'account-actions';
+        actions.append(button);
+        if (state.reviewer.owner) {
+            const role = textNode('button', account.role === 'supervisor' ? 'Make reviewer' : 'Make supervisor');
+            role.type = 'button';
+            role.dataset.account = account.username;
+            role.dataset.role = account.role === 'supervisor' ? 'reviewer' : 'supervisor';
+            role.setAttribute('aria-label', role.textContent + ' for ' + account.username);
+            actions.append(role);
+        }
+        item.append(info, actions);
         return item;
     }));
 }
@@ -647,10 +718,10 @@ element('add-reviewer').addEventListener('submit', async event => {
     try {
         await request('/reviewers', 'POST', {
             username: element('new-username').value,
-            password: element('new-password').value
+            password: element('new-password').value, role: state.reviewer.owner ? element('new-role').value : 'reviewer'
         });
         form.reset();
-        message('reviewers-message', 'Reviewer added.');
+        message('reviewers-message', 'Account added.');
         await loadReviewers();
     } catch (error) {
         reviewerError(error);
@@ -665,11 +736,12 @@ element('reviewer-list').addEventListener('click', async event => {
     button.disabled = true;
     try {
         const enabled = button.dataset.enabled === 'true';
-        await request('/reviewers/' + encodeURIComponent(button.dataset.account), 'PUT', { enabled });
+        const role = button.dataset.role;
+        await request('/reviewers/' + encodeURIComponent(button.dataset.account), 'PUT', role ? { role } : { enabled });
         await loadReviewers();
-        message('reviewers-message', enabled ? 'Reviewer enabled.' : 'Reviewer disabled.');
+        message('reviewers-message', role ? 'Account role updated.' : enabled ? 'Account enabled.' : 'Account disabled.');
         for (const current of element('reviewer-list').querySelectorAll('button')) {
-            if (current.dataset.account === button.dataset.account) current.focus();
+            if (current.dataset.account === button.dataset.account && Boolean(current.dataset.role) === Boolean(role)) current.focus();
         }
     } catch (error) {
         reviewerError(error);
@@ -708,6 +780,7 @@ element('queue-source').addEventListener('change', event => {
     state.detailRequest++;
     state.report = null;
     state.current = null;
+    clearReporterDraft();
     restoreQueue(event.target.value);
     element('detail-heading').textContent = 'Report details';
     element('detail-content').hidden = true;
@@ -747,6 +820,230 @@ element('sign-in').addEventListener('change', event => {
         ? 'Use the credentials your EmbeReady administrator created for you.'
         : 'Enter the admin password configured for EmbeReady.';
 });
+async function loadOperations() {
+    const sequence = ++state.operationsRequest;
+    try {
+        const { data } = await request('/operations');
+        if (sequence !== state.operationsRequest) return;
+        const weeklyHours = data.hours_to_first_review;
+        renderPairs('operations-metrics', [
+            ['Needs attention', String(data.needs_attention)],
+            ['Unresolved incidents', String(data.unresolved_incidents)],
+            ['Overdue cases', String(data.overdue_cases)],
+            ['Reviewed this week', `${data.reviewed} of ${data.submitted}`],
+            ['Avg. to first review', weeklyHours === null ? '—' : weeklyHours.toFixed(1) + ' h']
+        ]);
+        message('operations-message');
+    } catch (error) {
+        if (sequence === state.operationsRequest) message('operations-message', error.message, true);
+    }
+}
+
+element('show-attention').addEventListener('click', () => {
+    if (state.source !== 'community' && !canLeaveReport()) return;
+    if (state.source !== 'community') {
+        state.detailRequest++;
+        state.current = null;
+        state.report = null;
+        element('detail-content').hidden = true;
+        element('detail-heading').textContent = 'Report details';
+        message('detail-message', 'Select a report to review its evidence.');
+    }
+    restoreQueue('community');
+    Object.assign(state, defaultQueue, { followup: 'attention' });
+    element('followup-filter').value = 'attention';
+    element('reason-filter').value = 'all';
+    element('search-query').value = '';
+    loadQueue();
+    element('followup-filter').focus();
+});
+
+function renderPins(report) {
+    element('pin-editor').hidden = !report.has_location;
+    element('pin-lat').value = report.lat ?? '';
+    element('pin-lng').value = report.lng ?? '';
+    element('pin-reason').value = '';
+    element('pin-fields').disabled = false;
+    element('pin-history').replaceChildren(...report.pin_history.map(entry => {
+        const row = document.createElement('li');
+        row.append(
+            textNode('strong', entry.reviewer + ' · ' + date(entry.changed_at)),
+            textNode('p', `${entry.previous_lat}, ${entry.previous_lng} → ${entry.lat}, ${entry.lng}`, 'muted'),
+            textNode('p', entry.reason)
+        );
+        return row;
+    }));
+}
+
+function fillPin(lat, lng) {
+    element('pin-lat').value = Number(lat).toFixed(6);
+    element('pin-lng').value = Number(lng).toFixed(6);
+    if (!previewPins) return;
+    if (draftPin) previewPins.removeLayer(draftPin);
+    draftPin = L.circleMarker([lat, lng], { radius: 9, color: '#fff', fillColor: '#7256a6', fillOpacity: 1 })
+        .bindTooltip('Proposed location').addTo(previewPins);
+}
+
+element('pin-editor').addEventListener('toggle', event => {
+    if (!event.target.open && draftPin) {
+        previewPins?.removeLayer(draftPin);
+        draftPin = null;
+    }
+});
+
+element('pin-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const report = state.report;
+    if (!report) return;
+    const fields = element('pin-fields');
+    const path = '/reports/' + encodeURIComponent(report.ref_number);
+    fields.disabled = true;
+    try {
+        const { data } = await request(path + '/pin', 'PUT', {
+            lat: Number(element('pin-lat').value), lng: Number(element('pin-lng').value),
+            original_lat: report.lat, original_lng: report.lng, reason: element('pin-reason').value
+        });
+        if (state.report !== report) return;
+        Object.assign(report, data);
+        renderPins(report);
+        renderLocation(report);
+        renderAssessment(report);
+        message('pin-message', 'Pin corrected.');
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.report === report) message('pin-message', error.message, true);
+    } finally {
+        if (state.report === report) fields.disabled = false;
+    }
+});
+
+function clearReporterDraft() {
+    element('ask-reporter').reset();
+    element('reply-link-field').hidden = true;
+    element('reply-link').value = '';
+    message('reporter-message');
+}
+
+function renderReporterRequests(report) {
+    element('reporter-contact').hidden = Boolean(report.is_training);
+    element('reporter-jump').hidden = Boolean(report.is_training);
+    const path = '/api/admin/reports/' + encodeURIComponent(report.ref_number) + '/reporter-requests/';
+    element('reporter-replies').replaceChildren(...report.reporter_requests.map(entry => {
+        const item = document.createElement('li');
+        const header = document.createElement('div');
+        const status = entry.replied_at ? (entry.read_at ? 'Replied' : 'New reply')
+            : entry.cancelled_at ? 'Replaced' : entry.expired ? 'Expired' : 'Awaiting reply';
+        header.append(textNode('strong', status), textNode('span', date(entry.replied_at || entry.requested_at), 'muted'));
+        item.append(header, textNode('p', entry.requested_by + ' asked: ' + entry.question));
+        if (entry.reply) item.append(textNode('p', entry.reply, 'reporter-response'));
+        if (entry.reply_lat !== null && report.has_location) {
+            const pin = textNode('button', 'Use suggested coordinates');
+            pin.type = 'button';
+            pin.dataset.latitude = entry.reply_lat;
+            pin.dataset.longitude = entry.reply_lng;
+            item.append(textNode('p', `${entry.reply_lat}, ${entry.reply_lng}`, 'muted'), pin);
+        }
+        if (entry.has_photo) {
+            const photo = textNode('a', 'View private photo');
+            photo.href = path + entry.id + '/photo';
+            photo.target = '_blank';
+            photo.rel = 'noopener noreferrer';
+            item.append(photo);
+        }
+        if (entry.replied_at && !entry.read_at) {
+            const read = textNode('button', 'Mark reply read');
+            read.type = 'button';
+            read.dataset.read = entry.id;
+            item.append(read);
+        }
+        return item;
+    }));
+}
+
+element('ask-reporter').addEventListener('submit', async event => {
+    event.preventDefault();
+    const report = state.report;
+    if (!report) return;
+    const button = event.currentTarget.querySelector('button');
+    button.disabled = true;
+    try {
+        const { data, path } = await request('/reports/' + encodeURIComponent(report.ref_number) + '/reporter-requests',
+            'POST', { question: element('reporter-question').value });
+        if (state.report !== report) return;
+        report.reporter_requests = data;
+        element('reply-link').value = new URL(path, location.origin).href;
+        element('reply-link-field').hidden = false;
+        element('reporter-question').value = '';
+        renderReporterRequests(report);
+        message('reporter-message', 'Link created. Share it privately with the reporter.');
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.report === report) message('reporter-message', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+});
+
+element('copy-link').addEventListener('click', async () => {
+    const field = element('reply-link');
+    try {
+        await navigator.clipboard.writeText(field.value);
+        message('reporter-message', 'Private link copied.');
+    } catch {
+        field.select();
+        message('reporter-message', 'The link is selected. Use your copy shortcut.');
+    }
+});
+
+element('refresh-replies').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    const report = state.report;
+    if (!report) return;
+    button.disabled = true;
+    try {
+        const { data } = await request('/reports/' + encodeURIComponent(report.ref_number) + '/reporter-requests');
+        if (state.report !== report) return;
+        report.reporter_requests = data;
+        renderReporterRequests(report);
+        message('reporter-message', 'Replies refreshed.');
+        loadQueue();
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.report === report) message('reporter-message', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+});
+
+element('reporter-replies').addEventListener('click', async event => {
+    const button = event.target.closest('button');
+    const report = state.report;
+    if (!button || !report) return;
+    if ('latitude' in button.dataset) {
+        element('pin-editor').open = true;
+        fillPin(Number(button.dataset.latitude), Number(button.dataset.longitude));
+        element('pin-reason').focus();
+        return;
+    }
+    if (!button.dataset.read) return;
+    button.disabled = true;
+    try {
+        const { data } = await request('/reports/' + encodeURIComponent(report.ref_number) +
+            '/reporter-requests/' + button.dataset.read, 'PUT', {});
+        if (state.report === report) {
+            report.reporter_requests = data;
+            renderReporterRequests(report);
+            message('reporter-message', 'Reply marked read.');
+        }
+        if (state.reviewer) loadQueue();
+    } catch (error) {
+        if (error.status === 401) showSignedOut(error.message);
+        else if (state.report === report) message('reporter-message', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+});
+
 let initialSource = 'community';
 try {
     if (sessionStorage.getItem('embeready-admin-source') === 'demo') initialSource = 'demo';

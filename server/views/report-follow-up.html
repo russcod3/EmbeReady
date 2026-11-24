@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Private report reply · EmbeReady</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="/js/report-follow-up.js" defer></script>
+</head>
+<body class="reporter-page">
+    <header class="admin-header">
+        <div class="admin-header-inner">
+            <a class="brand" href="/"><img src="/images/embeready-mascot.png" width="36" height="36" alt=""> EmbeReady</a>
+        </div>
+    </header>
+    <main>
+        <div class="page-heading"><h1>Private report reply</h1></div>
+        <p id="reply-message" class="message" role="status">Checking this link…</p>
+        <form id="reporter-reply" class="panel" hidden>
+            <h2>Question from the reviewer</h2>
+            <p id="reporter-question"></p>
+            <p class="muted private-note">Your reply and photo are visible to the review team.</p>
+            <fieldset id="reply-fields">
+                <label for="reply">Your reply</label>
+                <textarea id="reply" name="reply" rows="5" maxlength="2000" placeholder="For example, describe the nearest landmark."></textarea>
+                <details>
+                    <summary>Add corrected coordinates</summary>
+                    <div class="review-fields">
+                        <div><label for="reply-lat">Latitude</label><input id="reply-lat" name="lat" type="number" step="any"></div>
+                        <div><label for="reply-lng">Longitude</label><input id="reply-lng" name="lng" type="number" step="any"></div>
+                    </div>
+                </details>
+                <label for="reply-photo">Photo <span class="muted">(optional, up to 3 MB)</span></label>
+                <input id="reply-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp">
+                <button class="primary" type="submit">Send reply</button>
+            </fieldset>
+        </form>
+    </main>
+</body>
+</html>

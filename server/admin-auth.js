@@ -12,7 +12,10 @@ const sharedDigest = sharedPassword?.length >= 8 ? digest(sharedPassword) : null
 const sessionLifetime = 8 * 60 * 60 * 1000;
 const sessions = new Map();
 const hasEnabledAccounts = db.prepare('SELECT 1 FROM reviewer_accounts WHERE enabled = 1 LIMIT 1');
-const accountEnabled = db.prepare('SELECT enabled FROM reviewer_accounts WHERE username = ?');
+const accountEnabled = db.prepare(`
+    SELECT a.enabled, s.username IS NOT NULL AS supervisor FROM reviewer_accounts a
+    LEFT JOIN supervisor_accounts s ON s.username = a.username WHERE a.username = ?
+`);
 const accountByName = db.prepare('SELECT username, password_hash FROM reviewer_accounts WHERE username = ?');
 
 function digest(value) {
@@ -31,8 +34,8 @@ function usernameOf(value) {
     return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
-function requireOwner(req, res, next) {
-    if (!req.reviewer.owner) return fail(res, 403, 'Only the shared administrator can manage reviewer accounts.');
+function requireManager(req, res, next) {
+    if (!req.reviewer.owner && !req.reviewer.supervisor) return fail(res, 403, 'A supervisor account is required to manage reviewers.');
     next();
 }
 
@@ -66,14 +69,15 @@ function installAdminAuth(router) {
             let reviewer;
             if (!username) {
                 if (sharedDigest && timingSafeEqual(digest(password), sharedDigest)) {
-                    reviewer = { username: 'Shared admin', owner: true };
+                    reviewer = { username: 'Shared admin', owner: true, supervisor: true };
                 }
             } else {
                 const account = usernamePattern.test(username) && accountByName.get(username);
                 const [salt, stored] = account ? account.password_hash.split(':') : ['0'.repeat(32), '0'.repeat(64)];
                 const key = await deriveKey(password, salt, 32);
-                if (timingSafeEqual(key, Buffer.from(stored, 'hex')) && account && accountEnabled.get(username)?.enabled) {
-                    reviewer = { username: account.username, owner: false };
+                const access = account && accountEnabled.get(username);
+                if (timingSafeEqual(key, Buffer.from(stored, 'hex')) && access?.enabled) {
+                    reviewer = { username: account.username, owner: false, supervisor: Boolean(access.supervisor) };
                 }
             }
             if (!reviewer) return fail(res, 401, 'Incorrect username or password.');
@@ -95,13 +99,13 @@ function installAdminAuth(router) {
     router.use((req, res, next) => {
         const token = /(?:^|;\s*)embeready_admin=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
         const session = sessions.get(token);
-        if (!session || session.expiry <= Date.now() ||
-            (!session.reviewer.owner && !accountEnabled.get(session.reviewer.username)?.enabled)) {
+        const access = session && !session.reviewer.owner ? accountEnabled.get(session.reviewer.username) : null;
+        if (!session || session.expiry <= Date.now() || (!session.reviewer.owner && !access?.enabled)) {
             sessions.delete(token);
             return fail(res, 401, 'Sign in to review reports.');
         }
         req.adminToken = token;
-        req.reviewer = session.reviewer;
+        req.reviewer = { ...session.reviewer, supervisor: session.reviewer.owner || Boolean(access?.supervisor) };
         next();
     });
 
@@ -111,24 +115,36 @@ function installAdminAuth(router) {
         res.json({ success: true });
     });
 
-    router.get('/reviewers', requireOwner, (req, res) => {
-        const data = db.prepare('SELECT username, enabled FROM reviewer_accounts ORDER BY username').all();
+    router.get('/reviewers', requireManager, (req, res) => {
+        const data = db.prepare(`
+            SELECT a.username, a.enabled, CASE WHEN s.username IS NOT NULL THEN 'supervisor' ELSE 'reviewer' END AS role
+            FROM reviewer_accounts a LEFT JOIN supervisor_accounts s ON s.username = a.username ORDER BY a.username
+        `).all();
         res.json({ success: true, data });
     });
 
-    router.post('/reviewers', requireOwner, async (req, res, next) => {
+    router.post('/reviewers', requireManager, async (req, res, next) => {
         try {
             const username = usernameOf(req.body?.username);
             const password = req.body?.password;
+            const role = req.body?.role ?? 'reviewer';
+            if (!['reviewer', 'supervisor'].includes(role)) return fail(res, 400, 'Choose a valid account role.');
+            if (role === 'supervisor' && !req.reviewer.owner) return fail(res, 403, 'Only the shared admin can grant supervisor access.');
             if (!usernamePattern.test(username) || typeof password !== 'string' || password.length < 8 || password.length > 1024) {
                 return fail(res, 400, 'Use a 3–32 character username with letters, digits, dots, underscores, or hyphens, and a password of at least 8 characters.');
             }
             const salt = randomBytes(16).toString('hex');
             const key = await deriveKey(password, salt, 32);
-            const inserted = db.prepare(`
-                INSERT INTO reviewer_accounts (username, password_hash) VALUES (?, ?)
-                ON CONFLICT (username) DO NOTHING
-            `).run(username, salt + ':' + key.toString('hex'));
+            const inserted = db.runTransaction(() => {
+                const result = db.prepare(`
+                    INSERT INTO reviewer_accounts (username, password_hash) VALUES (?, ?)
+                    ON CONFLICT (username) DO NOTHING
+                `).run(username, salt + ':' + key.toString('hex'));
+                if (result.changes && role === 'supervisor') {
+                    db.prepare('INSERT INTO supervisor_accounts (username) VALUES (?)').run(username);
+                }
+                return result;
+            }, { immediate: true });
             if (!inserted.changes) return fail(res, 409, 'That username is already in use.');
             res.status(201).json({ success: true });
         } catch (err) {
@@ -136,13 +152,29 @@ function installAdminAuth(router) {
         }
     });
 
-    router.put('/reviewers/:username', requireOwner, (req, res) => {
-        const { enabled } = req.body ?? {};
-        if (typeof enabled !== 'boolean') return fail(res, 400, 'Choose whether the reviewer can sign in.');
+    router.put('/reviewers/:username', requireManager, (req, res) => {
+        const { enabled, role } = req.body ?? {};
+        if ((enabled === undefined && role === undefined) ||
+            (enabled !== undefined && typeof enabled !== 'boolean') ||
+            (role !== undefined && !['reviewer', 'supervisor'].includes(role))) {
+            return fail(res, 400, 'Choose a valid account role or access setting.');
+        }
         const username = usernameOf(req.params.username);
-        const result = db.prepare('UPDATE reviewer_accounts SET enabled = ? WHERE username = ?').run(Number(enabled), username);
-        if (!result.changes) return fail(res, 404, 'Reviewer not found.');
-        if (!enabled) {
+        const result = db.runTransaction(() => {
+            const account = accountEnabled.get(username);
+            if (!account) return [404, 'Reviewer not found.'];
+            if (!req.reviewer.owner && (account.supervisor || role !== undefined)) {
+                return [403, 'Only the shared admin can manage supervisor access.'];
+            }
+            if (enabled !== undefined) {
+                db.prepare('UPDATE reviewer_accounts SET enabled = ? WHERE username = ?').run(Number(enabled), username);
+            }
+            if (role === 'supervisor') db.prepare('INSERT OR IGNORE INTO supervisor_accounts (username) VALUES (?)').run(username);
+            if (role === 'reviewer') db.prepare('DELETE FROM supervisor_accounts WHERE username = ?').run(username);
+            return null;
+        }, { immediate: true });
+        if (result) return fail(res, ...result);
+        if (enabled === false) {
             for (const [token, session] of sessions) {
                 if (session.reviewer.username === username) sessions.delete(token);
             }
