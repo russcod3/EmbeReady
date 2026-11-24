@@ -1,8 +1,8 @@
-const header = document.querySelector('.map-header');
+import S from '../strings.js';
 const hud = document.createElement('aside');
 hud.className = 'explore-hud';
 hud.setAttribute('aria-label', 'Explore and filter map');
-hud.innerHTML = '<button type="button" class="sheet-grabber" aria-label="Expand map controls" aria-expanded="false"><span></span></button><div class="sheet-tools"><button type="button">Filters & layers</button></div><h2>Explore Batangas City</h2><p class="hud-sub">Community fire hazard map · No account needed</p>';
+hud.innerHTML = '<button type="button" class="sheet-grabber" aria-label="Expand map controls" aria-expanded="false"><span></span></button><div class="sheet-tools"><button type="button" data-i18n="map.filtersLayers">Filters & layers</button></div><h2 data-i18n="map.exploreTitle">Explore Batangas City</h2><p class="hud-sub" data-i18n="map.exploreSubtitle">Community fire hazard map · No account needed</p>';
 document.getElementById('view-map').append(hud);
 const search = document.getElementById('map-search-form');
 hud.querySelector('.sheet-grabber').after(search);
@@ -16,7 +16,7 @@ function setSnap(panel, state) {
  panel.dataset.snap = state;
  const button = panel.querySelector('.sheet-grabber');
  button.setAttribute('aria-expanded', String(state !== 'collapsed'));
- button.setAttribute('aria-label', state === 'full' ? 'Collapse panel' : 'Expand panel');
+ button.setAttribute('aria-label', state === 'full' ? S.map.collapsePanel : S.map.expandPanel);
 }
 for (const panel of [hud,drawer]) {
  setSnap(panel, panel === hud ? 'collapsed' : 'half');
@@ -35,6 +35,10 @@ for (const panel of [hud,drawer]) {
  grip.addEventListener('pointercancel',()=>{start=null;});
 }
 hud.querySelector('.sheet-tools button').addEventListener('click',()=>setSnap(hud,hud.dataset.snap==='full'?'collapsed':'full'));
+window.addEventListener('filters:first-visit',()=>setSnap(hud,'full'));
 search.querySelector('input').addEventListener('focus',()=>setSnap(hud,'half'));
+window.addEventListener('language:changed',()=>{
+ for(const panel of [hud,drawer])setSnap(panel,panel.dataset.snap);
+});
 new MutationObserver(()=>{if(drawer.classList.contains('is-open'))setSnap(drawer,'half');}).observe(drawer,{attributes:true,attributeFilter:['class']});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))setSnap(hud,'collapsed');});

@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="./css/report-flow.css">
     <link rel="stylesheet" href="./css/welcome.css">
     <link rel="stylesheet" href="./css/risk-cards.css">
+    <link rel="stylesheet" href="./css/map-controls.css">
+    <link rel="stylesheet" href="./css/eclipse-motion.css">
+    <link rel="stylesheet" href="./css/success-motion.css">
+    <link rel="stylesheet" href="./css/ui-revision.css">
 </head>
 <body>
     <div id="app">
@@ -33,16 +37,16 @@
         <main id="view-landing" class="view is-active welcome-page" aria-label="Welcome to EmbeReady">
             <header class="welcome-header">
                 <div class="topbar-wordmark"><img class="ember-brand" src="./images/embeready-mascot.png" width="44" height="44" alt=""><span>EmbeReady</span></div>
-                <span class="welcome-location">BATANGAS CITY, PH</span>
+                <span class="welcome-location">BATANGAS CITY, PH</span><div class="welcome-tools"><div class="language-switch" role="group" aria-label="Language" data-i18n-aria-label="help.language"><button type="button" data-language="en" lang="en" aria-pressed="true">English</button><button type="button" data-language="tl" lang="tl" aria-pressed="false">Tagalog</button></div><span data-theme-control></span></div>
             </header>
             <section class="welcome-hero">
                 <div class="welcome-copy">
-                    <span class="welcome-eyebrow">A safer community starts with us</span>
-                    <h1>Welcome to<br><span>EmbeReady.</span></h1>
-                    <p>I’m Ember, your fire safety companion. Explore nearby fire hazards, understand the risks, and help keep Batangas City informed.</p>
-                    <div class="welcome-features"><span>Community reports</span><span>Gemini risk insights</span><span>No account needed</span></div>
-                    <details class="welcome-search"><summary>Jump to a barangay or landmark</summary>
-                        <form id="landing-search-form" class="landing-search-form" role="search"><div class="search-input-wrap"><input type="text" id="landing-search-input" class="landing-search-input" placeholder="Search Batangas City…" autocomplete="off" aria-label="Search location in Batangas City"><div id="landing-autocomplete" class="search-autocomplete" role="listbox"></div></div><button type="submit" class="search-btn">Search</button></form>
+                    <span class="welcome-eyebrow" data-i18n="welcome.eyebrow">A safer community starts with us</span>
+                    <h1><span class="welcome-title-line" data-i18n="welcome.heading">Welcome to</span><br><span data-i18n="welcome.accent">EmbeReady.</span></h1>
+                    <p data-i18n="welcome.intro">I’m Ember, your fire safety companion. Explore nearby fire hazards, understand the risks, and help keep Batangas City informed.</p>
+                    <div class="welcome-features"><span data-i18n="welcome.features.0">Community reports</span><span data-i18n="welcome.features.1">Gemini risk insights</span><span data-i18n="welcome.features.2">No account needed</span></div>
+                    <details class="welcome-search"><summary data-i18n="welcome.search">Jump to a barangay or landmark</summary>
+                        <form id="landing-search-form" class="landing-search-form" role="search"><div class="search-input-wrap"><input type="text" id="landing-search-input" class="landing-search-input" placeholder="Search Batangas City…" autocomplete="off" aria-label="Search location in Batangas City"><div id="landing-autocomplete" class="search-autocomplete" role="listbox"></div></div><button type="submit" class="search-btn" data-i18n="landing.searchBtn">Search</button></form>
                         <div class="landing-quickjump"><span class="quickjump-label">Quick jump:</span><div id="landing-quickjump-list" style="display:contents;"></div></div>
                     </details>
                 </div>
@@ -50,12 +54,12 @@
                     <div class="welcome-orbit" aria-hidden="true"></div>
                     <div class="welcome-fire" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
                     <div id="welcome-ember" class="welcome-character" aria-hidden="true"></div>
-                    <div class="welcome-speech">Hi! I’m Ember.</div>
-                    <button type="button" id="landing-explore-btn" class="welcome-map-button">Go to the fire hazard map <span aria-hidden="true">→</span></button>
-                    <p class="welcome-button-note">Explore. Report. Be ready.</p>
+                    <div class="welcome-speech" data-i18n="welcome.greeting">Hi! I’m Ember.</div>
+                    <button type="button" id="landing-explore-btn" class="welcome-map-button"><span data-i18n="welcome.explore">Go to the fire hazard map</span> <span aria-hidden="true">→</span></button>
+                    <p class="welcome-button-note" data-i18n="welcome.note">Explore. Report. Be ready.</p>
                 </div>
             </section>
-            <footer class="welcome-footer"><span>Made for Batangas City</span><span>Local awareness. Shared preparedness.</span></footer>
+            <footer class="welcome-footer"><span data-i18n="welcome.madeFor">Made for Batangas City</span><span data-i18n="welcome.footer">Local awareness. Shared preparedness.</span></footer>
         </main>
 
         <!-- ══════════════════════════════════════════════════════════════════════
@@ -89,72 +93,83 @@
                     </button>
 
                     <!-- Infrastructure Layer Toggles -->
-                    <div class="infra-toggles" role="group" aria-label="Infrastructure Layers">
+                    <div class="infra-toggles" role="group" aria-label="Infrastructure Layers"><h3 class="infra-heading" data-i18n="map.infrastructure">Infrastructure</h3>
                         <button id="toggle-hydrants-btn"
                                 class="infra-toggle-btn"
                                 aria-pressed="false"
                                 title="Toggle Fire Hydrants">
                             <span data-map-symbol="hydrant"></span>
-                            <span>Hydrants</span>
+                            <span data-i18n="map.hydrants">Hydrants</span>
                         </button>
                         <button id="toggle-hospitals-btn"
                                 class="infra-toggle-btn"
                                 aria-pressed="false"
                                 title="Toggle Hospitals &amp; Clinics">
                             <span data-map-symbol="hospital"></span>
-                            <span>Hospitals</span>
+                            <span data-i18n="map.hospitals">Hospitals</span>
                         </button>
                         <button id="toggle-firestations-btn"
                                 class="infra-toggle-btn"
                                 aria-pressed="false"
                                 title="Toggle Fire Protection Departments">
                             <span data-map-symbol="firestation"></span>
-                            <span>Fire Depts</span>
+                            <span data-i18n="map.fireStations">Fire Depts</span>
                         </button>
                     </div>
 
                     <!-- Header Report Trigger -->
                     <button type="button" id="map-report-btn" class="filter-chip">
-                        <span class="report-button-icon" aria-hidden="true">+</span><span>Report hazard</span>
+                        <span class="report-button-icon" aria-hidden="true">+</span><span data-i18n="map.reportHazard">Report hazard</span>
                     </button>
                 </div>
+                <div class="nav-toggles"><div class="language-switch" role="group" aria-label="Language" data-i18n-aria-label="help.language"><button type="button" data-language="en" lang="en" aria-pressed="true">English</button><button type="button" data-language="tl" lang="tl" aria-pressed="false">Tagalog</button></div><span data-theme-control></span></div>
             </header>
 
             <!-- Filter Bar -->
             <nav class="filter-bar" aria-label="Hazard Filters">
-                <button type="button" class="filter-chip is-active" data-filter="all" aria-pressed="true" title="Hide all map markers">All</button>
-                <button type="button" class="filter-chip filter-chip-live" data-filter="active" aria-pressed="false"><span data-map-symbol="active"></span>Live</button>
-                <button type="button" class="filter-chip" data-filter="heavy" aria-pressed="false"><span data-map-symbol="heavy"></span>High</button>
-                <button type="button" class="filter-chip" data-filter="moderate" aria-pressed="false"><span data-map-symbol="moderate"></span>Moderate</button>
-                <button type="button" class="filter-chip" data-filter="low" aria-pressed="false"><span data-map-symbol="low"></span>Low</button>
+                <div class="level-switches" role="group" aria-label="Hazard levels" aria-describedby="filter-hint" data-i18n-aria-label="map.filterLevel">
+                    <button type="button" class="filter-chip is-active" data-filter="all" aria-pressed="true" title="Hide all hazard levels"><span data-i18n="map.filterAll">All</span></button>
+                    <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="live" aria-pressed="true"><span data-map-symbol="active"></span><span data-i18n="map.filterLive">Live</span></button><button type="button" class="filter-remove" data-remove-level="live" aria-label="Hide live hazards">×</button></span>
+                    <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="high" aria-pressed="true"><span data-map-symbol="heavy"></span><span data-i18n="map.heavy">High</span></button><button type="button" class="filter-remove" data-remove-level="high" aria-label="Hide high hazards">×</button></span>
+                    <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="moderate" aria-pressed="true"><span data-map-symbol="moderate"></span><span data-i18n="map.moderate">Moderate</span></button><button type="button" class="filter-remove" data-remove-level="moderate" aria-label="Hide moderate hazards">×</button></span>
+                    <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="low" aria-pressed="true"><span data-map-symbol="low"></span><span data-i18n="map.low">Low</span></button><button type="button" class="filter-remove" data-remove-level="low" aria-label="Hide low hazards">×</button></span>
+                </div>
+                <p id="filter-hint" class="filter-hint" data-i18n="map.filterHint">A glowing level is visible. Tap a level to switch it on or off, or use × to hide it. All shows every level; tap it again to hide all.</p>
+                <div id="filter-tip" class="filter-tip" hidden>
+                    <strong data-i18n="map.tipTitle">Choose what you see</strong>
+                    <p data-i18n="map.tipText">A glow means a level is shown. Use its × to hide it. Tap any level to turn it on or off. All shows every level, or hides them when all are on.</p>
+                    <button type="button" id="filter-tip-dismiss" data-i18n="map.dismissTip">Got it</button>
+                </div>
+                <p id="hazard-empty-state" class="hazard-empty-state" role="status" aria-live="polite" data-i18n="map.emptyState" hidden>No hazards shown. Tap a level to see them</p>
 
                 <div class="filter-divider"></div>
 
                 <select id="filter-barangay-select" class="filter-select" aria-label="Filter by Barangay">
-                    <option value="">All Barangays</option>
+                    <option value="" data-i18n="map.allBarangays">All Barangays</option>
                     <!-- populated dynamically by app.js from /api/hazards/meta/barangays -->
                 </select>
 
                 <select id="filter-category-select" class="filter-select" aria-label="Filter by Hazard Category">
-                    <option value="">All Categories</option>
-                    <option value="faulty_wiring">Faulty Wiring</option>
-                    <option value="lpg_storage">LPG / Gas Storage</option>
-                    <option value="dry_grass">Dry Grass / Brush</option>
-                    <option value="overloaded_outlets">Overloaded Outlets</option>
-                    <option value="blocked_exit">Blocked Exit</option>
-                    <option value="illegal_burning">Illegal Burning</option>
-                    <option value="informal_settlement">Informal Settlement</option>
-                    <option value="flammable_storage">Flammable Storage</option>
-                    <option value="other">Other</option>
+                    <option value="" data-i18n="map.allCategories">All Categories</option>
+                    <option value="faulty_wiring" data-i18n="categories.faulty_wiring" data-i18n-en="Faulty Wiring">Faulty Wiring</option>
+                    <option value="lpg_storage" data-i18n="categories.lpg_storage" data-i18n-en="LPG / Gas Storage">LPG / Gas Storage</option>
+                    <option value="dry_grass" data-i18n="categories.dry_grass" data-i18n-en="Dry Grass / Brush">Dry Grass / Brush</option>
+                    <option value="overloaded_outlets" data-i18n="categories.overloaded_outlets" data-i18n-en="Overloaded Outlets">Overloaded Outlets</option>
+                    <option value="blocked_exit" data-i18n="categories.blocked_exit" data-i18n-en="Blocked Exit">Blocked Exit</option>
+                    <option value="illegal_burning" data-i18n="categories.illegal_burning" data-i18n-en="Illegal Burning">Illegal Burning</option>
+                    <option value="informal_settlement" data-i18n="categories.informal_settlement" data-i18n-en="Informal Settlement">Informal Settlement</option>
+                    <option value="flammable_storage" data-i18n="categories.flammable_storage" data-i18n-en="Flammable Storage">Flammable Storage</option>
+                    <option value="other" data-i18n="categories.other" data-i18n-en="Other">Other</option>
                 </select>
 
-                <button id="filter-reset-btn" class="filter-reset">Clear filters</button>
-                <div id="assessment-progress" class="assessment-progress" role="status" aria-live="polite" hidden><span class="assessment-progress-dot"></span><span id="assessment-progress-text"></span><button type="button" id="assessment-retry" hidden>Retry</button></div>
+                <button id="filter-reset-btn" class="filter-reset" data-i18n="map.resetFilters">Clear filters</button>
+                <div id="assessment-progress" class="assessment-progress" role="status" aria-live="polite" hidden><span class="assessment-progress-dot"></span><span id="assessment-progress-text"></span><button type="button" id="assessment-retry" data-i18n="map.retry" hidden>Retry</button></div>
             </nav>
 
             <!-- Map Viewport Wrapper -->
             <div class="map-viewport-wrapper">
                 <div id="map" role="region" aria-label="Batangas City Fire Hazard Map"></div>
+                <p id="map-empty-state" class="map-empty-state" role="status" aria-live="polite" data-i18n="map.emptyState" hidden>No hazards shown. Tap a level to see them</p>
 
 
             </div>
@@ -178,56 +193,63 @@
             <!-- Report Form Section (Below Map) -->
             <dialog id="report-section" aria-labelledby="report-heading-text">
                 <div class="report-section-inner">
-                    <div class="report-dialog-header"><div><span class="report-eyebrow">Help your community</span><h2 id="report-heading-text" class="report-heading">What are you reporting?</h2></div><button type="button" id="back-to-map-btn" class="dialog-close" aria-label="Close report">×</button></div>
-                    <p class="report-sub" id="report-intro">Choose the risk level first. Then tell us what you noticed.</p>
-                    <div id="form-errors" class="form-errors" role="alert" tabindex="-1"><div class="form-errors-title">Please check your report</div><ul id="form-errors-list"></ul></div>
+                    <div class="report-dialog-header"><div><span class="report-eyebrow"><span data-i18n="flow.eyebrow">Help your community</span></span><h2 id="report-heading-text" class="report-heading"><span data-i18n="flow.question">What are you reporting?</span></h2></div><button type="button" id="back-to-map-btn" class="dialog-close" aria-label="Close report">×</button></div>
+                    <p class="report-sub" id="report-intro"><span data-i18n="flow.intro">Choose the risk level first. Then tell us what you noticed.</span></p>
+                    <div id="form-errors" class="form-errors" role="alert" tabindex="-1"><div class="form-errors-title"><span data-i18n="flow.errors">Please check your report</span></div><ul id="form-errors-list"></ul></div>
                     <form id="hazard-report-form" novalidate>
                         <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
                         <input type="hidden" id="report-level" name="reported_level">
                         <input type="hidden" id="report-type" name="report_type" value="hazard">
                         <input type="hidden" id="report-status" name="status" value="potential">
                         <div class="report-field">
-                            <label id="report-risk-label" class="form-label">What risk level are you reporting?</label>
+                            <label id="report-risk-label" class="form-label"><span data-i18n="flow.riskQuestion">What risk level are you reporting?</span></label>
                             <div class="liquid-select" id="report-risk-dropdown">
-                                <button type="button" id="report-risk-trigger" class="liquid-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="report-risk-options" aria-labelledby="report-risk-label report-risk-value"><span id="report-risk-value">Choose a risk level…</span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></button>
+                                <button type="button" id="report-risk-trigger" class="liquid-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="report-risk-options" aria-labelledby="report-risk-label report-risk-value"><span id="report-risk-value"><span data-i18n="flow.chooseRisk">Choose a risk level…</span></span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></button>
                                 <div class="liquid-menu-grid"><div class="liquid-menu-clip"><div id="report-risk-options" class="liquid-options" role="listbox" aria-labelledby="report-risk-label" inert>
-                                    <button type="button" role="option" aria-selected="false" data-report-risk="live_fire"><span class="report-choice-icon" data-map-symbol="active"></span><span><strong>Live fire / emergency now</strong><small>Pin the fire, then open Alert.</small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
-                                    <button type="button" role="option" aria-selected="false" data-report-risk="heavy"><span class="report-choice-icon" data-map-symbol="heavy"></span><span><strong>High risk</strong><small>A serious hazard needing prompt attention.</small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
-                                    <button type="button" role="option" aria-selected="false" data-report-risk="moderate"><span class="report-choice-icon" data-map-symbol="moderate"></span><span><strong>Moderate risk</strong><small>An unsafe condition that could worsen.</small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
-                                    <button type="button" role="option" aria-selected="false" data-report-risk="low"><span class="report-choice-icon" data-map-symbol="low"></span><span><strong>Low risk</strong><small>A potential concern to inspect and prevent.</small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
+                                    <button type="button" role="option" aria-selected="false" data-report-risk="live_fire"><span class="report-choice-icon" data-map-symbol="active"></span><span><strong><span data-i18n="flow.levels.live_fire">Live fire / emergency now</span></strong><small><span data-i18n="flow.levelHints.live_fire">Pin the fire, then open Alert.</span></small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
+                                    <button type="button" role="option" aria-selected="false" data-report-risk="heavy"><span class="report-choice-icon" data-map-symbol="heavy"></span><span><strong><span data-i18n="flow.levels.heavy">High risk</span></strong><small><span data-i18n="flow.levelHints.heavy">A serious hazard needing prompt attention.</span></small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
+                                    <button type="button" role="option" aria-selected="false" data-report-risk="moderate"><span class="report-choice-icon" data-map-symbol="moderate"></span><span><strong><span data-i18n="flow.levels.moderate">Moderate risk</span></strong><small><span data-i18n="flow.levelHints.moderate">An unsafe condition that could worsen.</span></small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
+                                    <button type="button" role="option" aria-selected="false" data-report-risk="low"><span class="report-choice-icon" data-map-symbol="low"></span><span><strong><span data-i18n="flow.levels.low">Low risk</span></strong><small><span data-i18n="flow.levelHints.low">A potential concern to inspect and prevent.</span></small></span><img src="./images/ui/dropdown-check.svg" alt="" width="22" height="17"></button>
                                 </div></div></div>
                             </div>
                         </div>
                         <div id="report-followup" class="report-followup" hidden>
-                            <div id="report-live-note" class="report-live-note" hidden><strong>Location first. Contact help next.</strong><p>You won’t be asked for a description or photos. Alert opens numbers to copy and call manually.</p></div>
+                            <div id="report-live-note" class="report-live-note" hidden><strong><span data-i18n="flow.liveNoteTitle">Location first. Contact help next.</span></strong><p><span data-i18n="flow.liveNote">You won’t be asked for a description or photos. Alert opens numbers to copy and call manually.</span></p></div>
                             <details id="report-hazard-step" class="report-step" hidden>
-                                <summary><span>What did you notice?</span><span class="step-summary">Hazard details</span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></summary>
+                                <summary><span><span data-i18n="flow.notice">What did you notice?</span></span><span class="step-summary"><span data-i18n="flow.details">Hazard details</span></span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></summary>
                                 <fieldset id="report-hazard-fields" class="report-step-body" disabled>
-                                    <div class="report-field"><label for="report-category" class="form-label">Hazard category</label><select id="report-category" name="category" class="form-select" required><option value="">Choose a category…</option><option value="faulty_wiring">Faulty wiring</option><option value="overloaded_outlets">Overloaded outlets</option><option value="lpg_storage">LPG / gas storage</option><option value="dry_grass">Dry grass / brush</option><option value="blocked_exit">Blocked exit</option><option value="illegal_burning">Unsafe burning</option><option value="informal_settlement">Dense structures</option><option value="flammable_storage">Flammable storage</option><option value="other">Other hazard</option></select></div>
-                                    <div class="report-field"><label for="report-title" class="form-label">Hazard title</label><input type="text" id="report-title" name="title" class="form-input" placeholder="e.g. Sparking wires beside a wooden house" minlength="5" maxlength="180" required></div>
-                                    <div class="report-field"><label for="report-address" class="form-label">Street or nearby landmark <span class="field-optional">optional</span></label><input type="text" id="report-address" name="address" class="form-input" maxlength="500" placeholder="Help others recognize the spot"></div>
-                                    <div class="report-field"><label for="report-desc" class="form-label">What can you see? <span class="field-optional">optional</span></label><textarea id="report-desc" name="description" class="form-textarea" maxlength="5000" placeholder="Describe only what you can safely observe."></textarea></div>
-                                    <div class="report-field"><label class="form-label" for="report-photo-input">Add a photo <span class="field-optional">optional · hazards only</span></label><div id="photo-dropzone" class="photo-upload-area" role="button" tabindex="0" aria-label="Choose a hazard photo"><span id="photo-upload-label">Drop a photo or click to browse</span><span class="photo-upload-hint">JPG, PNG or WebP · up to 5 MB</span></div><input type="file" id="report-photo-input" name="photo" accept="image/jpeg,image/png,image/webp" hidden></div>
-<details class="report-observations"><summary>More site observations <span>optional</span></summary><p class="field-hint">Only add what you already know. Leave unknown conditions blank.</p><div class="report-field"><label for="observation-structure_material" class="form-label">Building materials and spacing</label><input id="observation-structure_material" name="observation_structure_material" class="form-input" maxlength="1000" placeholder="e.g. Timber walls; neighbouring home 1 m away"></div><div class="report-field"><label for="observation-proximity_to_people" class="form-label">People nearby</label><input id="observation-proximity_to_people" name="observation_proximity_to_people" class="form-input" maxlength="1000" placeholder="e.g. Occupied sleeping rooms above the shop"></div><div class="report-field"><label for="observation-escape_routes" class="form-label">Escape routes</label><input id="observation-escape_routes" name="observation_escape_routes" class="form-input" maxlength="1000" placeholder="e.g. Rear exit blocked; front exit clear"></div><div class="report-field"><label for="observation-truck_access" class="form-label">Road and responder access</label><input id="observation-truck_access" name="observation_truck_access" class="form-input" maxlength="1000" placeholder="e.g. Narrow alley; road entrance blocked"></div><div class="report-field"><label for="observation-safeguards" class="form-label">Existing safety measures</label><input id="observation-safeguards" name="observation_safeguards" class="form-input" maxlength="1000" placeholder="e.g. Working alarm; extinguisher condition unknown"></div></details>
+                                    <div class="report-field"><label for="report-category" class="form-label"><span data-i18n="flow.category">Hazard category</span></label><select id="report-category" name="category" class="form-select" required><option value="" data-i18n="flow.chooseCategory">Choose a category…</option><option value="faulty_wiring" data-i18n="categories.faulty_wiring" data-i18n-en="Faulty wiring">Faulty wiring</option><option value="overloaded_outlets" data-i18n="categories.overloaded_outlets" data-i18n-en="Overloaded outlets">Overloaded outlets</option><option value="lpg_storage" data-i18n="categories.lpg_storage" data-i18n-en="LPG / gas storage">LPG / gas storage</option><option value="dry_grass" data-i18n="categories.dry_grass" data-i18n-en="Dry grass / brush">Dry grass / brush</option><option value="blocked_exit" data-i18n="categories.blocked_exit" data-i18n-en="Blocked exit">Blocked exit</option><option value="illegal_burning" data-i18n="categories.illegal_burning" data-i18n-en="Unsafe burning">Unsafe burning</option><option value="informal_settlement" data-i18n="categories.informal_settlement" data-i18n-en="Dense structures">Dense structures</option><option value="flammable_storage" data-i18n="categories.flammable_storage" data-i18n-en="Flammable storage">Flammable storage</option><option value="other" data-i18n="categories.other" data-i18n-en="Other hazard">Other hazard</option></select></div>
+                                    <div class="report-field"><label for="report-title" class="form-label"><span data-i18n="flow.title">Hazard title</span></label><input type="text" id="report-title" name="title" class="form-input" placeholder="e.g. Sparking wires beside a wooden house" minlength="5" maxlength="180" required></div>
+                                    <div class="report-field"><label for="report-address" class="form-label"><span data-i18n="flow.address">Street or nearby landmark</span><span class="field-optional"><span data-i18n="flow.optional">optional</span></span></label><input type="text" id="report-address" name="address" class="form-input" maxlength="500" placeholder="Help others recognize the spot"></div>
+                                    <div class="report-field"><label for="report-desc" class="form-label"><span data-i18n="flow.description">What can you see?</span><span class="field-optional"><span data-i18n="flow.optional">optional</span></span></label><textarea id="report-desc" name="description" class="form-textarea" maxlength="5000" placeholder="Describe only what you can safely observe."></textarea></div>
+                                    <div class="report-field"><label class="form-label" for="report-photo-input"><span data-i18n="flow.photo">Add a photo</span><span class="field-optional"><span data-i18n="flow.photoOptional">optional · hazards only</span></span></label><div id="photo-dropzone" class="photo-upload-area" role="button" tabindex="0" aria-label="Choose a hazard photo"><span id="photo-upload-label"><span data-i18n="flow.photoPrompt">Drop a photo or click to browse</span></span><span class="photo-upload-hint"><span data-i18n="flow.photoHint">JPG, PNG or WebP · up to 5 MB</span></span></div><input type="file" id="report-photo-input" name="photo" accept="image/jpeg,image/png,image/webp" hidden></div>
+<details class="report-observations"><summary><span data-i18n="flow.observations">More site observations</span><span><span data-i18n="flow.optional">optional</span></span></summary><p class="field-hint"><span data-i18n="flow.observationsHint">Only add what you already know. Leave unknown conditions blank.</span></p><div class="report-field"><label for="observation-structure_material" class="form-label"><span data-i18n="flow.structure">Building materials and spacing</span></label><input id="observation-structure_material" name="observation_structure_material" class="form-input" maxlength="1000" placeholder="e.g. Timber walls; neighbouring home 1 m away"></div><div class="report-field"><label for="observation-proximity_to_people" class="form-label"><span data-i18n="flow.people">People nearby</span></label><input id="observation-proximity_to_people" name="observation_proximity_to_people" class="form-input" maxlength="1000" placeholder="e.g. Occupied sleeping rooms above the shop"></div><div class="report-field"><label for="observation-escape_routes" class="form-label"><span data-i18n="flow.exits">Escape routes</span></label><input id="observation-escape_routes" name="observation_escape_routes" class="form-input" maxlength="1000" placeholder="e.g. Rear exit blocked; front exit clear"></div><div class="report-field"><label for="observation-truck_access" class="form-label"><span data-i18n="flow.access">Road and responder access</span></label><input id="observation-truck_access" name="observation_truck_access" class="form-input" maxlength="1000" placeholder="e.g. Narrow alley; road entrance blocked"></div><div class="report-field"><label for="observation-safeguards" class="form-label"><span data-i18n="flow.safeguards">Existing safety measures</span></label><input id="observation-safeguards" name="observation_safeguards" class="form-input" maxlength="1000" placeholder="e.g. Working alarm; extinguisher condition unknown"></div></details>
                                 </fieldset>
                             </details>
                             <details id="report-location-step" class="report-step" open>
-                                <summary><span>Where is it?</span><span id="report-location-summary" class="step-summary">Pin a location</span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></summary>
+                                <summary><span><span data-i18n="flow.where">Where is it?</span></span><span id="report-location-summary" class="step-summary"><span data-i18n="flow.pin">Pin a location</span></span><img src="./images/ui/dropdown-chevron.svg" alt="" width="32" height="32"></summary>
                                 <div class="report-step-body">
-                                    <p class="field-hint">Tap the exact location on the map. Drag the pin to adjust it.</p>
+                                    <p class="field-hint"><span data-i18n="flow.pinHint">Tap the exact location on the map. Drag the pin to adjust it.</span></p>
                                     <div id="report-minimap" class="report-minimap" role="region" aria-label="Pin the report location on the map"></div>
-                                    <div id="report-coords-display" class="report-coordinates" role="status">No location pinned yet</div>
+                                    <div id="report-coords-display" class="report-coordinates" role="status"><span data-i18n="flow.noPin">No location pinned yet</span></div>
                                     <input type="hidden" id="report-lat" name="lat"><input type="hidden" id="report-lng" name="lng">
                                     <div id="report-nearest-barangay" class="field-hint" aria-live="polite"></div>
-                                    <div id="report-barangay-field" class="report-field"><label for="report-barangay" class="form-label">Barangay <span class="field-optional">optional correction</span></label><select id="report-barangay" name="barangay_id" class="form-select"><option value="">Use nearest barangay to pin</option></select></div>
+                                    <div id="report-barangay-field" class="report-field"><label for="report-barangay" class="form-label">Barangay <span class="field-optional"><span data-i18n="flow.correction">optional correction</span></span></label><select id="report-barangay" name="barangay_id" class="form-select"><option value="" data-i18n="flow.nearestOption">Use nearest barangay to pin</option></select></div>
                                 </div>
                             </details>
-                            <div class="report-submit-area"><button type="submit" id="report-submit-btn" class="submit-btn">Submit hazard report</button><p id="report-submit-note" class="field-hint">Gemini assesses the information you provide.</p></div>
+                            <div class="report-submit-area"><button type="submit" id="report-submit-btn" class="submit-btn"><span data-i18n="flow.submit">Submit hazard report</span></button><p id="report-submit-note" class="field-hint"><span data-i18n="flow.submitNote">Gemini assesses the information you provide.</span></p></div>
                         </div>
                     </form>
                 </div>
             </dialog>
         </main>
+
+        <button type="button" class="faq-button homepage-faq" data-open-faq data-i18n="help.faq">FAQ</button>
+
+        <dialog id="faq-dialog" class="faq-dialog" aria-labelledby="faq-title">
+            <div class="faq-header"><h2 id="faq-title">Frequently asked questions</h2><button type="button" class="faq-close" aria-label="Close FAQ">×</button></div>
+            <div id="faq-content" class="faq-content"></div>
+        </dialog>
 
         <!-- ══════════════════════════════════════════════════════════════════════
              MODAL: SUBMISSION CONFIRMATION & ACTION PROMPT
@@ -235,7 +257,7 @@
         <dialog id="report-modal" class="modal-overlay" aria-labelledby="modal-title-text">
             <div class="modal-box">
                 <div class="modal-header"><div><h3 id="modal-title-text" class="modal-title">Report saved</h3><div id="modal-ref-number" class="modal-ref"></div></div><button type="button" class="modal-close-btn dialog-close" aria-label="Close contacts">×</button></div>
-                <div class="modal-body"><div id="modal-ai-score-box" class="modal-ai-result" role="status"></div><p class="contacts-intro">Copy a number and call manually. Opening this panel does not send an alert or place a call.</p><div id="report-contact-list" class="report-contact-list"></div><p id="report-contact-status" class="field-hint" aria-live="polite"></p><button type="button" id="modal-action-done" class="submit-btn">Back to the map</button></div>
+                <div class="modal-body"><div id="modal-ai-score-box" class="modal-ai-result" role="status"></div><p class="contacts-intro"><span data-i18n="flow.contactsIntro">Copy a number and call manually. Opening this panel does not send an alert or place a call.</span></p><div id="report-contact-list" class="report-contact-list"></div><p id="report-contact-status" class="field-hint" aria-live="polite"></p><button type="button" id="modal-action-done" class="submit-btn"><span data-i18n="flow.back">Back to the map</span></button></div>
             </div>
         </dialog>
 

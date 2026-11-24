@@ -1,3 +1,5 @@
+import { playReportSuccess } from './report-success.js';
+import S from '../strings.js';
 import { escapeHtml } from './utils.js';
 import { fetchBarangays, fetchContacts, submitReport, logReportAction } from './api.js';
 import { initReportMiniMap } from './map.js';
@@ -32,6 +34,13 @@ export function initReportForm(onReportSuccess) {
         if (_pinConfirmed) updateNearestLabel();
     }).catch(()=>{});
     fetchContacts().then(rows=>{_contacts=rows;}).catch(()=>{});
+    window.addEventListener('language:changed', () => {
+        updateReportText();
+        if (!_pinConfirmed) el('report-coords-display').textContent=S.flow.noPin;
+        else el('report-location-summary').textContent=inBounds(Number(el('report-lat').value),Number(el('report-lng').value))?S.flow.pinned:S.flow.outside;
+        if (!el('report-photo-input').files?.length) el('photo-upload-label').textContent=S.flow.photoPrompt;
+        updateNearestLabel();
+    });
 }
 export function openReportPanel() {
     const panel=el('report-section');
@@ -68,7 +77,7 @@ export function refreshMiniMap() {
             _pinConfirmed=true;
             el('report-lat').value=lat.toFixed(6);el('report-lng').value=lng.toFixed(6);
             el('report-coords-display').textContent=`${lat.toFixed(5)}°N, ${lng.toFixed(5)}°E`;
-            el('report-location-summary').textContent=inBounds(lat,lng)?'Location pinned':'Outside Batangas City';
+            el('report-location-summary').textContent=inBounds(lat,lng)?S.flow.pinned:S.flow.outside;
             updateNearestLabel();
         });
     }
@@ -79,7 +88,7 @@ function updateNearestLabel() {
     const distance=b=>(Number(b.center_lat)-lat)**2+((Number(b.center_lng)-lng)*Math.cos(lat*Math.PI/180))**2;
     _nearest=_pinConfirmed?_barangays.reduce((nearest,b)=>!nearest||distance(b)<distance(nearest)?b:nearest,null):null;
     const selected=_barangays.find(b=>String(b.id)===el('report-barangay').value);
-    el('report-nearest-barangay').textContent=selected?`Selected barangay: ${selected.name}`:_nearest?`Nearest barangay: ${_nearest.name}. This is a proximity suggestion, not a boundary check.`:'';
+    el('report-nearest-barangay').textContent=selected?S.flow.selectedBarangay(selected.name):_nearest?S.flow.nearestBarangay(_nearest.name):'';
 }
 function setDropdownOpen(open,focusOption=false) {
     const box=el('report-risk-dropdown'),trigger=el('report-risk-trigger'),list=el('report-risk-options');
@@ -107,13 +116,11 @@ function setupRiskDropdown() {
     document.addEventListener('click',event=>{if(!el('report-risk-dropdown').contains(event.target))setDropdownOpen(false);});
     document.addEventListener('focusin',event=>{if(!el('report-risk-dropdown').contains(event.target))setDropdownOpen(false);});
 }
-function chooseRisk(level,label='Choose a risk level…') {
+function chooseRisk(level,label=S.flow.chooseRisk) {
     const live=level==='live_fire';
     el('report-level').value=live?'':level;
     el('report-type').value=live?'live_fire':'hazard';
-    el('report-risk-value').textContent=label;
-    el('report-heading-text').textContent=live?'Report a live fire':'Report a fire hazard';
-    el('report-intro').textContent=live?'Pin the fire, then open responder contacts.':'Choose the risk level first. Gemini will independently assess the evidence.';
+    updateReportText();
     el('report-section').dataset.mode=live?'live':'hazard';
     el('report-status').value=live?'active':'potential';
     el('report-followup').hidden=!level;
@@ -122,17 +129,23 @@ function chooseRisk(level,label='Choose a risk level…') {
     el('report-barangay-field').hidden=live;
     el('report-barangay').disabled=live;
     el('report-live-note').hidden=!live;
-    el('report-submit-btn').textContent=live?'Alert · view responder contacts':'Submit hazard report';
-    el('report-submit-note').textContent=live?'Saves your pinned location and opens contacts to copy and call manually.':'Your selected risk is saved. Gemini assesses the observations independently.';
-    if(live){el('report-photo-input').value='';el('photo-dropzone').classList.remove('has-file');el('photo-upload-label').textContent='Drop a photo or click to browse';}
+    if(live){el('report-photo-input').value='';el('photo-dropzone').classList.remove('has-file');el('photo-upload-label').textContent=S.flow.photoPrompt;}
     el('report-risk-options').querySelectorAll('[data-report-risk]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.reportRisk===level)));
     el('report-location-step').open=live;
     el('report-hazard-step').open=!live&&Boolean(level);
     if(live)refreshMiniMap();
 }
+function updateReportText() {
+    const live=isLive(),level=live?'live_fire':el('report-level').value;
+    el('report-risk-value').textContent=S.flow.levels[level]||S.flow.chooseRisk;
+    el('report-heading-text').textContent=!level?S.flow.question:live?S.flow.liveTitle:S.flow.hazardTitle;
+    el('report-intro').textContent=!level?S.flow.intro:live?S.flow.liveIntro:S.flow.hazardIntro;
+    el('report-submit-btn').textContent=el('report-submit-btn').disabled?(live?S.flow.savingLocation:S.flow.savingReport):(live?S.flow.alert:S.flow.submit);
+    el('report-submit-note').textContent=live?S.flow.liveSubmitNote:S.flow.submitNote;
+}
 function setupPhotoUpload() {
     const area=el('photo-dropzone'),input=el('report-photo-input'),label=el('photo-upload-label');
-    const showFile=()=>{const file=input.files?.[0];area.classList.toggle('has-file',Boolean(file));label.textContent=file?`${file.name} · ${Math.round(file.size/1024)} KB`:'Drop a photo or click to browse';};
+    const showFile=()=>{const file=input.files?.[0];area.classList.toggle('has-file',Boolean(file));label.textContent=file?`${file.name} · ${Math.round(file.size/1024)} KB`:S.flow.photoPrompt;};
     area.addEventListener('click',()=>input.click());
     area.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();input.click();}});
     input.addEventListener('change',showFile);
@@ -149,17 +162,17 @@ async function handleFormSubmit(event) {
     el('form-errors').classList.remove('is-visible');
     const live=isLive(),data=new FormData(_formEl),errors=[];
     const title=String(data.get('title')||'').trim(),lat=Number(data.get('lat')),lng=Number(data.get('lng')),photo=data.get('photo');
-    if(!live&&!data.get('reported_level'))errors.push('Choose the reported risk level first.');
-    if(!live&&!data.get('category'))errors.push('Choose a fire hazard category.');
-    if(!_pinConfirmed||!data.get('lat')||!data.get('lng')||!inBounds(lat,lng))errors.push('Pin a location within Batangas City.');
-    if(!live&&(title.length<5||title.length>180)){errors.push('Give the hazard a title between 5 and 180 characters.');el('report-hazard-step').open=true;}
-    if(!live&&photo?.size>5*1024*1024)errors.push('Keep the photo under 5 MB.');
-    if(!live&&photo?.size&&!['image/jpeg','image/png','image/webp'].includes(photo.type))errors.push('Choose a JPG, PNG or WebP photo.');
+    if(!live&&!data.get('reported_level'))errors.push(S.flow.chooseLevelError);
+    if(!live&&!data.get('category'))errors.push(S.flow.categoryError);
+    if(!_pinConfirmed||!data.get('lat')||!data.get('lng')||!inBounds(lat,lng))errors.push(S.flow.pinError);
+    if(!live&&(title.length<5||title.length>180)){errors.push(S.flow.titleError);el('report-hazard-step').open=true;}
+    if(!live&&photo?.size>5*1024*1024)errors.push(S.flow.photoSizeError);
+    if(!live&&photo?.size&&!['image/jpeg','image/png','image/webp'].includes(photo.type))errors.push(S.flow.photoTypeError);
     if(errors.length){showErrors(errors);return;}
     if(live){for(const key of ['title','description','address','photo','barangay_id','reported_level'])data.delete(key);}
     const selected=_barangays.find(b=>String(b.id)===el('report-barangay').value);
     const barangayName=(!live&&selected?selected:_nearest)?.name;
-    submit.disabled=true;submit.setAttribute('aria-busy','true');submit.textContent=live?'Saving location…':'Saving report…';
+    submit.disabled=true;submit.setAttribute('aria-busy','true');submit.textContent=live?S.flow.savingLocation:S.flow.savingReport;
     // Show contacts in the same interaction: neither a network request nor Gemini blocks access.
     if(live)showSuccessModal({status:'active',pending:true,contacts:_contacts,barangay:{name:barangayName,inferred:true}});
     try {
@@ -170,37 +183,37 @@ async function handleFormSubmit(event) {
         if(!live)window.dispatchEvent(new CustomEvent('assessment:requested'));
         showSuccessModal(result,showResult);
     }catch(error){
-        showErrors(error.details||[error.message||'The report could not be saved. Please retry.']);
-        if(live){el('modal-ref-number').textContent='Location not saved';el('modal-ai-score-box').textContent='The report could not be saved. Contacts remain available to copy and call manually.';_modalEl.dataset.state='failed';}
+        showErrors(error.details||[error.message||S.flow.saveError]);
+        if(live){el('modal-ref-number').textContent=S.flow.notSaved;el('modal-ai-score-box').textContent=S.flow.contactSaveError;_modalEl.dataset.state='failed';}
     }finally{
-        submit.disabled=false;submit.removeAttribute('aria-busy');submit.textContent=isLive()?'Alert · view responder contacts':'Submit hazard report';
+        submit.disabled=false;submit.removeAttribute('aria-busy');submit.textContent=isLive()?S.flow.alert:S.flow.submit;
     }
 }
 function resetReport() {
     _formEl.reset();_pinConfirmed=false;_nearest=null;
     _miniMapCtrl?.clear();
-    el('report-coords-display').textContent='No location pinned yet';el('report-location-summary').textContent='Pin a location';el('report-nearest-barangay').textContent='';
-    el('photo-dropzone').classList.remove('has-file');el('photo-upload-label').textContent='Drop a photo or click to browse';
+    el('report-coords-display').textContent=S.flow.noPin;el('report-location-summary').textContent=S.flow.pin;el('report-nearest-barangay').textContent='';
+    el('photo-dropzone').classList.remove('has-file');el('photo-upload-label').textContent=S.flow.photoPrompt;
     chooseRisk('');
 }
 function showSuccessModal(data,open=true) {
     const live=data.status==='active';
     _modalEl.dataset.state=data.pending?'saving':'saved';
-    el('modal-title-text').textContent=live?'Contact responders':'Report saved';
-    el('modal-ref-number').textContent=data.pending?'Saving your pinned location…':data.ref_number||'';
+    el('modal-title-text').textContent=live?S.flow.responders:S.flow.saved;
+    el('modal-ref-number').textContent=data.pending?S.flow.savingPin:data.ref_number||'';
     const scoreBox=el('modal-ai-score-box');
-    if(live)scoreBox.textContent=data.pending?'Your contacts are ready. Copy a number below to call manually.':'Live fire location saved. Use the contacts below to call manually.';
+    if(live)scoreBox.textContent=data.pending?S.flow.liveSaving:S.flow.liveSaved;
     else if(data.ai_result?.assessment){const a=data.ai_result.assessment;scoreBox.textContent=`Gemini assessment: ${a.assessed_level==='heavy'?'High':a.assessed_level} · ${a.overall_score}/100. ${a.reasoning_summary}`;}
-    else scoreBox.textContent=['queued','processing'].includes(data.ai_status)?'Report saved. Gemini is assessing your observations in the background. Your selected risk is shown until assessment completes.':'Report saved. Gemini is unavailable; your selected risk remains labelled as reporter-selected.';
+    else scoreBox.textContent=['queued','processing'].includes(data.ai_status)?S.flow.assessing:S.flow.unavailable;
     const contacts=responderContacts(data.contacts||[],data.barangay?.name);
-    el('report-contact-list').innerHTML=contacts.map((contact,index)=>`<article class="responder-card"><div class="responder-card-heading"><strong>${escapeHtml(contact.name)}</strong>${contact.mock?'<span class="sample-contact-tag">Sample contact</span>':''}</div><small>${escapeHtml(contact.jurisdiction)}${data.barangay?.inferred&&contact.agency==='barangay'?' · nearest to pin':''}</small><div class="contact-copy-row"><input readonly class="contact-copy-number" aria-label="${escapeHtml(contact.name)} number" value="${escapeHtml(contact.number)}"><button type="button" class="copy-contact" data-contact-index="${index}">Copy</button></div>${contact.mock?'<p class="sample-contact-note">Mock number for demonstration. Replace with a verified number before real use.</p>':''}</article>`).join('');
+    el('report-contact-list').innerHTML=contacts.map((contact,index)=>`<article class="responder-card"><div class="responder-card-heading"><strong>${escapeHtml(contact.name)}</strong>${contact.mock?`<span class="sample-contact-tag">${S.flow.sampleContact}</span>`:''}</div><small>${escapeHtml(contact.jurisdiction)}${data.barangay?.inferred&&contact.agency==='barangay'?' · '+S.flow.nearestPin:''}</small><div class="contact-copy-row"><input readonly class="contact-copy-number" aria-label="${escapeHtml(contact.name)} number" value="${escapeHtml(contact.number)}"><button type="button" class="copy-contact" data-contact-index="${index}">${S.flow.copy}</button></div>${contact.mock?`<p class="sample-contact-note">${S.flow.sampleNote}</p>`:''}</article>`).join('');
     el('report-contact-list').querySelectorAll('.copy-contact').forEach(button=>button.addEventListener('click',async()=>{
         const contact=contacts[Number(button.dataset.contactIndex)];
-        try {if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');await navigator.clipboard.writeText(contact.number);button.textContent='Copied';el('report-contact-status').textContent=contact.mock?'Sample number copied. This is not an operational emergency contact.':'Number copied. Call manually to contact responders.';}
-        catch {const input=button.previousElementSibling;input.focus();input.select();el('report-contact-status').textContent='The number is selected. Use Copy on your device.';}
+        try {if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');await navigator.clipboard.writeText(contact.number);button.textContent=S.flow.copied;el('report-contact-status').textContent=contact.mock?S.flow.sampleCopied:S.flow.copiedNote;}
+        catch {const input=button.previousElementSibling;input.focus();input.select();el('report-contact-status').textContent=S.flow.selectCopy;}
         if(data.ref_number&&['bfp','barangay'].includes(contact.agency))logReportAction(data.ref_number,contact.agency).catch(()=>{});
     }));
     el('report-contact-status').textContent='';
-    if(open){if(!_modalEl.open)_modalEl.showModal();_modalEl.classList.add('is-visible');}
+    if(open){if(!_modalEl.open)_modalEl.showModal();_modalEl.classList.add('is-visible');playReportSuccess(_modalEl,data);}
 }
 export function closeModal(){dismissDialog(_modalEl,'is-visible');}

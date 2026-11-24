@@ -8,6 +8,7 @@
  */
 
 import { mapSymbolMarkup } from './map-symbols.js';
+import S, { getLanguage } from '../strings.js';
 
 const BATANGAS_CENTER = [13.7565, 121.0583];
 const DEFAULT_ZOOM = 14;
@@ -106,7 +107,7 @@ export function initMap(containerId = 'map', onSelectHazard = null) {
  */
 function createHazardMarker(hazard) {
     const isLive = hazard.status === 'active';
-    const symbol = isLive ? 'active' : (hazard.risk_level || 'pending');
+    const symbol = isLive ? 'active' : (hazard.risk_level === 'high' ? 'heavy' : hazard.risk_level || 'pending');
     const riskClass = `er-marker-${symbol}`;
     const activeClass = isLive ? 'er-marker-active' : '';
 
@@ -131,8 +132,8 @@ function createHazardMarker(hazard) {
     const marker = L.marker([hazard.lat, hazard.lng], { icon, title: hazard.title, alt: hazard.title });
 
     // Custom tooltip
-    const riskLevelDisplay = (hazard.status === 'active' ? 'Live' : (hazard.risk_level === 'heavy' ? 'High' : (hazard.risk_level || (hazard.ai_status==='unavailable'?'Assessment unavailable':hazard.ai_status==='completed'?'More evidence needed':'Assessing')))).toUpperCase();
-    const sourceLabel=hazard.status!=='active'&&hazard.reported_level&&!hazard.assessed_level?' · REPORTER-SELECTED':'';
+    const riskLevelDisplay = (isLive ? S.map.filterLive : (S.map[hazard.risk_level] || (hazard.ai_status==='unavailable'?S.drawer.unavailable:hazard.ai_status==='completed'?S.drawer.moreEvidence:S.drawer.assessing))).toUpperCase();
+    const sourceLabel=hazard.status!=='active'&&hazard.reported_level&&!hazard.assessed_level?' · '+S.drawer.reporterSelected.toUpperCase():'';
     const tooltipContent = `
         <div class="er-tooltip">
             <div class="tooltip-title">${escapeHtml(hazard.title)}</div>
@@ -165,7 +166,7 @@ export function renderHazards(hazardsList = []) {
     let activeCount=0;
     for(const h of hazardsList){
         if(h.status==='active')activeCount++;
-        const key=JSON.stringify([h.lat,h.lng,h.risk_level,h.status,h.title,h.ai_status,h.assessed_level]);
+        const key=JSON.stringify([h.lat,h.lng,h.risk_level,h.status,h.title,h.ai_status,h.assessed_level,h.reported_level,h.barangay_name,getLanguage()]);
         const old=_hazardMarkers.get(h.id);
         if(old?.key===key)continue;
         if(old)_markerGroup.removeLayer(old.marker);

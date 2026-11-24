@@ -18,7 +18,7 @@ Gemini 3 models use the stateless Interactions API with revision 2026-05-20, low
 
 `server/data/demo-assessments.json` contains complete authored mock outputs, observation profiles and limited content corrections keyed by existing reference codes. It stores explicit factor scores and scenario-specific precautions, not a runtime rule engine. No Gemini request is made to prepare or load those records.
 
-Prepared results are labelled Demo assessment/Demo guidance in the same layout used for real Gemini results. New community reports never receive these fixtures based on their category. Mock references are explicitly enumerated so future reports cannot silently inherit fabricated assessments.
+Prepared results have a DEMO DATA badge and a Pre-seeded assessment label in the same layout used for real Gemini results. Repeated mock prefixes and boilerplate are omitted from the displayed prose; their original provenance remains stored. Genuine Gemini results retain Gemini attribution. New community reports never receive these fixtures based on their category. Mock references are explicitly enumerated so future reports cannot silently inherit fabricated assessments.
 
 The installer is idempotent. Unchanged fixtures reuse the existing saved run. It can update descriptions, titles, category and mock severity where explicitly authored, but never changes coordinates, IDs, reference codes, barangay, addresses, photo paths or incident status. Historical rule-based rows remain archived rather than being relabelled as Gemini output.
 

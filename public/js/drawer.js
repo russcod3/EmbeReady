@@ -16,12 +16,14 @@ import S from '../strings.js';
 import { escapeHtml } from './utils.js';
 import { fetchHazardDetail } from './api.js';
 import { riskCardsMarkup, initRiskCards } from './risk-cards.js';
+import { assessmentText, isPreparedAssessment } from './assessment-copy.js';
 
 let _drawerEl = null;
 let _closeBtn = null;
 let _contentEl = null;
 let _activeTimerInterval = null;
 let _currentHazardId=null, _requestVersion=0, _cleanupCards=()=>{}, _assessmentKey="";
+let _currentData = null;
 const resultKey=data=>`${data.hazard.ai_status}:${data.assessment?.id||""}:${data.hazard.ai_error||""}`;
 
 /**
@@ -41,7 +43,7 @@ export function initDrawer() {
 
     // Close on Escape key
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isDrawerOpen()) {
+        if (e.key === 'Escape' && isDrawerOpen() && !document.querySelector('dialog[open]')) {
             closeDrawer();
         }
     });
@@ -56,6 +58,15 @@ export function initDrawer() {
             renderHazardContent(data,index);_contentEl.scrollTop=scroll;
         } catch {}
     });
+    window.addEventListener('language:changed', () => {
+        if (!_currentData || !isDrawerOpen()) return;
+        const scroll = _contentEl.scrollTop;
+        const index = Number(_contentEl.querySelector('.factor-carousel')?.dataset.index || 0);
+        const tab = _contentEl.querySelector('.plan-tab.is-active')?.dataset.tabTarget;
+        renderHazardContent(_currentData, index);
+        if (tab) _contentEl.querySelector(`[data-tab-target="${tab}"]`)?.click();
+        _contentEl.scrollTop = scroll;
+    });
 }
 
 export function isDrawerOpen() {
@@ -64,7 +75,7 @@ export function isDrawerOpen() {
 
 export function closeDrawer() {
     if (!_drawerEl) return;
-    _requestVersion++;_currentHazardId=null;_cleanupCards();
+    _requestVersion++;_currentHazardId=null;_currentData=null;_cleanupCards();
     _drawerEl.classList.remove('is-open');
     document.body.classList.remove('drawer-open');
     if (_activeTimerInterval) {
@@ -85,15 +96,15 @@ export async function openDrawer(hazardId) {
         _activeTimerInterval = null;
     }
 
-    const version=++_requestVersion;_currentHazardId=hazardId;_cleanupCards();
+    const version=++_requestVersion;_currentHazardId=hazardId;_currentData=null;_cleanupCards();
     // Show loading state
     _contentEl.innerHTML = `
         <div style="padding: var(--space-8); text-align: center; color: var(--color-charcoal-400);">
             <div style="font-family: var(--font-display); font-size: var(--text-lg); text-transform: uppercase; margin-bottom: 8px;">
-                Loading hazard…
+                ${S.drawer.loading}
             </div>
             <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-charcoal-300);">
-                Preparing the report details
+                ${S.drawer.preparing}
             </div>
         </div>
     `;
@@ -110,7 +121,7 @@ export async function openDrawer(hazardId) {
         _contentEl.innerHTML = `
             <div style="padding: var(--space-8); text-align: center; color: var(--risk-heavy);">
                 <div style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: 8px;">
-                    Failed to load hazard
+                    ${S.drawer.loadFailed}
                 </div>
                 <div style="font-size: var(--text-sm); color: var(--color-charcoal-400);">
                     ${escapeHtml(err.message || 'Server error')}
@@ -124,6 +135,7 @@ export async function openDrawer(hazardId) {
  * renderHazardContent({ hazard, assessment, plan, history, contacts })
  */
 function renderHazardContent({ hazard, assessment, plan, history, contacts },cardIndex=0) {
+    _currentData = { hazard, assessment, plan, history, contacts };
     _cleanupCards();
     _assessmentKey=resultKey({hazard,assessment});
     if (_activeTimerInterval) {
@@ -133,6 +145,10 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
 
     const isLive = hazard.status === 'active';
     const isDemo = hazard.is_demo === 1 || assessment?.engine === 'mock';
+    const prepared = isPreparedAssessment(assessment);
+    const confidenceLabel = {high:S.drawer.confidenceHigh,medium:S.drawer.confidenceMed,low:S.drawer.confidenceLow}[assessment?.confidence_level] || assessment?.confidence_level || '';
+    const display = text => assessmentText(text, prepared);
+    const displayFactors = assessment?.factors && Object.fromEntries(Object.entries(assessment.factors).map(([key, factor]) => [key, { ...factor, reason: display(factor.reason) }]));
 
     // Category label — guard against null/undefined category
     const categoryLabel = hazard.category
@@ -160,7 +176,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
         `;
     }
 
-    const factorsHtml=assessment?.factors?riskCardsMarkup(assessment.factors):'';
+    const factorsHtml=displayFactors?riskCardsMarkup(displayFactors):'';
 
     // Preparedness tabs
     const beforeSteps = plan?.before_steps || plan?.before || [];
@@ -171,14 +187,14 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
 
     const renderSteps = (steps, isProhibited = false) => {
         if (!steps || steps.length === 0) {
-            return '<div style="font-size:var(--text-sm);color:var(--color-charcoal-400);padding:8px 0;">No instructions recorded for this phase.</div>';
+            return `<div style="font-size:var(--text-sm);color:var(--color-charcoal-400);padding:8px 0;">${S.drawer.noSteps}</div>`;
         }
         return `
             <div class="plan-steps">
                 ${steps.map((step, idx) => `
                     <div class="plan-step">
                         <span class="plan-step-num">${isProhibited ? '✕' : (idx + 1).toString().padStart(2, '0')}</span>
-                        <span>${escapeHtml(step)}</span>
+                        <span>${escapeHtml(display(step))}</span>
                     </div>
                 `).join('')}
             </div>
@@ -192,9 +208,9 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
             <div class="history-list">
                 ${history.map(item => `
                     <div class="history-item">
-                        <div class="history-item-title">${escapeHtml(item.incident_name)} (${item.incident_year || 'Historical'})</div>
+                        <div class="history-item-title">${escapeHtml(display(item.incident_name))} (${item.incident_year || 'Historical'})</div>
                         <div class="history-item-meta">Severity: ${escapeHtml((item.severity || 'moderate').toUpperCase())}</div>
-                        ${item.damage_notes ? `<div class="history-item-notes">${escapeHtml(item.damage_notes)}</div>` : ''}
+                        ${item.damage_notes ? `<div class="history-item-notes">${escapeHtml(display(item.damage_notes))}</div>` : ''}
                     </div>
                 `).join('')}
             </div>
@@ -228,7 +244,7 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
                                 <div class="contact-phone">${escapeHtml(phone || 'Not configured')}</div>
                             </div>
                             <a href="${callHref}" class="${btnClass}" ${warnAttr}>
-                                ${isPlaceholder ? 'UNCONFIGURED' : 'CALL'}
+                                ${isPlaceholder ? S.drawer.unconfigured : S.drawer.call}
                             </a>
                         </div>
                     `;
@@ -241,9 +257,9 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
         <!-- HEADER -->
         <div class="drawer-header">
             <div class="drawer-badges">
-                ${!isLive ? `<span class="badge badge-${hazard.risk_level || 'pending'}">${hazard.risk_level === 'heavy' ? 'High' : hazard.risk_level || (assessment?'More evidence needed':hazard.ai_status==='unavailable'?'Unassessed':'Assessing')}</span>` : ''}
-${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-demo">Reporter-selected</span>':''}
-                <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? 'Live' : hazard.status}</span>
+                ${!isLive ? `<span class="badge badge-${hazard.risk_level || 'pending'}">${S.map[hazard.risk_level] || (assessment ? S.drawer.moreEvidence : S.drawer.unavailable)}</span>` : ''}
+${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-demo">${S.drawer.reporterSelected}</span>`:''}
+                <span class="badge badge-${hazard.status}">${hazard.status === 'active' ? S.map.filterLive : S.statuses[hazard.status] || hazard.status}</span>
 
                 ${isDemo ? '<span class="badge badge-demo">DEMO DATA</span>' : ''}
             </div>
@@ -261,41 +277,41 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
             <div class="photo-placeholder" style="display:${photoSrc?'none':'flex'};">
                 <span class="photo-placeholder-icon">📷</span>
                 <div class="photo-placeholder-text">
-                    Photo not yet available<br>
-                    <span>The site owner can add a photo here.</span>
+                    ${S.drawer.photoUnavailable}<br>
+                    <span>${S.drawer.photoHint}</span>
                 </div>
             </div>
         </div>` : ''}
 
         <!-- DETAILS / LOCATION -->
         <div class="drawer-section">
-            <div class="drawer-section-label">Location & Description</div>
+            <div class="drawer-section-label">${S.drawer.locationTitle}</div>
             <div class="drawer-meta-grid" style="margin-bottom:var(--space-3);">
                 <div class="drawer-meta-item">
-                    <span class="drawer-meta-key">Barangay</span>
+                    <span class="drawer-meta-key">${S.drawer.barangayLabel}</span>
                     <span class="drawer-meta-val">${escapeHtml(hazard.barangay_name)}</span>
                 </div>
                 <div class="drawer-meta-item">
-                    <span class="drawer-meta-key">Classification</span>
+                    <span class="drawer-meta-key">${S.drawer.classification}</span>
                     <span class="drawer-meta-val" style="text-transform:capitalize;">${escapeHtml(hazard.barangay_classification || 'Urban')}</span>
                 </div>
                 <div class="drawer-meta-item">
-                    <span class="drawer-meta-key">Hazard Category</span>
+                    <span class="drawer-meta-key">${S.drawer.categoryLabel}</span>
                     <span class="drawer-meta-val">${escapeHtml(categoryLabel)}</span>
                 </div>
                 <div class="drawer-meta-item">
-                    <span class="drawer-meta-key">Coordinates</span>
+                    <span class="drawer-meta-key">${S.drawer.coordinates}</span>
                     <span class="drawer-meta-val" style="font-family:var(--font-mono);font-size:12px;">${parseFloat(hazard.lat || 0).toFixed(4)}°N, ${parseFloat(hazard.lng || 0).toFixed(4)}°E</span>
                 </div>
             </div>
             ${hazard.address ? `
                 <div style="font-size:var(--text-sm);color:var(--text-on-light);margin-bottom:var(--space-2);">
-                    <strong>Address:</strong> ${escapeHtml(hazard.address)}
+                    <strong>${S.drawer.addressLabel}:</strong> ${escapeHtml(hazard.address)}
                 </div>
             ` : ''}
             ${hazard.description ? `
                 <div style="font-size:var(--text-sm);color:var(--color-charcoal-500);line-height:1.5;">
-                    ${escapeHtml(hazard.description)}
+                    ${escapeHtml(display(hazard.description))}
                 </div>
             ` : ''}
         </div>
@@ -305,27 +321,27 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
         ${assessment ? `
             <div class="risk-overview">
                 <div class="risk-overall-value ${assessment.overall_score===null?'is-range':''}">${assessment.overall_score===null?`${assessment.score_range.min}–${assessment.score_range.max}`:assessment.overall_score}<small>/100</small></div>
-                <div class="risk-overview-meta"><strong>${assessment.assessed_level?`${assessment.assessed_level==='heavy'?'High':assessment.assessed_level} risk`:'More evidence needed'}</strong><span>${escapeHtml(assessment.confidence_level)} confidence</span><span>${assessment.engine==='mock'?'Demo assessment':'Gemini assessment'}</span></div>
+                <div class="risk-overview-meta"><strong>${assessment.assessed_level?`${S.map[assessment.assessed_level] || assessment.assessed_level} ${S.drawer.risk}`:S.drawer.moreEvidence}</strong><span>${escapeHtml(confidenceLabel)}</span><span>${prepared ? S.drawer.preSeeded : S.drawer.gemini}</span></div>
             </div>
             ${factorsHtml}
-            <p class="risk-summary">${escapeHtml(assessment.reasoning_summary)}</p>
-            <p class="risk-disclaimer">${assessment.overall_score===null?'Estimated range reflects missing observations. ':''}Prioritisation index · not a probability of fire. ${assessment.action_priority==='immediate'?'Immediate attention recommended.':''}</p>
-            ${assessment.missing_information?.length?`<div class="risk-missing"><strong>Still unknown</strong><br>${assessment.missing_information.map(escapeHtml).join(' · ')}</div>`:''}
-        ` : `<div class="assessment-empty"><strong>${isLive?'Live fire reported':hazard.ai_status==='unavailable'?'Assessment unavailable':'Gemini is assessing this hazard'}</strong><p>${isLive?'Use the responder contacts below to call for help.':hazard.ai_status==='unavailable'?'The report is saved. Retry assessment from the map controls. No generated score is available.':'The risk breakdown and precautions will appear here automatically. You can keep exploring the map.'}</p></div>`}
+            <p class="risk-summary">${escapeHtml(display(assessment.reasoning_summary))}</p>
+            <p class="risk-disclaimer">${assessment.overall_score===null?S.drawer.rangeNote+' ':''}${S.drawer.disclaimer} ${assessment.action_priority==='immediate'?S.drawer.immediate:''}</p>
+            ${assessment.missing_information?.length?`<div class="risk-missing"><strong>${S.drawer.unknown}</strong><br>${assessment.missing_information.map(item => escapeHtml(display(item))).join(' · ')}</div>`:''}
+        ` : `<div class="assessment-empty"><strong>${isLive?S.drawer.liveReported:hazard.ai_status==='unavailable'?S.drawer.unavailable:S.drawer.assessing}</strong><p>${isLive?S.drawer.liveHelp:hazard.ai_status==='unavailable'?S.drawer.retryHelp:S.drawer.assessingHelp}</p></div>`}
         </section>
 
         <!-- PREPAREDNESS PLAN -->
         ${plan ? `<div class="drawer-section" style="padding:0;">
             <div style="padding:var(--space-3) var(--space-5);background:var(--color-charcoal-800);color:var(--color-bone-200);display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Community Preparedness Plan</span>
-                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${assessment?.engine==='mock'?'Demo guidance':'Gemini guidance'}</span>
+                <span style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">${S.drawer.preparedness}</span>
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${prepared ? S.drawer.guidance : S.drawer.geminiGuidance}</span>
             </div>
             <div class="plan-tabs" role="tablist">
-                <button class="plan-tab is-active" data-tab-target="before">Before</button>
-                <button class="plan-tab" data-tab-target="during">During</button>
-                <button class="plan-tab" data-tab-target="after">After</button>
-                <button class="plan-tab" data-tab-target="evac">Evacuation</button>
-                <button class="plan-tab" data-tab-target="prohibited">What NOT To Do</button>
+                <button class="plan-tab is-active" data-tab-target="before">${S.drawer.tabBefore}</button>
+                <button class="plan-tab" data-tab-target="during">${S.drawer.tabDuring}</button>
+                <button class="plan-tab" data-tab-target="after">${S.drawer.tabAfter}</button>
+                <button class="plan-tab" data-tab-target="evac">${S.drawer.tabEvacuation}</button>
+                <button class="plan-tab" data-tab-target="prohibited">${S.drawer.tabProhibited}</button>
             </div>
             <div class="plan-content is-active" data-tab="before">
                 ${renderSteps(beforeSteps)}
@@ -342,17 +358,17 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
             <div class="plan-content" data-tab="prohibited">
                 ${renderSteps(prohibited, true)}
             </div>
-            ${plan?.local_context_notes ? `
+            ${!prepared && plan?.local_context_notes ? `
                 <div style="padding: 0 var(--space-5) var(--space-4);">
                     <div class="plan-local-note">
-                        <strong>Barangay Context:</strong> ${escapeHtml(plan.local_context_notes)}
+                        <strong>${S.drawer.context}:</strong> ${escapeHtml(plan.local_context_notes)}
                     </div>
                 </div>
             ` : ''}
             ${hazard.evacuation_center_name ? `
                 <div style="padding: 0 var(--space-5) var(--space-4);">
                     <div class="plan-local-note" style="background:rgba(217,119,6,0.08);border-color:rgba(217,119,6,0.3);">
-                        <strong>Designated Evacuation Site:</strong> ${escapeHtml(hazard.evacuation_center_name)}
+                        <strong>${S.drawer.evacuationSite}:</strong> ${escapeHtml(hazard.evacuation_center_name)}
                     </div>
                 </div>
             ` : ''}
@@ -380,7 +396,7 @@ ${!assessment?.assessed_level&&hazard.reported_level?'<span class="badge badge-d
 
     _contentEl.querySelectorAll('.is-placeholder').forEach(link => { link.setAttribute('aria-disabled', 'true'); link.addEventListener('click', e => e.preventDefault()); });
     _contentEl.querySelector('.drawer-header').after(_contentEl.querySelector('.risk-panel'));
-    if(assessment?.factors)_cleanupCards=initRiskCards(_contentEl,assessment.factors,cardIndex);
+    if(displayFactors)_cleanupCards=initRiskCards(_contentEl,displayFactors,cardIndex);
 
     // Bind tab clicks
     const tabs = _contentEl.querySelectorAll('.plan-tab');
