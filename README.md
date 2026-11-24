@@ -16,6 +16,8 @@ Run `npm run test:ui` for the filter walkthrough, all 16 combinations, dropdown 
 
 The top navigation places language and the persisted light/dark Eclipse theme control on the right, outside the filter card. A shared FAQ button stays fixed at the lower-right corner on both homepage and map and uses the report liquid reveal. Compact 38px level chips use a glow and separate corner remove buttons. Successful saved reports play the Figma-derived check/rings and a one-shot canvas ember burst; pending or failed saves never trigger it. Motion respects reduced-motion preferences. Figma assets are stored under `public/images/motion/`.
 
+On Node 24, EmbeReady uses built-in SQLite. Run `npm ci --omit=optional` to install without compiling the optional `better-sqlite3` fallback. On older Node versions without built-in SQLite, run `npm ci` to install the fallback.
+
 ## Report review
 
 Set a unique `ADMIN_PASSWORD` of at least 16 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
