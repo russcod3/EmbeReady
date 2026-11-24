@@ -8,7 +8,7 @@ const assessments = require('../assessment-service');
 
 const router = express.Router();
 const password = process.env.ADMIN_PASSWORD;
-const passwordDigest = password?.length >= 16 ? digest(password) : null;
+const passwordDigest = password?.length >= 8 ? digest(password) : null;
 const sessionCookie = 'embeready_admin';
 const sessionLifetime = 8 * 60 * 60 * 1000;
 const sessions = new Map();
@@ -30,7 +30,7 @@ function fail(res, status, error) {
 
 router.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
-    if (!passwordDigest) return fail(res, 503, 'Configure ADMIN_PASSWORD to enable report review.');
+    if (!passwordDigest) return fail(res, 503, 'Set ADMIN_PASSWORD to at least 8 characters to enable report review.');
     // Cross-origin forms cannot send JSON, and the server grants no CORS access.
     if (['POST', 'PUT'].includes(req.method) && !req.is('application/json')) {
         return fail(res, 415, 'Send an application/json request.');

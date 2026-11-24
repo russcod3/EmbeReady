@@ -1,6 +1,6 @@
 'use strict';
 const {test,before,after}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const os=require('node:os');const path=require('node:path');const express=require('express');
-const testDir=fs.mkdtempSync(path.join(os.tmpdir(),'embeready-report-tests-'));process.env.DB_PATH=path.join(testDir,'reports.db');process.env.RATE_LIMIT_MAX='100';process.env.GEMINI_API_KEY='test-only-key';process.env.GEMINI_MODEL='gemini-test';process.env.ADMIN_PASSWORD='integration-test-password';
+const testDir=fs.mkdtempSync(path.join(os.tmpdir(),'embeready-report-tests-'));process.env.DB_PATH=path.join(testDir,'reports.db');process.env.RATE_LIMIT_MAX='100';process.env.GEMINI_API_KEY='test-only-key';process.env.GEMINI_MODEL='gemini-test';process.env.ADMIN_PASSWORD='test-8pw';
 const db=require('./db'),ai=require('./ai'),service=require('./assessment-service');let server,base;
 const result=()=>({assessment:{overall_score:75,assessed_level:'heavy',factors_json:'{}',confidence_level:'medium',reasoning_summary:'Test assessment.',engine:'llm',model_version:'gemini-test',score_range:{min:75,max:75},missing_information:[],action_priority:'prompt',evidence_coverage:100},plan:{...Object.fromEntries(['before_steps','during_steps','after_steps','evacuation_tips','prohibited_actions'].map(k=>[k+'_json','["Stay clear.","Contact responders."]'])),local_context_notes:'Test only.'}});
 before(async()=>{db.prepare('INSERT INTO barangays(id,name,classification,center_lat,center_lng) VALUES(1,?,?,?,?)').run('Test barangay','urban',13.7565,121.0583);const app=express();app.use(express.json());app.use('/api/reports',require('./routes/reports'));app.use('/api/hazards',require('./routes/hazards'));app.use('/api/assessments',require('./routes/assessments'));app.use('/api/admin',require('./routes/admin'));server=await new Promise(resolve=>{const running=app.listen(0,'127.0.0.1',()=>resolve(running));});base=`http://127.0.0.1:${server.address().port}`;});
@@ -48,7 +48,7 @@ test('successful historical Gemini assessment and precautions remain exactly pre
  assert.equal(calls,0);assert.equal(detail.assessment.overall_score,40);assert.equal(detail.assessment.factors_json,factors);assert.equal(detail.assessment.reasoning_summary,'Original Gemini summary.');assert.equal(detail.assessment.model_version,'gemini-2.5-flash-lite');assert.deepEqual(detail.plan.before_steps,JSON.parse(steps));assert.deepEqual(db.prepare('SELECT * FROM risk_assessments WHERE hazard_id=?').get(id),original);
 });
 
-test('admin review is authenticated, persists evaluations, and rejects stale updates', async () => {
+test('admin review accepts an 8-character password, persists evaluations, and rejects stale updates', async () => {
     const root = '/api/admin';
     const queue = root + '/reports';
     const admin = (route, method = 'GET', cookie, body) => fetch(base + route, {

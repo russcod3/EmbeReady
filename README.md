@@ -20,6 +20,6 @@ On Node 24, EmbeReady uses built-in SQLite. Run `npm ci --omit=optional` to inst
 
 ## Report review
 
-Set a unique `ADMIN_PASSWORD` of at least 16 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
+Set a unique `ADMIN_PASSWORD` of at least 8 characters in `.env`, restart the server, and open `/admin`. Use HTTPS when sharing the app. If HTTPS terminates at a reverse proxy, configure `TRUST_PROXY` for your deployment.
 
 The queue contains submitted community reports, with live fires listed first. Reviewers can inspect the submitted location, observations, photo, and any saved Gemini assessment before recording a decision, an optional evaluated risk level, and notes. Notes are required for **Needs verification** and **Dismissed**. Review decisions are internal, and community pins and live-fire responder contacts appear as soon as a report is saved.
