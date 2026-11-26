@@ -6,6 +6,16 @@
 
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE IF NOT EXISTS hazard_deletions (
+    id INTEGER PRIMARY KEY,
+    hazard_id INTEGER NOT NULL,
+    ref_code TEXT NOT NULL,
+    report_refs TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    reviewer TEXT NOT NULL,
+    deleted_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- ── Barangays ─────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS barangays (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -116,6 +126,14 @@ CREATE TABLE IF NOT EXISTS emergency_contacts (
 CREATE INDEX IF NOT EXISTS idx_hazards_barangay   ON hazards(barangay_id);
 CREATE INDEX IF NOT EXISTS idx_hazards_status     ON hazards(status);
 CREATE INDEX IF NOT EXISTS idx_hazards_risk_level ON hazards(risk_level);
+
+CREATE TABLE IF NOT EXISTS photo_authenticity_scans (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE,
+    image_hash TEXT NOT NULL,
+    model_revision TEXT NOT NULL,
+    ai_score REAL NOT NULL CHECK(ai_score >= 0 AND ai_score <= 1),
+    scanned_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 CREATE INDEX IF NOT EXISTS idx_assessments_hazard ON risk_assessments(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_plans_hazard       ON preparedness_plans(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_history_hazard     ON fire_history(hazard_id);

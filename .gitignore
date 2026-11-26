@@ -33,3 +33,4 @@ logs/
 # Local recovery snapshots and UI verification artifacts
 data/backups/
 data/qa/
+data/models/

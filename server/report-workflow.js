@@ -6,7 +6,9 @@ const { nearestBarangay } = require('./report-validation');
 
 const sharedReviewer = 'Shared admin';
 const queueOrder = "CASE WHEN h.status = 'active' THEN 0 ELSE 1 END, r.id DESC";
-const publicHazard = 'NOT EXISTS (SELECT 1 FROM review_demo_hazards demo WHERE demo.hazard_id = h.id)';
+const publicHazard = `NOT EXISTS (SELECT 1 FROM review_demo_hazards demo WHERE demo.hazard_id = h.id)
+    AND NOT EXISTS (SELECT 1 FROM reports flagged JOIN report_reviews review ON review.report_id=flagged.id
+        WHERE flagged.hazard_id=h.id AND review.decision='dismissed')`;
 const enabledReviewers = db.prepare('SELECT username FROM reviewer_accounts WHERE enabled = 1 ORDER BY username');
 const findAccount = db.prepare('SELECT username FROM reviewer_accounts WHERE enabled = 1 AND username = ?');
 const inboundLink = db.prepare('SELECT 1 FROM report_followups WHERE duplicate_of = ? LIMIT 1');

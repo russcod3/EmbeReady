@@ -1,4 +1,7 @@
 import { createEmberPuppet } from './ember-puppet.js';
+import { initWelcomeBackground } from './welcome-background.js';
+
+initWelcomeBackground();
 
 const stage = document.getElementById('welcome-ember');
 if (stage) {

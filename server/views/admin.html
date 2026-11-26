@@ -2,311 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#18191b">
-    <title>Report review · EmbeReady</title>
-    <link rel="icon" href="/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#eeeaf8">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Admin · EmbeReady</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="/images/ember-icon.png">
     <link rel="stylesheet" href="/css/tokens.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/experience.css">
+    <link rel="stylesheet" href="/css/ember.css">
+    <link rel="stylesheet" href="/css/eclipse-motion.css">
+    <link rel="stylesheet" href="/css/ui-revision.css">
+    <link rel="stylesheet" href="/css/welcome.css">
     <link rel="stylesheet" href="/css/admin.css">
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="/js/admin.js" defer></script>
+    <script type="module" src="/js/admin.js"></script>
 </head>
-<body>
-    <header class="admin-header">
-        <div class="admin-header-inner">
-            <a class="brand" href="/" aria-label="EmbeReady public site">
-                <img src="/images/embeready-mascot.png" width="36" height="36" alt="">
-                EmbeReady
-            </a>
-            <nav aria-label="Admin navigation">
-                <a href="/">Public site</a>
-                <button id="manage-reviewers" type="button" hidden>Reviewers</button>
-                <span id="reviewer-identity" hidden></span>
-                <button id="sign-out" type="button" hidden>Sign out</button>
-            </nav>
-        </div>
-    </header>
-    <main>
-        <div class="page-heading">
-            <h1>Report review</h1>
-            <p>Review evidence, coordinate follow-up, and keep incident status current.</p>
-        </div>
-        <p id="page-message" class="message" role="status">Checking admin access…</p>
-        <form id="sign-in" class="panel sign-in" hidden>
-            <h2>Admin sign-in</h2>
-            <fieldset class="mode-switch" aria-label="Account type">
-                <label><input type="radio" name="account-mode" value="shared" checked><span>Shared admin</span></label>
-                <label><input type="radio" name="account-mode" value="reviewer"><span>Named reviewer</span></label>
-            </fieldset>
-            <p id="sign-in-help" class="muted">Enter the admin password configured for EmbeReady.</p>
-            <div id="username-field" hidden>
-                <label for="username">Reviewer username</label>
-                <input id="username" name="username" autocomplete="username" maxlength="32" autocapitalize="none" spellcheck="false" disabled>
+<body class="admin-page">
+<div id="app">
+    <main id="view-landing" class="view is-active welcome-page admin-auth-page" aria-label="EmbeReady admin sign in">
+        <div class="welcome-backdrop" aria-hidden="true"><div class="welcome-art"><canvas id="welcome-flow"></canvas><svg class="welcome-traces" viewBox="0 0 1176 500" preserveAspectRatio="xMidYMid slice" fill="none"><path class="welcome-trace welcome-trace-dotted" d="M-80 180C132 19 263 183 481 256S789 203 1015 274"/><path class="welcome-trace welcome-trace-soft" d="M-50 175C152 67 212 175 306 272M350 422C594 421 566 125 736 159M340 304C424 379 487 397 574 374"/></svg></div></div>
+        <header class="admin-topbar admin-auth-topbar">
+            <a class="admin-brand" href="/"><img src="/images/ember-icon.png" width="42" height="42" alt=""><span>EmbeReady<small>ADMIN</small></span></a>
+            <nav class="admin-top-actions" aria-label="Appearance and public site"><a class="public-link" href="/" aria-label="Open public site"><span>Public site</span><span aria-hidden="true">↗</span></a><span data-theme-control></span></nav>
+        </header>
+        <section class="admin-auth-stage">
+            <div class="admin-login-wrap">
+                <div class="admin-peek" aria-hidden="true"><div id="admin-ember"></div></div>
+                <span class="admin-hello">Welcome, admin.</span><span class="admin-grip admin-grip-left" aria-hidden="true"></span><span class="admin-grip admin-grip-right" aria-hidden="true"></span>
+                <form id="sign-in" class="admin-login-card">
+                    <span class="admin-lock-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span>
+                    <h1>Admin sign in</h1><p>Review reports. Keep the community informed.</p>
+                    <label for="username">Username</label><div class="admin-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg><input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="32" placeholder="Your username"></div>
+                    <label for="password">Password</label><div class="admin-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024" placeholder="Your password"><button type="button" id="password-visibility" class="password-eye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div>
+                    <p id="login-message" class="admin-message" role="alert" hidden></p>
+                    <button type="submit" id="sign-in-submit" class="admin-primary">Sign in<span aria-hidden="true">→</span></button>
+                    <div class="admin-login-footer"><span aria-hidden="true">◇</span> EmbeReady administration</div>
+                </form>
             </div>
-            <label for="password" id="password-label">Admin password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024">
-            <button class="primary" type="submit">Sign in</button>
-        </form>
-        <dialog id="reviewer-dialog" class="panel">
-            <div class="queue-heading">
-                <h2>Reviewer accounts</h2>
-                <form method="dialog"><button>Close</button></form>
-            </div>
-            <form id="add-reviewer">
-                <div class="review-fields">
-                    <div>
-                        <label for="new-username">Username</label>
-                        <input id="new-username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9._\-]{2,31}" autocapitalize="none" spellcheck="false">
-                    </div>
-                    <div>
-                        <label for="new-password">Password</label>
-                        <input id="new-password" type="password" required minlength="8" maxlength="1024" autocomplete="new-password">
-                    </div>
+        </section>
+        <footer class="admin-auth-footer"><span>Made for Batangas City</span><button type="button" id="welcome-motion-toggle" class="welcome-motion-toggle" aria-pressed="false"><svg class="welcome-pause-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 3h3v10H4zm5 0h3v10H9z"/></svg><svg class="welcome-play-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="m5 2 9 6-9 6z"/></svg><span class="welcome-motion-label">Pause animations</span></button></footer>
+    </main>
+    <main id="workspace" class="view admin-workspace" hidden>
+        <header class="admin-topbar admin-dashboard-topbar">
+            <a class="admin-brand" href="/admin"><img src="/images/ember-icon.png" width="42" height="42" alt=""><span>EmbeReady<small>ADMIN</small></span></a>
+            <nav class="admin-top-actions" aria-label="Admin account"><a class="public-link" href="/" aria-label="Open public site"><span>Public site</span><span aria-hidden="true">↗</span></a><span data-theme-control></span><button id="sign-out" class="admin-quiet" type="button" aria-label="Sign out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h12"/></svg><span>Sign out</span></button></nav>
+        </header>
+        <div class="admin-shell">
+            <aside class="admin-sidebar"><span class="admin-nav-label">WORKSPACE</span><nav aria-label="Review workspace"><button type="button" data-section="reports" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Reports<span id="nav-pending" class="admin-count">0</span></button><button type="button" data-section="hazards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z M9 3v15M15 6v15"/></svg>All hazards</button></nav><div class="admin-sidebar-note"><span class="admin-status-dot"></span>Human review first<p>Use your observations and external sources to confirm each report.</p></div></aside>
+            <section class="admin-content" aria-labelledby="workspace-title">
+                <div class="admin-page-heading"><div><p class="admin-eyebrow">COMMUNITY OVERSIGHT</p><h1 id="workspace-title">Community reports</h1><p id="workspace-subtitle">A clear view of what needs your attention.</p></div><button type="button" id="refresh" class="admin-secondary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>Refresh</button></div>
+                <div id="admin-metrics" class="admin-metrics"><button type="button" data-review-filter="all"><span>Submitted reports</span><strong id="count-all">0</strong><small>Community submissions</small></button><button type="button" data-review-filter="pending"><span>Needs review</span><strong id="count-pending">0</strong><small>Awaiting your decision</small></button><button type="button" data-review-filter="verified"><span>Verified</span><strong id="count-verified">0</strong><small>Confirmed by an admin</small></button><button type="button" data-review-filter="fake"><span>Marked as fake</span><strong id="count-fake">0</strong><small>Hidden from the public map</small></button></div>
+                <div class="admin-collection">
+                    <div class="admin-filter-row"><div id="review-filters" class="admin-status-filters" role="group" aria-label="Review status"><button type="button" data-review-filter="all" aria-pressed="true">All reports</button><button type="button" data-review-filter="pending" aria-pressed="false">Needs review</button><button type="button" data-review-filter="verified" aria-pressed="false">Verified</button><button type="button" data-review-filter="fake" aria-pressed="false">Fake</button></div><div class="admin-view-switch" role="group" aria-label="Report layout"><button type="button" data-view="grid" aria-label="Grid view" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button><button type="button" data-view="list" aria-label="List view" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h13M8 12h13M8 19h13M3 5h1M3 12h1M3 19h1"/></svg></button></div></div>
+                    <div class="admin-search-row"><label class="admin-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search-query" type="search" placeholder="Search title, reference, or barangay" aria-label="Search reports" maxlength="120"></label><select id="risk-filter" aria-label="Filter risk level"><option value="all">All risk levels</option><option value="live">Live fire</option><option value="heavy">High</option><option value="moderate">Moderate</option><option value="low">Low</option></select><select id="source-filter" aria-label="Filter hazard source" hidden><option value="all">All sources</option><option value="community">Community</option><option value="examples">Examples</option></select></div>
+                    <div class="admin-result-line"><span id="result-count" role="status">Loading reports…</span><span id="example-note">Submitted reports only</span></div>
+                    <p id="collection-message" class="admin-message" role="alert" hidden></p>
+                    <div id="reports" class="admin-report-collection" data-view="grid" aria-live="polite"></div>
+                    <div id="empty-state" class="admin-empty" hidden><div class="admin-empty-icon" aria-hidden="true">✓</div><h2>Your inbox is clear</h2><p>New community reports will appear here.<br>Example hazards are in All hazards.</p></div>
+                    <nav id="pagination" class="admin-pagination" aria-label="Report pages" hidden><button type="button" id="previous" class="admin-secondary">← Previous</button><span id="page-number"></span><button type="button" id="next" class="admin-secondary">Next →</button></nav>
                 </div>
-                <div id="new-role-field" hidden>
-                    <label for="new-role">Account role</label>
-                    <select id="new-role"><option value="reviewer">Reviewer</option><option value="supervisor">Supervisor</option></select>
-                </div>
-                <button class="primary" type="submit">Add account</button>
-            </form>
-            <p id="reviewers-message" class="message" role="status"></p>
-            <ul id="reviewer-list" class="account-list"></ul>
-        </dialog>
-        <div id="workspace" hidden>
-            <section id="operations" class="operations" aria-labelledby="operations-heading">
-                <div class="section-heading">
-                    <div><h2 id="operations-heading">Operations overview</h2><p class="muted">Community workload and reports received in the last 7 days.</p></div>
-                    <button id="show-attention" type="button">Needs attention</button>
-                </div>
-                <dl id="operations-metrics"></dl>
-                <p id="operations-message" class="message" role="status"></p>
             </section>
-            <div class="workspace-toolbar">
-                <fieldset id="queue-source" class="mode-switch" aria-label="Report queue source">
-                    <label><input type="radio" name="queue-source" value="community" checked><span>Community reports</span></label>
-                    <label><input type="radio" name="queue-source" value="demo"><span>Demo queue</span></label>
-                </fieldset>
-                <button id="load-demo" type="button" hidden>Load sample reports</button>
-            </div>
-            <p id="demo-notice" class="demo-notice" hidden>Practice reports stay in this demo queue and never appear on the public map.</p>
-            <div id="filters" class="filters" role="group" aria-label="Filter by review decision">
-                <button type="button" data-decision="all" aria-pressed="true">All reports <strong>0</strong></button>
-                <button type="button" data-decision="pending" aria-pressed="false">Pending <strong>0</strong></button>
-                <button type="button" data-decision="needs_verification" aria-pressed="false">Needs verification <strong>0</strong></button>
-                <button type="button" data-decision="validated" aria-pressed="false">Validated <strong>0</strong></button>
-                <button type="button" data-decision="dismissed" aria-pressed="false">Dismissed <strong>0</strong></button>
-            </div>
-            <div class="review-layout">
-                <section class="panel queue" aria-labelledby="queue-heading">
-                    <div class="queue-heading">
-                        <h2 id="queue-heading">Report queue</h2>
-                        <button id="refresh" type="button">Refresh queue</button>
-                    </div>
-                    <form id="search" class="search" role="search">
-                        <label for="search-query">Search reports</label>
-                        <div>
-                            <input id="search-query" type="search" placeholder="Reference, title, or barangay" maxlength="120">
-                            <button type="submit">Search</button>
-                        </div>
-                    </form>
-                    <div class="follow-up-filter">
-                        <label for="reason-filter">Follow-up reason</label>
-                        <select id="reason-filter"><option value="all">All reasons</option></select>
-                    </div>
-                    <div class="follow-up-filter">
-                        <label for="followup-filter">Follow-up workload</label>
-                        <select id="followup-filter">
-                            <option value="all">All follow-ups</option>
-                            <option value="attention">Needs attention</option>
-                            <option value="mine">Assigned to me</option>
-                            <option value="overdue">Overdue</option>
-                        </select>
-                    </div>
-                    <p id="queue-message" class="muted" role="status"></p>
-                    <ul id="reports" class="report-list"></ul>
-                    <nav id="pagination" class="pagination" aria-label="Report pages" hidden>
-                        <button id="previous" type="button">Previous</button>
-                        <span id="page-number"></span>
-                        <button id="next" type="button">Next</button>
-                    </nav>
-                </section>
-                <section class="panel detail" aria-labelledby="detail-heading">
-                    <h2 id="detail-heading" tabindex="-1">Report details</h2>
-                    <p id="detail-message" class="muted" role="status">Select a report to review its evidence.</p>
-                    <div id="detail-content" hidden>
-                        <div class="detail-meta">
-                            <span id="demo-badge" class="badge" hidden>Demo report</span>
-                            <span id="report-reference" class="reference"></span>
-                            <span id="report-decision" class="badge"></span>
-                        </div>
-                        <nav class="detail-links" aria-label="Jump within report">
-                            <a href="#review">Moderator review</a>
-                            <a href="#workflow">Follow-up &amp; incident</a>
-                            <a id="reporter-jump" href="#reporter-contact">Reporter replies</a>
-                            <a href="#history-heading">Review history</a>
-                            <a class="back-to-queue" href="#queue-heading">Back to queue</a>
-                        </nav>
-                        <dl id="report-facts" class="facts"></dl>
-                        <section class="detail-section location" aria-labelledby="location-heading">
-                            <div class="section-heading">
-                                <h3 id="location-heading">Location &amp; nearby reports</h3>
-                                <a id="report-map" target="_blank" rel="noopener noreferrer" hidden>OpenStreetMap</a>
-                            </div>
-                            <div id="map-preview" aria-label="Report location and nearby report pins" hidden></div>
-                            <div id="map-legend" class="map-legend muted" hidden>
-                                <span>Selected pin</span><span>Nearby report</span>
-                            </div>
-                            <p id="map-message" class="muted" role="status"></p>
-                            <p id="location-message" class="muted"></p>
-                            <ul id="nearby-reports" class="nearby-list"></ul>
-                            <details id="pin-editor" class="case-panel">
-                                <summary>Correct report pin</summary>
-                                <p class="muted">Click the map to choose a new pin or enter coordinates below. Previous coordinates stay in the history.</p>
-                                <form id="pin-form">
-                                    <fieldset id="pin-fields">
-                                        <div class="review-fields">
-                                            <div><label for="pin-lat">Pin latitude</label><input id="pin-lat" type="number" step="any" required></div>
-                                            <div><label for="pin-lng">Pin longitude</label><input id="pin-lng" type="number" step="any" required></div>
-                                        </div>
-                                        <div class="review-fields">
-                                            <div><label for="pin-barangay">Confirmed barangay</label><select id="pin-barangay" required></select></div>
-                                            <div><label for="pin-address">Corrected address (optional)</label><input id="pin-address" maxlength="500"></div>
-                                        </div>
-                                        <label for="pin-reason">Reason for moving or correcting the pin</label>
-                                        <input id="pin-reason" maxlength="500" required>
-                                        <button type="submit">Save pin correction</button>
-                                    </fieldset>
-                                </form>
-                                <p id="pin-message" class="message" role="status"></p>
-                                <ol id="pin-history" class="timeline"></ol>
-                            </details>
-                        </section>
-                        <div id="report-evidence" class="detail-section">
-                            <h3>Submitted evidence</h3>
-                            <p id="report-description"></p>
-                            <dl id="report-observations" class="observations"></dl>
-                            <a id="photo-link" target="_blank" rel="noopener noreferrer" hidden>
-                                <img id="report-photo" alt="Photo submitted with the report">
-                                Open full photo
-                            </a>
-                        </div>
-                        <div class="detail-section assessment">
-                            <h3>Risk comparison</h3>
-                            <dl id="risk-comparison" class="risk-comparison"></dl>
-                            <h4>Gemini assessment</h4>
-                            <p id="assessment-summary"></p>
-                            <div id="assessment-missing" hidden>
-                                <h4>Missing information</h4>
-                                <ul id="missing-information"></ul>
-                            </div>
-                            <details id="assessment-details" hidden>
-                                <summary>Risk factors</summary>
-                                <dl id="assessment-factors" class="observations"></dl>
-                            </details>
-                        </div>
-                        <form id="review" class="detail-section">
-                            <h3>Moderator review</h3>
-                            <p id="review-context">Validation displays a Verified label on the public map. Review notes stay private.</p>
-                            <fieldset id="review-fields" aria-label="Review decision and evaluation">
-                                <div class="review-fields">
-                                    <div>
-                                        <label for="decision">Validation decision</label>
-                                        <select id="decision" required>
-                                            <option value="">Choose a decision</option>
-                                            <option value="validated">Validated</option>
-                                            <option value="needs_verification">Needs verification</option>
-                                            <option value="dismissed">Dismissed</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="evaluated-level">Evaluated risk</label>
-                                        <select id="evaluated-level">
-                                            <option value="">Not evaluated</option>
-                                            <option value="low">Low</option>
-                                            <option value="moderate">Moderate</option>
-                                            <option value="heavy">Heavy</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="review-reason-field" hidden>
-                                    <label for="review-reason">Follow-up reason</label>
-                                    <select id="review-reason"><option value="">Select a reason</option></select>
-                                </div>
-                                <div id="correction-field" hidden>
-                                    <label for="correction-reason">Reason for correcting the prior review</label>
-                                    <input id="correction-reason" maxlength="500">
-                                </div>
-                                <label for="notes">Review notes <span id="notes-requirement">(optional)</span></label>
-                                <textarea id="notes" rows="4" maxlength="2000" placeholder="Record what you verified or what needs follow-up."></textarea>
-                                <div class="review-actions">
-                                    <button class="primary" type="submit">Save review</button>
-                                    <button id="save-next" type="submit">Save and open next</button>
-                                    <span id="review-time" class="muted"></span>
-                                </div>
-                            </fieldset>
-                            <p id="review-access" class="muted" hidden>A supervisor can change another reviewer’s decision.</p>
-                            <p id="review-message" class="message" role="status"></p>
-                        </form>
-                        <form id="workflow" class="detail-section">
-                            <h3>Follow-up &amp; incident</h3>
-                            <fieldset id="workflow-fields" aria-label="Follow-up and incident status">
-                                <div class="review-fields">
-                                    <div>
-                                        <label for="assignee">Assigned reviewer</label>
-                                        <select id="assignee"></select>
-                                    </div>
-                                    <div>
-                                        <label for="due-on">Due date</label>
-                                        <input id="due-on" type="date">
-                                    </div>
-                                    <div>
-                                        <label for="original-reference">Original report reference</label>
-                                        <input id="original-reference" list="nearby-references" maxlength="64" placeholder="Enter or choose a reference" aria-describedby="duplicate-help">
-                                        <datalist id="nearby-references"></datalist>
-                                        <small id="duplicate-help">Clear the reference to undo a duplicate link.</small>
-                                        <button id="open-original" type="button" hidden>Open linked original</button>
-                                    </div>
-                                    <div>
-                                        <label for="incident-status">Incident status</label>
-                                        <select id="incident-status"></select>
-                                    </div>
-                                </div>
-                                <button type="submit" class="primary">Save follow-up</button>
-                            </fieldset>
-                            <p id="workflow-message" class="message" role="status"></p>
-                        </form>
-                        <section id="reporter-contact" class="detail-section" aria-labelledby="reporter-heading">
-                            <div class="section-heading">
-                                <h3 id="reporter-heading">Reporter follow-up</h3>
-                                <button id="refresh-replies" type="button">Refresh replies</button>
-                            </div>
-                            <p>Create a private link to share with the reporter. It expires in 7 days or when you create a replacement.</p>
-                            <form id="ask-reporter">
-                                <label for="reporter-question">Question for the reporter</label>
-                                <textarea id="reporter-question" rows="2" maxlength="1000" required placeholder="Ask for a landmark, corrected map coordinates, or a photo."></textarea>
-                                <button type="submit">Create private reply link</button>
-                            </form>
-                            <div id="reply-link-field" class="review-actions" hidden>
-                                <div><label for="reply-link">Private reply link</label><input id="reply-link" readonly></div>
-                                <button id="copy-link" type="button">Copy link</button>
-                            </div>
-                            <p id="reporter-message" class="message" role="status"></p>
-                            <ol id="reporter-replies" class="timeline"></ol>
-                        </section>
-                        <section class="detail-section" aria-labelledby="history-heading">
-                            <h3 id="history-heading">Review history</h3>
-                            <p id="history-empty" class="muted">No decisions recorded yet.</p>
-                            <ol id="review-history" class="timeline"></ol>
-                            <details id="workflow-log" hidden>
-                                <summary>Follow-up and incident changes</summary>
-                                <ol id="workflow-history" class="timeline"></ol>
-                            </details>
-                        </section>
-                    </div>
-                </section>
-            </div>
         </div>
     </main>
+</div>
+<dialog id="review-dialog" class="admin-dialog" aria-labelledby="review-title"><div id="review-content"></div></dialog>
+<dialog id="photo-dialog" class="admin-photo-dialog" aria-labelledby="photo-title"><header><h2 id="photo-title">Submitted photo</h2><button type="button" data-close-dialog="photo-dialog" class="admin-icon-button" aria-label="Close photo">×</button></header><img id="full-photo" alt="Submitted report evidence"></dialog>
+<dialog id="delete-dialog" class="admin-confirm-dialog" aria-labelledby="delete-title"><form id="delete-confirm"><span class="admin-delete-symbol" aria-hidden="true">×</span><h2 id="delete-title">Delete this hazard?</h2><p id="delete-description"></p><label for="delete-reason">Reason for removal</label><select id="delete-reason"><option value="no_longer_exists">The hazard no longer exists</option><option value="fake_report">The report is fake or misleading</option><option value="requested_removal">Requested removal</option></select><p class="admin-delete-note">This permanently removes the hazard pin, its submitted report, and the uploaded photo.</p><p id="delete-message" class="admin-message" role="alert" hidden></p><div class="admin-confirm-actions"><button type="button" data-close-dialog="delete-dialog" class="admin-secondary">Cancel</button><button type="submit" id="delete-submit" class="admin-danger">Delete permanently</button></div></form></dialog>
+<div id="admin-toast" class="admin-toast" role="status" hidden></div>
 </body>
 </html>

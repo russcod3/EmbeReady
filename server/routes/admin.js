@@ -16,6 +16,7 @@ const pageSize = 20;
 
 installAdminAuth(router);
 installDemoQueue(router);
+require('../admin-dashboard').installAdminDashboard(router);
 
 const reportJoins = `
     FROM reports r

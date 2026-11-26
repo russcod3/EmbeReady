@@ -8,6 +8,7 @@ const db = require('./db');
 const deriveKey = promisify(scrypt);
 const usernamePattern = /^[a-z0-9][a-z0-9._-]{2,31}$/;
 const sharedPassword = process.env.ADMIN_PASSWORD;
+const adminUsername = (process.env.ADMIN_USERNAME || 'admin').trim().toLowerCase();
 const sharedDigest = sharedPassword?.length >= 8 ? digest(sharedPassword) : null;
 const sessionLifetime = 8 * 60 * 60 * 1000;
 const sessions = new Map();
@@ -46,7 +47,7 @@ function installAdminAuth(router) {
             return fail(res, 503, 'Set ADMIN_PASSWORD to at least 8 characters to enable report review.');
         }
         // Cross-origin forms cannot send JSON, and this server grants no CORS access.
-        if (['POST', 'PUT'].includes(req.method) && !req.is('application/json')) {
+        if (['POST', 'PUT', 'DELETE'].includes(req.method) && !req.is('application/json')) {
             return fail(res, 415, 'Send an application/json request.');
         }
         next();
@@ -67,7 +68,11 @@ function installAdminAuth(router) {
                 return fail(res, 401, 'Incorrect username or password.');
             }
             let reviewer;
-            if (!username) {
+            if (username === adminUsername) {
+                if (sharedDigest && timingSafeEqual(digest(password), sharedDigest)) {
+                    reviewer = { username: adminUsername, owner: true, supervisor: true };
+                }
+            } else if (!username) {
                 if (sharedDigest && timingSafeEqual(digest(password), sharedDigest)) {
                     reviewer = { username: 'Shared admin', owner: true, supervisor: true };
                 }

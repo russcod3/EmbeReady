@@ -36,6 +36,7 @@ function buildInput(id) {
  return{hazard,context,barangay:{name:hazard.barangay_name},snapshot,hash};
 }
 function saveResult(input,result){
+ if(!db.prepare('SELECT 1 FROM hazards WHERE id=?').get(input.hazard.id))return;
  // Both assessment and precautions are published as one immutable result.
  db.runTransaction(()=>{
   const run=db.prepare('INSERT INTO assessment_runs (hazard_id,input_hash,input_json,result_json,model_version,rubric_version) VALUES (?,?,?,?,?,?)').run(input.hazard.id,input.hash,JSON.stringify(input.snapshot),JSON.stringify(result),ai.modelName(),VERSION);

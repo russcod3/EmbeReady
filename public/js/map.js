@@ -37,6 +37,8 @@ function buildTileLayer() {
             minZoom: 3,
             tileSize: 256,
             detectRetina: true,
+            updateWhenZooming: false,
+            updateWhenIdle: true,
             attribution:
                 '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
         }
@@ -57,7 +59,11 @@ export function initMap(containerId = 'map', onSelectHazard = null) {
         zoom: DEFAULT_ZOOM,
         zoomControl: false,
         attributionControl: true,
-        preferCanvas: true  // canvas renderer — faster marker drawing
+        preferCanvas: true,
+        zoomSnap: 0.25,
+        zoomDelta: 0.5,
+        wheelDebounceTime: 80,
+        wheelPxPerZoomLevel: 160
     });
 
     // Keep zoom controls above the legend, with the current level below them.
@@ -129,7 +135,7 @@ function createHazardMarker(hazard) {
         iconAnchor: [14, 14]
     });
 
-    const marker = L.marker([hazard.lat, hazard.lng], { icon, title: hazard.title, alt: hazard.title });
+    const marker = L.marker([hazard.lat, hazard.lng], { icon, title: hazard.title, alt: hazard.title, riseOnHover: true, riseOffset: 500 });
 
     // Custom tooltip
     const previousFire = hazard.active_started_at && S.statuses[hazard.status];
@@ -151,6 +157,7 @@ function createHazardMarker(hazard) {
     });
 
     marker.on('click', () => {
+        marker.closeTooltip();
         if (_onSelectHazard) _onSelectHazard(hazard.id);
     });
 

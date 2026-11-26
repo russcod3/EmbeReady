@@ -1,0 +1,12 @@
+{
+  "name": "onnx-community/ai-image-detection-ONNX",
+  "revision": "e3cfe99f2841930a040a6281682c10c989965603",
+  "license": "Apache-2.0",
+  "directory": "ai-image-detector",
+  "threshold": 0.5,
+  "files": [
+    { "name": "config.json" },
+    { "name": "preprocessor_config.json" },
+    { "name": "onnx/model_quantized.onnx", "sha256": "11a8189f453b9bd7f3bbb6527f8aa5a116e6b6559ca933951ed434abf6ac8d95" }
+  ]
+}

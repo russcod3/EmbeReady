@@ -15,12 +15,12 @@ const hazards = [
 function controls(storage = new Map()) {
     const chips = ['all', ...levels].map(level => element({ filter:level }));
     const removes=levels.map(level=>element({removeLevel:level}));
-    const nodes = Object.fromEntries(['filter-barangay-select','filter-category-select','filter-reset-btn','filter-tip','filter-tip-dismiss','hazard-empty-state','map-empty-state','live-fire-counter','live-counter-text'].map(id => [id,element()]));
+    const nodes = Object.fromEntries(['filter-barangay-select','filter-category-select','filter-reset-btn','filter-hint','filter-hint-dismiss','filter-tip','filter-tip-dismiss','hazard-empty-state','map-empty-state','live-fire-counter','live-counter-text'].map(id => [id,element()]));
     const rendered = [];
     let fetchSnapshot = async () => hazards;
     const { context } = loadFrontend('public/js/app.js', [], {
         ...rules, S: { map: { hideAll:'Hide all', showAll:'Show all', liveCount:n=>`${n} Live` }, errors:{loadFailed:'Failed'} },
-        document: { addEventListener() {}, querySelectorAll:selector => selector === '.filter-bar .filter-chip' ? chips : selector === '[data-remove-level]' ? removes : [], getElementById:id => nodes[id] },
+        document: { addEventListener() {}, querySelector(){return null;}, querySelectorAll:selector => selector === '.filter-bar .filter-chip' ? chips : selector === '[data-remove-level]' ? removes : [], getElementById:id => nodes[id] },
         localStorage: {getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value)},
         window:{dispatchEvent(){}},Event:class {},
         renderHazards:visible => rendered.push([...visible]), closeDrawer() {},
@@ -126,4 +126,13 @@ test('stored heavy and reporter-selected levels use the correct switch without a
     expectView(ui,levels,[1,2,3,4]);
     assert.equal(ui.removes.find(button=>button.dataset.removeLevel==='high').hidden,false);
     ui.nodes['filter-reset-btn'].click();expectView(ui,levels,[1,2,3,4]);
+});
+
+test('Got it dismisses the filter explanation and remembers the dismissal',()=>{
+    const ui=controls();
+    assert.equal(ui.nodes['filter-hint'].hidden,false);
+    ui.nodes['filter-hint-dismiss'].click();
+    assert.equal(ui.nodes['filter-hint'].hidden,true);
+    assert.equal(controls(ui.storage).nodes['filter-hint'].hidden,true);
+    assert.equal(ui.nodes['filter-tip'].hidden,false);
 });

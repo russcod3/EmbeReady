@@ -469,6 +469,15 @@ function updateFilterChips() {
 }
 
 function setupFilterTip() {
+    const hint = document.getElementById('filter-hint');
+    if (hint) {
+        try { hint.hidden = localStorage.getItem('embeready-filter-hint-dismissed') === '1'; } catch { hint.hidden = false; }
+        document.getElementById('filter-hint-dismiss')?.addEventListener('click', () => {
+            hint.hidden = true;
+            document.querySelector('.level-switches')?.removeAttribute('aria-describedby');
+            try { localStorage.setItem('embeready-filter-hint-dismissed', '1'); } catch {}
+        });
+    }
     const tip = document.getElementById('filter-tip');
     if (!tip) return;
     try { tip.hidden = localStorage.getItem('embeready-filter-tip-dismissed') === '1'; }

@@ -17,6 +17,7 @@ import { escapeHtml } from './utils.js';
 import { fetchHazardDetail } from './api.js';
 import { riskCardsMarkup, initRiskCards } from './risk-cards.js';
 import { assessmentText, isPreparedAssessment } from './assessment-copy.js';
+import { initPlanNavigation } from './plan-navigation.js';
 
 let _drawerEl = null;
 let _closeBtn = null;
@@ -25,6 +26,7 @@ let _activeTimerInterval = null;
 let _currentHazardId=null, _requestVersion=0, _cleanupCards=()=>{}, _assessmentKey="";
 let _currentData = null;
 let _refreshVersion = 0;
+let _cleanupPlanNavigation = () => {};
 const resultKey=data=>`${data.hazard.status}:${data.hazard.verification_status}:${data.hazard.ai_status}:${data.assessment?.id||""}:${data.hazard.ai_error||""}`;
 
 /**
@@ -57,7 +59,9 @@ export function initDrawer() {
             if (id !== _currentHazardId || version !== _requestVersion || refresh !== _refreshVersion || resultKey(data) === _assessmentKey) return;
             const scroll=_contentEl.scrollTop,index=Number(_contentEl.querySelector('.factor-carousel')?.dataset.index||0);
             renderHazardContent(data,index);_contentEl.scrollTop=scroll;
-        } catch {}
+        } catch (error) {
+            if (error.status === 404 && id === _currentHazardId && version === _requestVersion && refresh === _refreshVersion) closeDrawer();
+        }
     });
     window.addEventListener('language:changed', () => {
         if (!_currentData || !isDrawerOpen()) return;
@@ -76,7 +80,7 @@ export function isDrawerOpen() {
 
 export function closeDrawer() {
     if (!_drawerEl) return;
-    _requestVersion++;_currentHazardId=null;_currentData=null;_cleanupCards();
+    _requestVersion++;_currentHazardId=null;_currentData=null;_cleanupCards();_cleanupPlanNavigation();
     _drawerEl.classList.remove('is-open');
     document.body.classList.remove('drawer-open');
     if (_activeTimerInterval) {
@@ -97,7 +101,7 @@ export async function openDrawer(hazardId) {
         _activeTimerInterval = null;
     }
 
-    const version=++_requestVersion;_currentHazardId=hazardId;_currentData=null;_cleanupCards();
+    const version=++_requestVersion;_currentHazardId=hazardId;_currentData=null;_cleanupCards();_cleanupPlanNavigation();
     // Show loading state
     _contentEl.innerHTML = `
         <div style="padding: var(--space-8); text-align: center; color: var(--color-charcoal-400);">
@@ -136,6 +140,7 @@ export async function openDrawer(hazardId) {
  * renderHazardContent({ hazard, assessment, plan, history, contacts })
  */
 function renderHazardContent({ hazard, assessment, plan, history, contacts },cardIndex=0) {
+    _cleanupPlanNavigation();
     _currentData = { hazard, assessment, plan, history, contacts };
     _cleanupCards();
     _assessmentKey=resultKey({hazard,assessment});
@@ -314,7 +319,7 @@ ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-d
                 </div>
             ` : ''}
             ${hazard.description ? `
-                <div style="font-size:var(--text-sm);color:var(--color-charcoal-500);line-height:1.5;">
+                <div class="drawer-description" style="font-size:var(--text-sm);color:var(--text-on-light-2);line-height:1.6;">
                     ${escapeHtml(display(hazard.description))}
                 </div>
             ` : ''}
@@ -340,13 +345,13 @@ ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-d
                 <span style="font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">${S.drawer.preparedness}</span>
                 <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-charcoal-300);">${prepared ? S.drawer.guidance : S.drawer.geminiGuidance}</span>
             </div>
-            <div class="plan-tabs" role="tablist">
+            <div class="plan-tabs-shell"><button type="button" class="plan-scroll-arrow plan-scroll-left" data-plan-scroll="-1" aria-label="${S.drawer.scrollPlanLeft}">‹</button><div class="plan-tabs" role="tablist">
                 <button class="plan-tab is-active" data-tab-target="before">${S.drawer.tabBefore}</button>
                 <button class="plan-tab" data-tab-target="during">${S.drawer.tabDuring}</button>
                 <button class="plan-tab" data-tab-target="after">${S.drawer.tabAfter}</button>
                 <button class="plan-tab" data-tab-target="evac">${S.drawer.tabEvacuation}</button>
                 <button class="plan-tab" data-tab-target="prohibited">${S.drawer.tabProhibited}</button>
-            </div>
+            </div></div>
             <div class="plan-content is-active" data-tab="before">
                 ${renderSteps(beforeSteps)}
             </div>
@@ -403,6 +408,11 @@ ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-d
     if(displayFactors)_cleanupCards=initRiskCards(_contentEl,displayFactors,cardIndex);
 
     // Bind tab clicks
+    const planTabs = _contentEl.querySelector('.plan-tabs');
+    if (planTabs) {
+        planTabs.insertAdjacentHTML('afterend', `<button type="button" class="plan-scroll-arrow plan-scroll-right" data-plan-scroll="1" aria-label="${S.drawer.scrollPlanRight}">›</button>`);
+        _cleanupPlanNavigation = initPlanNavigation(_contentEl);
+    }
     const tabs = _contentEl.querySelectorAll('.plan-tab');
     const tabPanels = _contentEl.querySelectorAll('.plan-content');
     tabs.forEach(tab => {
