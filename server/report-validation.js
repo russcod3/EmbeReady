@@ -1,13 +1,18 @@
 'use strict';
 const CATEGORIES = new Set(['faulty_wiring','lpg_storage','dry_grass','overloaded_outlets','blocked_exit','illegal_burning','informal_settlement','flammable_storage','other']);
 
+function isWithinBatangas(lat, lng) {
+    return Number.isFinite(lat) && Number.isFinite(lng) &&
+        lat >= 13.60 && lat <= 13.85 && lng >= 120.93 && lng <= 121.14;
+}
+
 function validateReport(body) {
     const live = body.report_type === 'live_fire' || body.category === 'live_fire' || body.status === 'active';
     const lat = body.lat === '' || body.lat == null ? NaN : Number(body.lat);
     const lng = body.lng === '' || body.lng == null ? NaN : Number(body.lng);
     const errors = [];
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) errors.push('Pin the location on the map.');
-    else if (lat < 13.60 || lat > 13.85 || lng < 120.93 || lng > 121.14) errors.push('The pin must be within Batangas City.');
+    else if (!isWithinBatangas(lat, lng)) errors.push('The pin must be within Batangas City.');
     if (!live && !CATEGORIES.has(body.category)) errors.push('Select a fire hazard category.');
     const title = live ? 'Live fire reported' : String(body.title || '').trim();
     if (!live && (title.length < 5 || title.length > 180)) errors.push('Use a hazard title between 5 and 180 characters.');
@@ -32,4 +37,4 @@ function nearestBarangay(barangays,lat,lng) {
     const distance = b => (Number(b.center_lat)-lat)**2 + ((Number(b.center_lng)-lng)*Math.cos(lat*Math.PI/180))**2;
     return barangays.reduce((nearest,b)=>!nearest || distance(b)<distance(nearest) ? b : nearest,null);
 }
-module.exports={validateReport,nearestBarangay};
+module.exports={isWithinBatangas,validateReport,nearestBarangay};

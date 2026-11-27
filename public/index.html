@@ -7,7 +7,7 @@
     <meta name="description" content="EmbeReady — Community fire hazard and risk map for Batangas City, Philippines. Community reports and Gemini-generated fire risk insights. No account needed.">
     <title>EmbeReady — Batangas City Fire Hazard & Risk Map</title>
 
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/png" sizes="64x64" href="./images/ember-icon.png">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -21,12 +21,13 @@
     <link rel="stylesheet" href="./css/map-symbols.css">
     <link rel="stylesheet" href="./css/ember.css">
     <link rel="stylesheet" href="./css/report-flow.css">
-    <link rel="stylesheet" href="./css/welcome.css">
     <link rel="stylesheet" href="./css/risk-cards.css">
     <link rel="stylesheet" href="./css/map-controls.css">
     <link rel="stylesheet" href="./css/eclipse-motion.css">
     <link rel="stylesheet" href="./css/success-motion.css">
     <link rel="stylesheet" href="./css/ui-revision.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/welcome.css">
 </head>
 <body>
     <div id="app">
@@ -35,6 +36,22 @@
              VIEW 1: LANDING & SEARCH (Hero Dispatch)
         ══════════════════════════════════════════════════════════════════════ -->
         <main id="view-landing" class="view is-active welcome-page" aria-label="Welcome to EmbeReady">
+            <div class="welcome-backdrop" aria-hidden="true">
+                <div class="welcome-art">
+                    <canvas id="welcome-flow"></canvas>
+                    <svg class="welcome-traces" viewBox="0 0 1176 500" preserveAspectRatio="xMidYMid slice" fill="none">
+                        <g>
+                            <path class="welcome-trace welcome-trace-dotted" d="M-80 180C132 19 263 183 481 256S789 203 1015 274"/>
+                            <path class="welcome-trace" d="M-50 175C152 67 212 175 306 272"/>
+                            <path class="welcome-trace welcome-trace-soft" d="M-20 148C188 105 149 272 180 417"/>
+                            <path class="welcome-trace" d="M340 304C424 379 487 397 574 374"/>
+                            <path class="welcome-trace welcome-trace-soft" d="M350 422C594 421 566 125 736 159"/>
+                            <path class="welcome-trace welcome-trace-soft" d="M350 422C586 428 631 159 670 114"/>
+                            <g class="welcome-trace-nodes" fill="currentColor"><circle cx="306" cy="272" r="3"/><circle cx="180" cy="417" r="3"/><circle cx="574" cy="374" r="3"/><circle cx="736" cy="159" r="3"/><circle cx="670" cy="114" r="3"/><circle cx="1015" cy="274" r="4"/></g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
             <header class="welcome-header">
                 <div class="topbar-wordmark"><img class="ember-brand" src="./images/embeready-mascot.png" width="44" height="44" alt=""><span>EmbeReady</span></div>
                 <span class="welcome-location">BATANGAS CITY, PH</span><div class="welcome-tools"><div class="language-switch" role="group" aria-label="Language" data-i18n-aria-label="help.language"><button type="button" data-language="en" lang="en" aria-pressed="true">English</button><button type="button" data-language="tl" lang="tl" aria-pressed="false">Tagalog</button></div><span data-theme-control></span></div>
@@ -44,6 +61,10 @@
                     <span class="welcome-eyebrow" data-i18n="welcome.eyebrow">A safer community starts with us</span>
                     <h1><span class="welcome-title-line" data-i18n="welcome.heading">Welcome to</span><br><span data-i18n="welcome.accent">EmbeReady.</span></h1>
                     <p data-i18n="welcome.intro">I’m Ember, your fire safety companion. Explore nearby fire hazards, understand the risks, and help keep Batangas City informed.</p>
+                    <div class="welcome-actions">
+                        <button type="button" id="landing-explore-btn" class="welcome-map-button"><span data-i18n="welcome.explore">Go to the fire hazard map</span><span class="welcome-button-arrow" aria-hidden="true">↗</span></button>
+                        <p class="welcome-button-note" data-i18n="welcome.note">Explore. Report. Be ready.</p>
+                    </div>
                     <div class="welcome-features"><span data-i18n="welcome.features.0">Community reports</span><span data-i18n="welcome.features.1">Gemini risk insights</span><span data-i18n="welcome.features.2">No account needed</span></div>
                     <details class="welcome-search"><summary data-i18n="welcome.search">Jump to a barangay or landmark</summary>
                         <form id="landing-search-form" class="landing-search-form" role="search"><div class="search-input-wrap"><input type="text" id="landing-search-input" class="landing-search-input" placeholder="Search Batangas City…" autocomplete="off" aria-label="Search location in Batangas City"><div id="landing-autocomplete" class="search-autocomplete" role="listbox"></div></div><button type="submit" class="search-btn" data-i18n="landing.searchBtn">Search</button></form>
@@ -51,15 +72,12 @@
                     </details>
                 </div>
                 <div class="welcome-stage">
-                    <div class="welcome-orbit" aria-hidden="true"></div>
-                    <div class="welcome-fire" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="welcome-character-halo" aria-hidden="true"></div>
                     <div id="welcome-ember" class="welcome-character" aria-hidden="true"></div>
                     <div class="welcome-speech" data-i18n="welcome.greeting">Hi! I’m Ember.</div>
-                    <button type="button" id="landing-explore-btn" class="welcome-map-button"><span data-i18n="welcome.explore">Go to the fire hazard map</span> <span aria-hidden="true">→</span></button>
-                    <p class="welcome-button-note" data-i18n="welcome.note">Explore. Report. Be ready.</p>
                 </div>
             </section>
-            <footer class="welcome-footer"><span data-i18n="welcome.madeFor">Made for Batangas City</span><span data-i18n="welcome.footer">Local awareness. Shared preparedness.</span></footer>
+            <footer class="welcome-footer"><span class="welcome-made-for" data-i18n="welcome.madeFor">Made for Batangas City</span><span class="welcome-footer-message" data-i18n="welcome.footer">Local awareness. Shared preparedness.</span><button type="button" id="welcome-motion-toggle" class="welcome-motion-toggle" aria-pressed="false"><svg class="welcome-pause-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 3h3v10H4zm5 0h3v10H9z"/></svg><svg class="welcome-play-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="m5 2 9 6-9 6z"/></svg><span class="welcome-motion-label">Pause animations</span></button></footer>
         </main>
 
         <!-- ══════════════════════════════════════════════════════════════════════
@@ -134,7 +152,7 @@
                     <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="moderate" aria-pressed="true"><span data-map-symbol="moderate"></span><span data-i18n="map.moderate">Moderate</span></button><button type="button" class="filter-remove" data-remove-level="moderate" aria-label="Hide moderate hazards">×</button></span>
                     <span class="level-pill"><button type="button" class="filter-chip is-active" data-filter="low" aria-pressed="true"><span data-map-symbol="low"></span><span data-i18n="map.low">Low</span></button><button type="button" class="filter-remove" data-remove-level="low" aria-label="Hide low hazards">×</button></span>
                 </div>
-                <p id="filter-hint" class="filter-hint" data-i18n="map.filterHint">A glowing level is visible. Tap a level to switch it on or off, or use × to hide it. All shows every level; tap it again to hide all.</p>
+                <div id="filter-hint" class="filter-hint"><p data-i18n="map.filterHint">A glowing level is visible. Tap a level to switch it on or off, or use × to hide it. All shows every level; tap it again to hide all.</p><button type="button" id="filter-hint-dismiss" data-i18n="map.dismissTip">Got it</button></div>
                 <div id="filter-tip" class="filter-tip" hidden>
                     <strong data-i18n="map.tipTitle">Choose what you see</strong>
                     <p data-i18n="map.tipText">A glow means a level is shown. Use its × to hide it. Tap any level to turn it on or off. All shows every level, or hides them when all are on.</p>

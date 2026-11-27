@@ -132,7 +132,6 @@ async function monitorAssessments(start=false,retry=false) {
             _assessmentProgress=progress;renderAssessmentProgress();
             button.hidden=!progress.unavailable||Boolean(progress.queued+progress.processing);
             await loadHazards();
-            window.dispatchEvent(new CustomEvent('assessment:updated'));
             if(!progress.queued&&!progress.processing)break;
             await new Promise(resolve=>setTimeout(resolve,2500));
             progress=await fetchAssessmentStatus();
@@ -470,6 +469,15 @@ function updateFilterChips() {
 }
 
 function setupFilterTip() {
+    const hint = document.getElementById('filter-hint');
+    if (hint) {
+        try { hint.hidden = localStorage.getItem('embeready-filter-hint-dismissed') === '1'; } catch { hint.hidden = false; }
+        document.getElementById('filter-hint-dismiss')?.addEventListener('click', () => {
+            hint.hidden = true;
+            document.querySelector('.level-switches')?.removeAttribute('aria-describedby');
+            try { localStorage.setItem('embeready-filter-hint-dismissed', '1'); } catch {}
+        });
+    }
     const tip = document.getElementById('filter-tip');
     if (!tip) return;
     try { tip.hidden = localStorage.getItem('embeready-filter-tip-dismissed') === '1'; }
@@ -503,6 +511,7 @@ async function loadHazards() {
         _hazardsLoaded = true;
         renderFilteredHazards();
         updateLiveFireCounter(hazards.filter(hazard => hazard.status === 'active').length);
+        window.dispatchEvent(new Event('hazards:updated'));
     } catch (err) {
         if (version !== _hazardLoadVersion) return;
         console.error('[App] Failed to load hazards:', err);

@@ -1,0 +1,80 @@
+/* Keep touch layouts within the viewport and avoid animating hidden views. */
+.view:not(.is-active) .ember-puppet *,
+body:has(dialog[open]) #view-map .ember-puppet * { animation-play-state: paused !important; }
+.explore-hud, #hazard-drawer .drawer-inner, #report-section, #report-modal, .faq-dialog {
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+@media (max-width: 1023px) {
+    .explore-hud .landing-search-input,
+    #report-section .form-input,
+    #report-section .form-select,
+    #report-section .form-textarea { font-size: 16px; }
+    .report-dialog-header { position: sticky; top: 0; z-index: 5; background: var(--surface-raised); }
+    .dialog-close, .faq-close, .drawer-close-btn { min-width: 44px; min-height: 44px; }
+    .step-summary { flex: 0 1 44%; min-width: 0; text-align: right; }
+    .report-step summary > span:first-child { min-width: 0; }
+    .report-step-body { overflow-wrap: anywhere; }
+    #report-modal .modal-ref, .contact-phone { overflow-wrap: anywhere; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .map-header { padding-inline: 20px; gap: 12px; }
+    .map-header-wordmark > span:not(.ember-puppet) { display: none; }
+    .map-header .nav-toggles { gap: 8px; }
+    .map-header .language-switch button { min-height: 40px; padding: 7px 9px; font-size: 12px; }
+    .map-header-actions { gap: 8px; }
+    #map-report-btn { min-height: 44px; padding-inline: 12px; font-size: 12px; }
+    .drawer-open .explore-hud { visibility: hidden; pointer-events: none; }
+    #hazard-drawer { width: min(380px, 48vw); right: 12px; }
+    .drawer-open .leaflet-bottom.leaflet-left { left: calc((100% - min(380px, 48vw) - 24px) / 2); }
+    .drawer-open .map-legend { right: calc(min(380px, 48vw) + 24px); }
+    .map-empty-state { width: min(310px, calc(100% - 344px)); right: 12px; }
+}
+
+@media (max-width: 767px) {
+    .explore-hud { padding-bottom: max(28px, env(safe-area-inset-bottom)); }
+    .explore-hud .sheet-grabber { position: sticky; top: 0; z-index: 4; background: inherit; }
+    .explore-hud .sheet-tools { position: sticky; top: 28px; z-index: 3; padding-bottom: 6px; background: inherit; }
+    .explore-hud h2 { font-size: 19px; }
+    .drawer-open #hazard-drawer .drawer-inner { padding-bottom: max(30px, env(safe-area-inset-bottom)); }
+    #report-section .report-section-inner { padding: 20px; }
+    #report-section .liquid-trigger { font-size: 14px; gap: 8px; padding-inline: 14px; }
+    #report-section .report-step summary { flex-wrap: wrap; padding-inline: 12px; }
+    #report-section .report-step-body { padding-inline: 12px; }
+    #report-section .form-label { line-height: 1.65; }
+    #report-modal .modal-header { padding-inline: 20px; }
+    #report-modal .modal-body { padding-inline: 20px; }
+    .faq-dialog { max-height: calc(100dvh - 24px); }
+}
+
+@media (max-width: 359px) {
+    .map-header .nav-toggles { gap: 6px; }
+    .map-header .theme-toggle { width: 76px; height: 36px; }
+    .map-header .eclipse-art { transform: scale(.08); }
+    .map-header .language-switch button { padding-inline: 8px; font-size: 12px; }
+    #report-section .report-section-inner { padding: 18px; }
+    #report-section .report-heading { font-size: 21px; }
+    .contact-copy-row { flex-wrap: wrap; }
+    .contact-copy-number { flex: 1 1 100%; }
+    .copy-contact { width: 100%; }
+}
+/* Small-screen map help and horizontally overflowing preparedness tabs. */
+.filter-hint>p { margin:0; }
+.filter-hint>button { min-height:36px; margin-top:9px; padding:6px 12px; border:1px solid #c5d7ed; border-radius:8px; background:#fff; color:#386694; font-size:11px; font-weight:600; }
+[data-theme='dark'] .filter-hint>button { background:#2c435f; border-color:#557194; color:#daebff; }
+.plan-tabs-shell { position:relative; min-width:0; overflow:hidden; }
+.plan-tabs-shell .plan-tabs { padding-inline:30px; scroll-padding-inline:35px; }
+.plan-scroll-arrow { position:absolute; top:4px; bottom:5px; z-index:3; display:grid; place-items:center; width:29px; border:1px solid #dce3ed; border-radius:8px; background:#fffffff5; color:#4b6d95; box-shadow:0 2px 8px #152b4912; font-size:24px; line-height:1; opacity:0; pointer-events:none; transition:opacity .16s,background .16s; }
+.plan-scroll-left { left:1px; }.plan-scroll-right { right:1px; }
+.plan-tabs-shell[data-can-left='true']:is(:hover,:focus-within) .plan-scroll-left,.plan-tabs-shell[data-can-right='true']:is(:hover,:focus-within) .plan-scroll-right { opacity:1; pointer-events:auto; }
+.plan-scroll-arrow:disabled { visibility:hidden; }
+.plan-scroll-arrow:focus-visible { opacity:1; outline:2px solid #729fd6; outline-offset:-2px; }
+[data-theme='dark'] .plan-scroll-arrow { background:#33455f; border-color:#5a6e89; color:#dce9ff; }
+@media(hover:none) { .plan-tabs-shell[data-can-left='true'] .plan-scroll-left,.plan-tabs-shell[data-can-right='true'] .plan-scroll-right { opacity:1; pointer-events:auto; } }
+.er-marker { transform-origin:50% 60%; transition:transform .18s cubic-bezier(.2,.8,.3,1),filter .18s; }
+.er-marker-wrapper:hover .er-marker,.er-marker-wrapper:focus-visible .er-marker { transform:translateY(-2px) scale(1.15); filter:drop-shadow(0 3px 5px #263a5240); }
+.er-tooltip-wrap { max-width:min(260px,calc(100vw - 36px)); white-space:normal; pointer-events:none; transition:opacity .14s; }
+.er-tooltip .tooltip-title { line-height:1.45; }.er-tooltip .tooltip-meta { margin-top:4px; line-height:1.5; }
+@media(prefers-reduced-motion:reduce) { .plan-scroll-arrow,.er-marker,.er-tooltip-wrap { transition:none; } }

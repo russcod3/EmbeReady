@@ -91,7 +91,10 @@ const EN_STRINGS = {
 
     // ── Detail drawer ─────────────────────────────────────────────────────────
     drawer: {
+        verification: { verified: 'Verified', unverified: 'Unverified' },
         closeBtn:       'Close',
+        scrollPlanLeft: 'Show earlier preparedness tabs',
+        scrollPlanRight:'Show more preparedness tabs',
         reportedLevel:  'Reported level',
         assessedLevel:  'AI-assessed level',
         statusLabel:    'Status',
@@ -233,6 +236,7 @@ const EN_STRINGS = {
         features: ['Community reports', 'Gemini risk insights', 'No account needed'],
         search: 'Jump to a barangay or landmark', greeting: 'Hi! I’m Ember.',
         explore: 'Go to the fire hazard map', note: 'Explore. Report. Be ready.',
+        pauseMotion: 'Pause animations', resumeMotion: 'Play animations',
         madeFor: 'Made for Batangas City', footer: 'Local awareness. Shared preparedness.'
     },
     help: { faq: 'FAQ', title: 'Frequently asked questions', close: 'Close FAQ', language: 'Language' }
@@ -266,6 +270,7 @@ const TL_STRINGS = {
         ready:n => `${n} pagsusuri ang handa`, progressError:'Hindi matingnan ang pag-usad ng pagsusuri'
     },
     drawer: {
+        verification: { verified: 'Naberipika', unverified: 'Hindi pa beripikado' },
         ...EN_STRINGS.drawer,
         closeBtn:'Isara', barangayLabel:'Barangay', addressLabel:'Tirahan', categoryLabel:'Uri ng panganib', descLabel:'Paglalarawan',
         historyTitle:'Kasaysayan ng sunog sa lokasyong ito', noHistory:'Walang tala ng insidente para sa ulat na ito.', contactsTitle:'Mga contact sa emergency',
@@ -294,6 +299,11 @@ const TL_STRINGS = {
     welcome: { eyebrow:'Nagsisimula sa atin ang mas ligtas na komunidad', heading:'Maligayang pagdating sa', accent:'EmbeReady.', intro:'Ako si Ember, ang iyong kasama sa kaligtasan sa sunog. Tingnan ang mga kalapit na panganib, unawain ang mga risk, at tulungang manatiling may kaalaman ang Batangas City.', features:['Mga ulat ng komunidad','Pagsusuri ng Gemini','Hindi kailangan ng account'], search:'Pumunta sa barangay o palatandaan', greeting:'Kumusta! Ako si Ember.', explore:'Pumunta sa mapa ng panganib sa sunog', note:'Tuklasin. Mag-ulat. Maghanda.', madeFor:'Para sa Batangas City', footer:'Kaalaman sa komunidad. Sama-samang paghahanda.' },
     help: { faq:'FAQ', title:'Mga madalas itanong', close:'Isara ang FAQ', language:'Wika' }
 };
+
+TL_STRINGS.welcome.pauseMotion = 'Ihinto ang mga galaw';
+TL_STRINGS.welcome.resumeMotion = 'Ituloy ang mga galaw';
+TL_STRINGS.drawer.scrollPlanLeft = 'Ipakita ang mga naunang tab sa paghahanda';
+TL_STRINGS.drawer.scrollPlanRight = 'Ipakita ang iba pang tab sa paghahanda';
 
 TL_STRINGS.ember = { greeting:'Kumusta, ako si Ember.', idle:'Pindutin ang isang pin sa mapa upang makita ang ulat at gabay sa kaligtasan.', saved:'Na-save ang iyong ulat. Direktang kontakin ang mga responder kung kailangan.', thinking:'Sinusuri ang iyong ulat.', hello:'Kumusta! Tutulungan kitang tuklasin ang mapa.', walking:'Handa ka na? Pumili ng barangay o pindutin ang isang pin.', paused:'Naka-off ang galaw · ayon sa system', resume:'Ipagpatuloy ang galaw ng mascot', pause:'Ihinto ang galaw ng mascot', wave:'Kumaway kay Ember' };
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#eeeaf8">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Admin · EmbeReady</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="/images/ember-icon.png">
+    <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/experience.css">
+    <link rel="stylesheet" href="/css/ember.css">
+    <link rel="stylesheet" href="/css/eclipse-motion.css">
+    <link rel="stylesheet" href="/css/ui-revision.css">
+    <link rel="stylesheet" href="/css/welcome.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script type="module" src="/js/admin.js"></script>
+</head>
+<body class="admin-page">
+<div id="app">
+    <main id="view-landing" class="view is-active welcome-page admin-auth-page" aria-label="EmbeReady admin sign in">
+        <div class="welcome-backdrop" aria-hidden="true"><div class="welcome-art"><canvas id="welcome-flow"></canvas><svg class="welcome-traces" viewBox="0 0 1176 500" preserveAspectRatio="xMidYMid slice" fill="none"><path class="welcome-trace welcome-trace-dotted" d="M-80 180C132 19 263 183 481 256S789 203 1015 274"/><path class="welcome-trace welcome-trace-soft" d="M-50 175C152 67 212 175 306 272M350 422C594 421 566 125 736 159M340 304C424 379 487 397 574 374"/></svg></div></div>
+        <header class="admin-topbar admin-auth-topbar">
+            <a class="admin-brand" href="/"><img src="/images/ember-icon.png" width="42" height="42" alt=""><span>EmbeReady<small>ADMIN</small></span></a>
+            <nav class="admin-top-actions" aria-label="Appearance and public site"><a class="public-link" href="/" aria-label="Open public site"><span>Public site</span><span aria-hidden="true">↗</span></a><span data-theme-control></span></nav>
+        </header>
+        <section class="admin-auth-stage">
+            <div class="admin-login-wrap">
+                <div class="admin-peek" aria-hidden="true"><div id="admin-ember"></div></div>
+                <span class="admin-hello">Welcome, admin.</span><span class="admin-grip admin-grip-left" aria-hidden="true"></span><span class="admin-grip admin-grip-right" aria-hidden="true"></span>
+                <form id="sign-in" class="admin-login-card">
+                    <span class="admin-lock-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span>
+                    <h1>Admin sign in</h1><p>Review reports. Keep the community informed.</p>
+                    <label for="username">Username</label><div class="admin-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg><input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="32" placeholder="Your username"></div>
+                    <label for="password">Password</label><div class="admin-input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024" placeholder="Your password"><button type="button" id="password-visibility" class="password-eye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div>
+                    <p id="login-message" class="admin-message" role="alert" hidden></p>
+                    <button type="submit" id="sign-in-submit" class="admin-primary">Sign in<span aria-hidden="true">→</span></button>
+                    <div class="admin-login-footer"><span aria-hidden="true">◇</span> EmbeReady administration</div>
+                </form>
+            </div>
+        </section>
+        <footer class="admin-auth-footer"><span>Made for Batangas City</span><button type="button" id="welcome-motion-toggle" class="welcome-motion-toggle" aria-pressed="false"><svg class="welcome-pause-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 3h3v10H4zm5 0h3v10H9z"/></svg><svg class="welcome-play-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="m5 2 9 6-9 6z"/></svg><span class="welcome-motion-label">Pause animations</span></button></footer>
+    </main>
+    <main id="workspace" class="view admin-workspace" hidden>
+        <header class="admin-topbar admin-dashboard-topbar">
+            <a class="admin-brand" href="/admin"><img src="/images/ember-icon.png" width="42" height="42" alt=""><span>EmbeReady<small>ADMIN</small></span></a>
+            <nav class="admin-top-actions" aria-label="Admin account"><a class="public-link" href="/" aria-label="Open public site"><span>Public site</span><span aria-hidden="true">↗</span></a><span data-theme-control></span><button id="sign-out" class="admin-quiet" type="button" aria-label="Sign out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h12"/></svg><span>Sign out</span></button></nav>
+        </header>
+        <div class="admin-shell">
+            <aside class="admin-sidebar"><span class="admin-nav-label">WORKSPACE</span><nav aria-label="Review workspace"><button type="button" data-section="reports" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Reports<span id="nav-pending" class="admin-count">0</span></button><button type="button" data-section="hazards"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z M9 3v15M15 6v15"/></svg>All hazards</button></nav><div class="admin-sidebar-note"><span class="admin-status-dot"></span>Human review first<p>Use your observations and external sources to confirm each report.</p></div></aside>
+            <section class="admin-content" aria-labelledby="workspace-title">
+                <div class="admin-page-heading"><div><p class="admin-eyebrow">COMMUNITY OVERSIGHT</p><h1 id="workspace-title">Community reports</h1><p id="workspace-subtitle">A clear view of what needs your attention.</p></div><button type="button" id="refresh" class="admin-secondary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>Refresh</button></div>
+                <div id="admin-metrics" class="admin-metrics"><button type="button" data-review-filter="all"><span>Submitted reports</span><strong id="count-all">0</strong><small>Community submissions</small></button><button type="button" data-review-filter="pending"><span>Needs review</span><strong id="count-pending">0</strong><small>Awaiting your decision</small></button><button type="button" data-review-filter="verified"><span>Verified</span><strong id="count-verified">0</strong><small>Confirmed by an admin</small></button><button type="button" data-review-filter="fake"><span>Marked as fake</span><strong id="count-fake">0</strong><small>Hidden from the public map</small></button></div>
+                <div class="admin-collection">
+                    <div class="admin-filter-row"><div id="review-filters" class="admin-status-filters" role="group" aria-label="Review status"><button type="button" data-review-filter="all" aria-pressed="true">All reports</button><button type="button" data-review-filter="pending" aria-pressed="false">Needs review</button><button type="button" data-review-filter="verified" aria-pressed="false">Verified</button><button type="button" data-review-filter="fake" aria-pressed="false">Fake</button></div><div class="admin-view-switch" role="group" aria-label="Report layout"><button type="button" data-view="grid" aria-label="Grid view" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button><button type="button" data-view="list" aria-label="List view" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h13M8 12h13M8 19h13M3 5h1M3 12h1M3 19h1"/></svg></button></div></div>
+                    <div class="admin-search-row"><label class="admin-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search-query" type="search" placeholder="Search title, reference, or barangay" aria-label="Search reports" maxlength="120"></label><select id="risk-filter" aria-label="Filter risk level"><option value="all">All risk levels</option><option value="live">Live fire</option><option value="heavy">High</option><option value="moderate">Moderate</option><option value="low">Low</option></select><select id="source-filter" aria-label="Filter hazard source" hidden><option value="all">All sources</option><option value="community">Community</option><option value="examples">Examples</option></select></div>
+                    <div class="admin-result-line"><span id="result-count" role="status">Loading reports…</span><span id="example-note">Submitted reports only</span></div>
+                    <p id="collection-message" class="admin-message" role="alert" hidden></p>
+                    <div id="reports" class="admin-report-collection" data-view="grid" aria-live="polite"></div>
+                    <div id="empty-state" class="admin-empty" hidden><div class="admin-empty-icon" aria-hidden="true">✓</div><h2>Your inbox is clear</h2><p>New community reports will appear here.<br>Example hazards are in All hazards.</p></div>
+                    <nav id="pagination" class="admin-pagination" aria-label="Report pages" hidden><button type="button" id="previous" class="admin-secondary">← Previous</button><span id="page-number"></span><button type="button" id="next" class="admin-secondary">Next →</button></nav>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+<dialog id="review-dialog" class="admin-dialog" aria-labelledby="review-title"><div id="review-content"></div></dialog>
+<dialog id="photo-dialog" class="admin-photo-dialog" aria-labelledby="photo-title"><header><h2 id="photo-title">Submitted photo</h2><button type="button" data-close-dialog="photo-dialog" class="admin-icon-button" aria-label="Close photo">×</button></header><img id="full-photo" alt="Submitted report evidence"></dialog>
+<dialog id="delete-dialog" class="admin-confirm-dialog" aria-labelledby="delete-title"><form id="delete-confirm"><span class="admin-delete-symbol" aria-hidden="true">×</span><h2 id="delete-title">Delete this hazard?</h2><p id="delete-description"></p><label for="delete-reason">Reason for removal</label><select id="delete-reason"><option value="no_longer_exists">The hazard no longer exists</option><option value="fake_report">The report is fake or misleading</option><option value="requested_removal">Requested removal</option></select><p class="admin-delete-note">This permanently removes the hazard pin, its submitted report, and the uploaded photo.</p><p id="delete-message" class="admin-message" role="alert" hidden></p><div class="admin-confirm-actions"><button type="button" data-close-dialog="delete-dialog" class="admin-secondary">Cancel</button><button type="submit" id="delete-submit" class="admin-danger">Delete permanently</button></div></form></dialog>
+<div id="admin-toast" class="admin-toast" role="status" hidden></div>
+</body>
+</html>

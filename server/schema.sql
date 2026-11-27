@@ -6,6 +6,16 @@
 
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE IF NOT EXISTS hazard_deletions (
+    id INTEGER PRIMARY KEY,
+    hazard_id INTEGER NOT NULL,
+    ref_code TEXT NOT NULL,
+    report_refs TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    reviewer TEXT NOT NULL,
+    deleted_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- ── Barangays ─────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS barangays (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -116,6 +126,14 @@ CREATE TABLE IF NOT EXISTS emergency_contacts (
 CREATE INDEX IF NOT EXISTS idx_hazards_barangay   ON hazards(barangay_id);
 CREATE INDEX IF NOT EXISTS idx_hazards_status     ON hazards(status);
 CREATE INDEX IF NOT EXISTS idx_hazards_risk_level ON hazards(risk_level);
+
+CREATE TABLE IF NOT EXISTS photo_authenticity_scans (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE,
+    image_hash TEXT NOT NULL,
+    model_revision TEXT NOT NULL,
+    ai_score REAL NOT NULL CHECK(ai_score >= 0 AND ai_score <= 1),
+    scanned_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 CREATE INDEX IF NOT EXISTS idx_assessments_hazard ON risk_assessments(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_plans_hazard       ON preparedness_plans(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_history_hazard     ON fire_history(hazard_id);
@@ -146,4 +164,116 @@ CREATE TABLE IF NOT EXISTS assessment_jobs (
     run_id INTEGER REFERENCES assessment_runs(id),
     error_code TEXT,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Human review is stored separately from submitted evidence and Gemini results.
+CREATE TABLE IF NOT EXISTS report_reviews (
+    report_id       INTEGER PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
+    decision        TEXT NOT NULL CHECK (decision IN ('validated', 'needs_verification', 'dismissed')),
+    evaluated_level TEXT CHECK (evaluated_level IN ('low', 'moderate', 'heavy')),
+    notes           TEXT NOT NULL DEFAULT '' CHECK (length(notes) <= 2000),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    version         INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)
+);
+
+CREATE TABLE IF NOT EXISTS reviewer_accounts (
+    username       TEXT PRIMARY KEY COLLATE NOCASE,
+    password_hash  TEXT NOT NULL,
+    enabled        INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
+    created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS report_review_history (
+    report_id       INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    version         INTEGER NOT NULL,
+    decision        TEXT NOT NULL,
+    evaluated_level TEXT,
+    reason          TEXT CHECK (reason IN ('unclear_location', 'possible_duplicate', 'insufficient_evidence', 'other')),
+    notes           TEXT NOT NULL,
+    reviewer        TEXT NOT NULL,
+    reviewed_at     TEXT NOT NULL,
+    PRIMARY KEY (report_id, version)
+);
+
+-- Retain the last saved state of reviews that predate reviewer history.
+INSERT OR IGNORE INTO report_review_history
+    (report_id, version, decision, evaluated_level, notes, reviewer, reviewed_at)
+SELECT report_id, version, decision, evaluated_level, notes, 'Legacy review', updated_at
+FROM report_reviews;
+
+CREATE INDEX IF NOT EXISTS idx_reports_hazard ON reports(hazard_id);
+CREATE INDEX IF NOT EXISTS idx_hazards_location ON hazards(lat, lng);
+
+CREATE TABLE IF NOT EXISTS review_demo_hazards (
+    hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS report_followups (
+    report_id    INTEGER PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
+    assignee     TEXT,
+    due_on       TEXT,
+    duplicate_of INTEGER REFERENCES reports(id) ON DELETE SET NULL,
+    version      INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_followups_duplicates ON report_followups(duplicate_of);
+
+CREATE TABLE IF NOT EXISTS report_workflow_history (
+    id          INTEGER PRIMARY KEY,
+    report_id   INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    reviewer    TEXT NOT NULL,
+    changes     TEXT NOT NULL,
+    recorded_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_history_report ON report_workflow_history(report_id, id DESC);
+
+CREATE TABLE IF NOT EXISTS supervisor_accounts (
+    username TEXT PRIMARY KEY COLLATE NOCASE REFERENCES reviewer_accounts(username) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS review_corrections (
+    report_id INTEGER NOT NULL,
+    version   INTEGER NOT NULL,
+    reason    TEXT NOT NULL,
+    PRIMARY KEY (report_id, version),
+    FOREIGN KEY (report_id, version) REFERENCES report_review_history(report_id, version) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS report_pin_changes (
+    id           INTEGER PRIMARY KEY,
+    hazard_id    INTEGER NOT NULL REFERENCES hazards(id) ON DELETE CASCADE,
+    reviewer     TEXT NOT NULL,
+    previous_lat REAL NOT NULL,
+    previous_lng REAL NOT NULL,
+    lat          REAL NOT NULL,
+    lng          REAL NOT NULL,
+    reason       TEXT NOT NULL,
+    changed_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+CREATE INDEX IF NOT EXISTS idx_pin_changes_hazard ON report_pin_changes(hazard_id, id DESC);
+
+CREATE TABLE IF NOT EXISTS reporter_followups (
+    id           INTEGER PRIMARY KEY,
+    report_id    INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+    token_hash   TEXT NOT NULL UNIQUE,
+    requested_by TEXT NOT NULL,
+    question     TEXT NOT NULL,
+    requested_at TEXT NOT NULL DEFAULT (datetime('now')),
+    expires_at   TEXT NOT NULL DEFAULT (datetime('now', '+7 days')),
+    cancelled_at TEXT,
+    replied_at   TEXT,
+    reply        TEXT,
+    reply_lat    REAL,
+    reply_lng    REAL,
+    photo_mime   TEXT,
+    photo        BLOB,
+    read_at      TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_reporter_followups_report ON reporter_followups(report_id, id DESC);
+CREATE INDEX IF NOT EXISTS idx_reporter_followups_unread ON reporter_followups(report_id, replied_at)
+    WHERE replied_at IS NOT NULL AND read_at IS NULL;
+
+CREATE TABLE IF NOT EXISTS report_pin_location_details (
+    change_id         INTEGER PRIMARY KEY REFERENCES report_pin_changes(id) ON DELETE CASCADE,
+    previous_barangay TEXT,
+    barangay          TEXT NOT NULL,
+    previous_address  TEXT,
+    address           TEXT
 );
