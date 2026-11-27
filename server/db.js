@@ -80,6 +80,7 @@ db.runTransaction = function runTransaction(fn, { immediate = false } = {}) {
 
 console.log(`[DB] Connected → ${DB_PATH}`);
 
+require('./fire-stations').syncFireStations(db);
 require('./load-mock-observations')(db);
 require('./install-saved-assessments')(db);
 // A restarted server cannot resume requests owned by its previous process.

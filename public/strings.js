@@ -328,6 +328,7 @@ EN_STRINGS.flow = {
     liveSaving:'Your contacts are ready. Copy a number below to call manually.', liveSaved:'Live fire location saved. Use the contacts below to call manually.',
     assessing:'Report saved. Gemini is assessing your observations in the background. Your selected risk is shown until assessment completes.', unavailable:'Report saved. Gemini is unavailable; your selected risk remains labelled as reporter-selected.',
     contactSaveError:'The report could not be saved. Contacts remain available to copy and call manually.',
+    contactUnavailable:'Hotline unavailable',
     sampleContact:'Sample contact', sampleNote:'Sample number for demonstration. Replace with a verified number before real use.', nearestPin:'nearest to pin', copy:'Copy', copied:'Copied', sampleCopied:'Sample number copied. This is not an operational emergency contact.', copiedNote:'Number copied. Call manually to contact responders.', selectCopy:'The number is selected. Use Copy on your device.'
 };
 TL_STRINGS.flow = {
@@ -347,6 +348,7 @@ TL_STRINGS.flow = {
     savingLocation:'Sine-save ang lokasyon…', savingReport:'Sine-save ang ulat…', saved:'Na-save ang ulat', responders:'Kontakin ang mga responder', savingPin:'Sine-save ang naka-pin mong lokasyon…', notSaved:'Hindi na-save ang lokasyon',
     contactsIntro:'Kumopya ng numero at ikaw ang tumawag. Ang pagbukas ng panel ay hindi nagpapadala ng alert o tumatawag.', back:'Bumalik sa mapa', liveSaving:'Handa na ang mga contact. Kumopya ng numero sa ibaba at ikaw ang tumawag.', liveSaved:'Na-save ang lokasyon ng sunog. Gamitin ang mga contact sa ibaba upang ikaw ang tumawag.',
     assessing:'Na-save ang ulat. Sinusuri ng Gemini ang mga obserbasyon. Ipinapakita muna ang pinili mong antas hanggang matapos ang pagsusuri.', unavailable:'Na-save ang ulat. Hindi magamit ang Gemini; may label pa rin ang pinili mong antas bilang pinili ng nag-ulat.', contactSaveError:'Hindi ma-save ang ulat. Maaari mo pa ring kopyahin ang mga contact at ikaw ang tumawag.',
+    contactUnavailable:'Walang available na hotline',
     sampleContact:'Halimbawang contact', sampleNote:'Halimbawang numero para sa demo. Palitan ng beripikadong numero bago gamitin sa tunay na sitwasyon.', nearestPin:'pinakamalapit sa pin', copy:'Kopyahin', copied:'Nakopya', sampleCopied:'Nakopya ang halimbawang numero. Hindi ito gumaganang contact sa emergency.', copiedNote:'Nakopya ang numero. Ikaw ang tumawag upang makontak ang mga responder.', selectCopy:'Napili ang numero. Gamitin ang Copy sa iyong device.'
 };
 

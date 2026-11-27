@@ -580,6 +580,7 @@ function seed() {
         });
     }
     console.log(`[seed] Inserted ${contacts.length} emergency contacts.`);
+    require('./fire-stations').syncFireStations(db);
 
     // ── Insert hazards ────────────────────────────────────────────────────────
     const insertHazard = db.prepare(`

@@ -2,6 +2,7 @@
  * server/routes/contacts.js
  * ─────────────────────────────────────────────────────────────────────────────
  * GET /api/contacts           — all emergency contacts
+ * GET /api/contacts/fire-stations — saved station locations and phone lines
  * GET /api/contacts/:barangay — contacts for a specific barangay + citywide
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -11,6 +12,15 @@
 const express = require('express');
 const db      = require('../db');
 const router  = express.Router();
+const { listFireStations } = require('../fire-stations');
+
+router.get('/fire-stations', (req, res) => {
+    try {
+        res.json({ success: true, data: listFireStations(db) });
+    } catch (err) {
+        res.status(500).json({ success: false, error: 'Database error' });
+    }
+});
 
 router.get('/', (req, res) => {
     try {

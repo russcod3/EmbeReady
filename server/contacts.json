@@ -1,218 +1,983 @@
 [
   {
-    "jurisdiction":   "Citywide",
-    "agency_type":    "National",
-    "facility_name":  "National Emergency Hotline",
-    "phone_display":  "911",
+    "jurisdiction": "Citywide",
+    "agency_type": "National",
+    "facility_name": "National Emergency Hotline",
+    "phone_display": "911",
     "phone_dialable": "911",
     "is_placeholder": false,
-    "sort_order":     1
+    "sort_order": 1
   },
   {
-    "jurisdiction":   "Citywide",
-    "agency_type":    "BFP",
-    "facility_name":  "BFP Batangas City Fire Station",
-    "phone_display":  "REPLACE-ME-BFP-BTG",
-    "phone_dialable": "REPLACE-ME-BFP-BTG",
-    "is_placeholder": true,
-    "sort_order":     2
+    "jurisdiction": "Citywide",
+    "agency_type": "BFP",
+    "facility_name": "BFP Batangas City Fire Station",
+    "phone_display": "(043) 301 7966",
+    "phone_dialable": "09156021984",
+    "is_placeholder": false,
+    "sort_order": 2
   },
   {
-    "jurisdiction":   "Citywide",
-    "agency_type":    "Police",
-    "facility_name":  "Batangas City Police Station",
-    "phone_display":  "REPLACE-ME-BCPO",
-    "phone_dialable": "REPLACE-ME-BCPO",
-    "is_placeholder": true,
-    "sort_order":     3
+    "jurisdiction": "Citywide",
+    "agency_type": "Police",
+    "facility_name": "Batangas City Police Station",
+    "phone_display": "(043) 723 2476",
+    "phone_dialable": "09164291515",
+    "is_placeholder": false,
+    "sort_order": 3
   },
   {
-    "jurisdiction":   "Citywide",
-    "agency_type":    "Hospital",
-    "facility_name":  "Batangas Medical Center",
-    "phone_display":  "REPLACE-ME-BMC",
-    "phone_dialable": "REPLACE-ME-BMC",
-    "is_placeholder": true,
-    "sort_order":     4
+    "jurisdiction": "Citywide",
+    "agency_type": "Hospital",
+    "facility_name": "Batangas Medical Center",
+    "phone_display": "(043) 740 8307",
+    "phone_dialable": "09199133102",
+    "is_placeholder": false,
+    "sort_order": 4
   },
   {
-    "jurisdiction":   "Citywide",
-    "agency_type":    "Hospital",
-    "facility_name":  "Batangas Regional Hospital",
-    "phone_display":  "REPLACE-ME-BRH",
-    "phone_dialable": "REPLACE-ME-BRH",
-    "is_placeholder": true,
-    "sort_order":     5
+    "jurisdiction": "Brgy. 1 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 1 (Poblacion)",
+    "phone_display": "0954 453 8677",
+    "phone_dialable": "09544538677",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Brgy. 1 (Poblacion)",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Brgy. 1",
-    "phone_display":  "REPLACE-ME-BRGY1",
-    "phone_dialable": "REPLACE-ME-BRGY1",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 2 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 2 (Poblacion)",
+    "phone_display": "(043) 724 6438",
+    "phone_dialable": "0437246438",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Brgy. 3 (Poblacion)",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Brgy. 3",
-    "phone_display":  "REPLACE-ME-BRGY3",
-    "phone_dialable": "REPLACE-ME-BRGY3",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 3 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 3 (Poblacion)",
+    "phone_display": "(043) 706 4500",
+    "phone_dialable": "0437064500",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Brgy. 7 (Poblacion)",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Brgy. 7",
-    "phone_display":  "REPLACE-ME-BRGY7",
-    "phone_dialable": "REPLACE-ME-BRGY7",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 4 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 4 (Poblacion)",
+    "phone_display": "(043) 980 5597",
+    "phone_dialable": "0439805597",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Brgy. 12 (Poblacion)",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Brgy. 12",
-    "phone_display":  "REPLACE-ME-BRGY12",
-    "phone_dialable": "REPLACE-ME-BRGY12",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 5 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 5 (Poblacion)",
+    "phone_display": "(043) 722 8365",
+    "phone_dialable": "0437228365",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Brgy. 18 (Poblacion)",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Brgy. 18",
-    "phone_display":  "REPLACE-ME-BRGY18",
-    "phone_dialable": "REPLACE-ME-BRGY18",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 6 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 6 (Poblacion)",
+    "phone_display": "(043) 702 1592",
+    "phone_dialable": "0437021592",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Alangilan",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Alangilan",
-    "phone_display":  "REPLACE-ME-ALANGILAN",
-    "phone_dialable": "REPLACE-ME-ALANGILAN",
+    "jurisdiction": "Brgy. 7 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 7 (Poblacion)",
+    "phone_display": "(043) 965 1496",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Kumintang Ibaba",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Kumintang Ibaba",
-    "phone_display":  "REPLACE-ME-KUMIBABA",
-    "phone_dialable": "REPLACE-ME-KUMIBABA",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 8 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 8 (Poblacion)",
+    "phone_display": "(043) 723 3368",
+    "phone_dialable": "0437233368",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Kumintang Ilaya",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Kumintang Ilaya",
-    "phone_display":  "REPLACE-ME-KUMILAYA",
-    "phone_dialable": "REPLACE-ME-KUMILAYA",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 9 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 9 (Poblacion)",
+    "phone_display": "(043) 723 9522",
+    "phone_dialable": "0437239522",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Pallocan West",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Pallocan West",
-    "phone_display":  "REPLACE-ME-PALW",
-    "phone_dialable": "REPLACE-ME-PALW",
+    "jurisdiction": "Brgy. 10 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 10 (Poblacion)",
+    "phone_display": "(043) 935 4086",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Pallocan East",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Pallocan East",
-    "phone_display":  "REPLACE-ME-PALE",
-    "phone_dialable": "REPLACE-ME-PALE",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 11 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 11 (Poblacion)",
+    "phone_display": "(043) 726 3625",
+    "phone_dialable": "0437263625",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Santa Clara",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Santa Clara",
-    "phone_display":  "REPLACE-ME-SANTACLARA",
-    "phone_dialable": "REPLACE-ME-SANTACLARA",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 12 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 12 (Poblacion)",
+    "phone_display": "(043) 702 5874",
+    "phone_dialable": "0437025874",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Wawa",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Wawa",
-    "phone_display":  "REPLACE-ME-WAWA",
-    "phone_dialable": "REPLACE-ME-WAWA",
+    "jurisdiction": "Brgy. 13 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 13 (Poblacion)",
+    "phone_display": "(043) 926 1487",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Calicanto",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Calicanto",
-    "phone_display":  "REPLACE-ME-CALICANTO",
-    "phone_dialable": "REPLACE-ME-CALICANTO",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 14 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 14 (Poblacion)",
+    "phone_display": "(043) 752 0586",
+    "phone_dialable": "0437520586",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Bolbok",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Bolbok",
-    "phone_display":  "REPLACE-ME-BOLBOK",
-    "phone_dialable": "REPLACE-ME-BOLBOK",
+    "jurisdiction": "Brgy. 15 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 15 (Poblacion)",
+    "phone_display": "(043) 934 0144",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Tabangao",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Tabangao",
-    "phone_display":  "REPLACE-ME-TABANGAO",
-    "phone_dialable": "REPLACE-ME-TABANGAO",
+    "jurisdiction": "Brgy. 16 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 16 (Poblacion)",
+    "phone_display": "(043) 851 1829",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Ilijan",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Ilijan",
-    "phone_display":  "REPLACE-ME-ILIJAN",
-    "phone_dialable": "REPLACE-ME-ILIJAN",
+    "jurisdiction": "Brgy. 17 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 17 (Poblacion)",
+    "phone_display": "(043) 818 0257",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Sorosoro Ibaba",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Sorosoro Ibaba",
-    "phone_display":  "REPLACE-ME-SORIBABA",
-    "phone_dialable": "REPLACE-ME-SORIBABA",
+    "jurisdiction": "Brgy. 18 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 18 (Poblacion)",
+    "phone_display": "(043) 718 8250",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Tinga Labac",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Tinga Labac",
-    "phone_display":  "REPLACE-ME-TINGALABAC",
-    "phone_dialable": "REPLACE-ME-TINGALABAC",
-    "is_placeholder": true,
-    "sort_order":     10
+    "jurisdiction": "Brgy. 19 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 19 (Poblacion)",
+    "phone_display": "(043) 984 9452",
+    "phone_dialable": "0439849452",
+    "is_placeholder": false,
+    "sort_order": 10
   },
   {
-    "jurisdiction":   "Dumantay",
-    "agency_type":    "Barangay",
-    "facility_name":  "Barangay Hall / Tanod — Dumantay",
-    "phone_display":  "REPLACE-ME-DUMANTAY",
-    "phone_dialable": "REPLACE-ME-DUMANTAY",
+    "jurisdiction": "Brgy. 20 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 20 (Poblacion)",
+    "phone_display": "(043) 706 1526",
+    "phone_dialable": "0437061526",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Brgy. 21 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 21 (Poblacion)",
+    "phone_display": "(043) 702 1743",
+    "phone_dialable": "0437021743",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Brgy. 22 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 22 (Poblacion)",
+    "phone_display": "(043) 984 2704",
+    "phone_dialable": "0439842704",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Brgy. 23 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 23 (Poblacion)",
+    "phone_display": "(043) 300 4627",
+    "phone_dialable": "0433004627",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Brgy. 24 (Poblacion)",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Brgy. 24 (Poblacion)",
+    "phone_display": "(043) 984 2281",
+    "phone_dialable": "0439842281",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Alangilan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Alangilan",
+    "phone_display": "(043) 349 8939",
+    "phone_dialable": "0433498939",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Balagtas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Balagtas",
+    "phone_display": "(043) 402 0119",
+    "phone_dialable": "0434020119",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Balete",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Balete",
+    "phone_display": "(043) 318 2559",
+    "phone_dialable": "0433182559",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Banaba Center",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Banaba Center",
+    "phone_display": "(043) 789 4237",
+    "phone_dialable": "0437894237",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Banaba Kanluran",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Banaba Kanluran",
+    "phone_display": "(043) 402 1935",
+    "phone_dialable": "0434021935",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Banaba Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Banaba Silangan",
+    "phone_display": "(043) 885 5843",
+    "phone_dialable": null,
     "is_placeholder": true,
-    "sort_order":     10
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Banaba Ibaba",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Banaba Ibaba",
+    "phone_display": "(043) 341 3892",
+    "phone_dialable": "0433413892",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Bilogo",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Bilogo",
+    "phone_display": "0917 724 5646",
+    "phone_dialable": "09177245646",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Bolbok",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Bolbok",
+    "phone_display": "(043) 980 0831",
+    "phone_dialable": "0439800831",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Bucal",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Bucal",
+    "phone_display": "0927 777 0253",
+    "phone_dialable": "09277770253",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Calicanto",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Calicanto",
+    "phone_display": "(043) 980 0371",
+    "phone_dialable": "0439800371",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Catandala",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Catandala",
+    "phone_display": "(043) 774 4664",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Concepcion",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Concepcion",
+    "phone_display": "(043) 702 4573",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Conde Itaas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Conde Itaas",
+    "phone_display": "(043) 776 5856",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Conde Labac",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Conde Labac",
+    "phone_display": "(043) 859 3382",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Kumba",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Kumba",
+    "phone_display": "(043) 971 2946",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Cuta",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Cuta",
+    "phone_display": "(043) 723 3470",
+    "phone_dialable": "0437233470",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Dalig",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Dalig",
+    "phone_display": "(043) 986 4293",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Dela Paz",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Dela Paz",
+    "phone_display": "(043) 947 3302",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Dela Paz Pulot Aplaya",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Dela Paz Pulot Aplaya",
+    "phone_display": "(043) 958 3254",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Dela Paz Pulot Itaas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Dela Paz Pulot Itaas",
+    "phone_display": "(043) 889 7278",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Domoclay",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Domoclay",
+    "phone_display": "(043) 842 3646",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Dumantay",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Dumantay",
+    "phone_display": "(043) 740 9359",
+    "phone_dialable": "0437409359",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Gulod Itaas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Gulod Itaas",
+    "phone_display": "(043) 980 5973",
+    "phone_dialable": "0439805973",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Gulod Labac",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Gulod Labac",
+    "phone_display": "(043) 783 4617",
+    "phone_dialable": "0437834617",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Haligue Kanluran",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Haligue Kanluran",
+    "phone_display": "(043) 884 1412",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Haligue Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Haligue Silangan",
+    "phone_display": "(043) 847 1379",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Ilijan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Ilijan",
+    "phone_display": "(043) 784 4468",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Kumintang Ibaba",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Kumintang Ibaba",
+    "phone_display": "(043) 402 3026",
+    "phone_dialable": "0434023026",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Kumintang Ilaya",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Kumintang Ilaya",
+    "phone_display": "(043) 723 6318",
+    "phone_dialable": "0437236318",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Libjo",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Libjo",
+    "phone_display": "(043) 349 3697",
+    "phone_dialable": "0433493697",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Liponpon, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Liponpon, Isla Verde",
+    "phone_display": "(043) 787 8738",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Maapas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Maapas",
+    "phone_display": "(043) 877 4639",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Mahabang Dahilig",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Mahabang Dahilig",
+    "phone_display": "(043) 976 6310",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Mahabang Parang",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Mahabang Parang",
+    "phone_display": "0966 436 3225",
+    "phone_dialable": "09664363225",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Mahacot Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Mahacot Silangan",
+    "phone_display": "(043) 826 0394",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Mahacot Kanluran",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Mahacot Kanluran",
+    "phone_display": "(043) 906 7696",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Malalim",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Malalim",
+    "phone_display": "(043) 772 9352",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Malibayo",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Malibayo",
+    "phone_display": "(043) 959 5021",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Malitam",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Malitam",
+    "phone_display": "(043) 723 4421",
+    "phone_dialable": "0437234421",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Maruclap",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Maruclap",
+    "phone_display": "(043) 819 2093",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Mabacong",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Mabacong",
+    "phone_display": "(043) 949 7170",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pagkilatan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pagkilatan",
+    "phone_display": "(043) 975 3207",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Paharang Kanluran",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Paharang Kanluran",
+    "phone_display": "(043) 783 8050",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Paharang Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Paharang Silangan",
+    "phone_display": "(043) 702 2383",
+    "phone_dialable": "0437022383",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pallocan West",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pallocan West",
+    "phone_display": "(043) 722 0496",
+    "phone_dialable": "0437220496",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pallocan East",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pallocan East",
+    "phone_display": "(043) 723 2851",
+    "phone_dialable": "0437232851",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pinamucan Ibaba",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pinamucan Ibaba",
+    "phone_display": "(043) 903 6114",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pinamucan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pinamucan",
+    "phone_display": "(043) 341 0641",
+    "phone_dialable": "0433410641",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Pinamucan Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Pinamucan Silangan",
+    "phone_display": "(043) 882 5004",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Sampaga",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Sampaga",
+    "phone_display": "(043) 773 7341",
+    "phone_dialable": "0437737341",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Agapito, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Agapito, Isla Verde",
+    "phone_display": "(043) 838 0182",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Agustin Kanluran, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Agustin Kanluran, Isla Verde",
+    "phone_display": "(043) 941 7403",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Agustin Silangan, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Agustin Silangan, Isla Verde",
+    "phone_display": "(043) 856 5423",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Andres, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Andres, Isla Verde",
+    "phone_display": "(043) 852 8936",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Antonio, Isla Verde",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Antonio, Isla Verde",
+    "phone_display": "(043) 742 2102",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Isidro",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Isidro",
+    "phone_display": "(043) 723 9146",
+    "phone_dialable": "0437239146",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Jose Sico",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Jose Sico",
+    "phone_display": "(043) 702 6777",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Miguel",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Miguel",
+    "phone_display": "(043) 980 9711",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "San Pedro",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — San Pedro",
+    "phone_display": "(043) 930 9104",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Santa Clara",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Santa Clara",
+    "phone_display": "(043) 723 6323",
+    "phone_dialable": "0437236323",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Santa Rita Aplaya",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Santa Rita Aplaya",
+    "phone_display": "(043) 341 8109",
+    "phone_dialable": "0433418109",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Santa Rita Karsada",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Santa Rita Karsada",
+    "phone_display": "(043) 723 5797",
+    "phone_dialable": "0437235797",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Santo Domingo",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Santo Domingo",
+    "phone_display": "0935 805 1359",
+    "phone_dialable": "09358051359",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Santo Niño",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Santo Niño",
+    "phone_display": "(043) 883 9305",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Simlong",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Simlong",
+    "phone_display": "(043) 928 6302",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Sirang Lupa",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Sirang Lupa",
+    "phone_display": "(043) 928 4545",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Sorosoro Ibaba",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Sorosoro Ibaba",
+    "phone_display": "(043) 846 1965",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Sorosoro Ilaya",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Sorosoro Ilaya",
+    "phone_display": "(043) 822 4417",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Sorosoro Karsada",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Sorosoro Karsada",
+    "phone_display": "(043) 702 3612",
+    "phone_dialable": "0437023612",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tabangao Aplaya",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tabangao Aplaya",
+    "phone_display": "(043) 702 6065",
+    "phone_dialable": "0437026065",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tabangao Ambulong",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tabangao Ambulong",
+    "phone_display": "(043) 402 1880",
+    "phone_dialable": "0434021880",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tabangao Dao",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tabangao Dao",
+    "phone_display": "(043) 941 3789",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Talahib Pandayan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Talahib Pandayan",
+    "phone_display": "(043) 706 3235",
+    "phone_dialable": "0437063235",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Talahib Payapa",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Talahib Payapa",
+    "phone_display": "(043) 958 0902",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Talumpok Kanluran",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Talumpok Kanluran",
+    "phone_display": "(043) 828 4765",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Talumpok Silangan",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Talumpok Silangan",
+    "phone_display": "(043) 735 4085",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tinga Itaas",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tinga Itaas",
+    "phone_display": "0956 599 4984",
+    "phone_dialable": "09565994984",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tinga Labac",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tinga Labac",
+    "phone_display": "(043) 774 1853",
+    "phone_dialable": "0437741853",
+    "is_placeholder": false,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Tulo",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Tulo",
+    "phone_display": "(043) 729 9957",
+    "phone_dialable": null,
+    "is_placeholder": true,
+    "sort_order": 10
+  },
+  {
+    "jurisdiction": "Wawa",
+    "agency_type": "Barangay",
+    "facility_name": "Barangay Hall / Tanod — Wawa",
+    "phone_display": "(043) 723 0878",
+    "phone_dialable": "0437230878",
+    "is_placeholder": false,
+    "sort_order": 10
   }
 ]

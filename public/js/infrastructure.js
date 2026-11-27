@@ -14,6 +14,7 @@
 
 import { escapeHtml } from './utils.js';
 import { mapSymbolMarkup } from './map-symbols.js';
+import { fetchFireStations } from './api.js';
 
 // ── DATA: HOSPITALS ──────────────────────────────────────────────────────────
 // Sources: Wikipedia, Nominatim OSM, batangascity.gov.ph, mapcarta.com
@@ -28,17 +29,6 @@ export const HOSPITALS = [
         lng: 121.0667828,
         phone: '(043) 723-2780',
         level: 'Level 3'
-    },
-    {
-        id: 'hosp-02',
-        name: 'Batangas Regional Hospital',
-        shortName: 'BRH',
-        type: 'Government Regional Hospital',
-        address: 'Kumintang Ibaba, Batangas City',
-        lat: 13.7671142,
-        lng: 121.0671008,
-        phone: '(043) 723-1433',
-        level: 'Regional'
     },
     {
         id: 'hosp-03',
@@ -290,6 +280,8 @@ function buildHospitalPopup(h) {
 }
 
 function buildFireStationPopup(fs) {
+    const phones = fs.phoneNumbers || [{ label: 'Phone', phone_display: fs.phone,
+        phone_dialable: String(fs.phone || '').replace(/[^0-9+]/g, '') }];
     return `
         <div class="infra-popup infra-popup-firestation">
             <div class="infra-popup-header">
@@ -308,10 +300,11 @@ function buildFireStationPopup(fs) {
                     <span class="infra-popup-label">Coverage</span>
                     <span class="infra-popup-value" style="color:#f97316;font-weight:700;">${escapeHtml(fs.coverage)}</span>
                 </div>
+                ${phones.map(phone => `
                 <div class="infra-popup-row">
-                    <span class="infra-popup-label">Phone</span>
-                    <span class="infra-popup-value"><a href="tel:${fs.phone}" style="color:#fb923c;text-decoration:none;">${escapeHtml(fs.phone)}</a></span>
-                </div>
+                    <span class="infra-popup-label">${escapeHtml(phone.label)}</span>
+                    <span class="infra-popup-value"><a href="tel:${escapeHtml(String(phone.phone_dialable || '').replace(/[^0-9+]/g, ''))}" style="color:#fb923c;text-decoration:none;">${escapeHtml(phone.phone_display)}</a></span>
+                </div>`).join('')}
                 <div class="infra-popup-row">
                     <span class="infra-popup-label">Emergency</span>
                     <span class="infra-popup-value" style="color:#ef4444;font-weight:700;"><a href="tel:911" style="color:#ef4444;text-decoration:none;">📞 911</a></span>
@@ -327,7 +320,7 @@ function buildFireStationPopup(fs) {
  * initInfrastructure(mapInstance)
  * Must be called after the Leaflet map is initialized.
  */
-export function initInfrastructure(mapInstance) {
+export async function initInfrastructure(mapInstance) {
     _map = mapInstance;
 
     // Create layer groups (hidden by default — not added to map yet)
@@ -357,13 +350,30 @@ export function initInfrastructure(mapInstance) {
 
     // Populate fire station layer
     for (const fs of FIRE_STATIONS) {
-        const marker = L.marker([fs.lat, fs.lng], { icon: buildInfrastructureIcon('firestation'), title: fs.name, alt: fs.name, zIndexOffset: 300 });
-        marker.bindPopup(buildFireStationPopup(fs), { maxWidth: 300, className: 'infra-leaflet-popup' });
-        marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">${fs.shortName}</span>`, {
-            direction: 'top', offset: [0, -16], opacity: 0.95
-        });
-        _fireStationLayer.addLayer(marker);
+        addFireStationMarker(fs);
     }
+
+    try {
+        const additional = await fetchFireStations();
+        for (const station of additional) {
+            if (typeof station.id !== 'string' || !Number.isFinite(station.lat) ||
+                !Number.isFinite(station.lng) || !Array.isArray(station.phoneNumbers)) continue;
+            if (FIRE_STATIONS.some(existing => existing.id === station.id)) continue;
+            FIRE_STATIONS.push(station);
+            addFireStationMarker(station);
+        }
+    } catch (error) {
+        console.warn('[Infrastructure] Could not load additional fire stations:', error.message);
+    }
+}
+
+function addFireStationMarker(fs) {
+    const marker = L.marker([fs.lat, fs.lng], { icon: buildInfrastructureIcon('firestation'), title: fs.name, alt: fs.name, zIndexOffset: 300 });
+    marker.bindPopup(buildFireStationPopup(fs), { maxWidth: 300, className: 'infra-leaflet-popup' });
+    marker.bindTooltip(`<span style="font-family:monospace;font-size:11px;">${escapeHtml(fs.shortName)}</span>`, {
+        direction: 'top', offset: [0, -16], opacity: 0.95
+    });
+    _fireStationLayer.addLayer(marker);
 }
 
 /**

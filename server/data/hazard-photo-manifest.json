@@ -1,0 +1,599 @@
+[
+  {
+    "reference": "HZ-0001",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_poste_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_poste_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "imageSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0001.png"
+    ]
+  },
+  {
+    "reference": "HZ-0002",
+    "photo_url": "/uploads/seed/zip-edit-HZ-0002.png",
+    "userProvided": true,
+    "aiEdited": true,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "overloaded_outlets_shop_heavy.jpg",
+    "location": "Unverified; user-supplied shop/eatery background",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original rights and location not independently verified",
+    "changes": "User-supplied background with localized AI-edited hazard details",
+    "prompt": "Use case: precise-object-edit. Edit target is the attached user-supplied photo, which defines the background, construction, lighting, materials and casual camera character. Preserve that actual scene. Make only the small hazard detail edit below. Do not regenerate an idealized scene, change building geometry, invent extra machinery, add people, make repeated objects identical, sharpen excessively, add cinematic lighting, or add text/watermarks. Natural local documentary-style scenario illustration. The scenario is a mixed commercial/residential electrical overload. Make a close photographic crop toward the existing back/side plain wall and power strips. Add just one small physically plausible grey breaker-panel box mounted on that existing wall with its door open, crowded ordinary breaker circuits, one darkened breaker position. Keep existing daisy-chained extension leads visibly in frame. No sparks or flames.",
+    "tool": "built-in image_gen",
+    "originalGeneratedPath": "C:\\Users\\Russell Matthew\\.codex\\generated_images\\01a21753-b501-7c52-a419-5030859907b0\\exec-6bbb3215-d942-4f95-b4ff-d92c0631ac57.png",
+    "status": "visually reviewed and installed",
+    "imageSha256": "24edb7b6b7f3e6b9b0dbf59a13f623c860b3e799b065571ddef37fa5f6c53f96",
+    "sourceSha256": "0ba430276b69f5b83c644383861cfbb55a792c9d2e8b4035bbe3a0441e8cb77f",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0002.png"
+    ]
+  },
+  {
+    "reference": "HZ-0003",
+    "photo_url": "/uploads/seed/supplied-dense_structures_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dense_structures_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "imageSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0003.png"
+    ]
+  },
+  {
+    "reference": "HZ-0004",
+    "photo_url": "/uploads/seed/supplied-lpg_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "lpg_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "0657c7f6153819d019d7369ec629ff70ffe89fcd7b166381c341e8b1577d6cd1",
+    "imageSha256": "0657c7f6153819d019d7369ec629ff70ffe89fcd7b166381c341e8b1577d6cd1",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0004.png"
+    ]
+  },
+  {
+    "reference": "HZ-0005",
+    "photo_url": "/uploads/seed/supplied-blocked_exit_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "blocked_exit_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "f52fc1acb16567a1eb6a6e347871cb81f9cfe0172fe7abbd42792b3eed41155e",
+    "imageSha256": "f52fc1acb16567a1eb6a6e347871cb81f9cfe0172fe7abbd42792b3eed41155e",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0005.png"
+    ]
+  },
+  {
+    "reference": "HZ-0006",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_heavy.jpg.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "imageSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0006.png"
+    ]
+  },
+  {
+    "reference": "HZ-0007",
+    "photo_url": "/uploads/seed/supplied-lpg_storage_retail_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "lpg_storage_retail_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "322c24cf0b799cbfc0030c4c4e2da7ce11fa9dd40bfcd6846161f060c7ca3906",
+    "imageSha256": "322c24cf0b799cbfc0030c4c4e2da7ce11fa9dd40bfcd6846161f060c7ca3906",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0007.png"
+    ]
+  },
+  {
+    "reference": "HZ-0008",
+    "photo_url": "/uploads/seed/supplied-flammable_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "flammable_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "imageSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0008.png"
+    ]
+  },
+  {
+    "reference": "HZ-0009",
+    "photo_url": "/uploads/seed/zip-edit-HZ-0009.png",
+    "userProvided": true,
+    "aiEdited": true,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "overloaded_outlets_shop_heavy.jpg",
+    "location": "Unverified; user-supplied shop/eatery background",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original rights and location not independently verified",
+    "changes": "User-supplied background with localized AI-edited hazard details",
+    "prompt": "Use case: precise-object-edit. Edit target is the attached user-supplied photo, which defines the background, construction, lighting, materials and casual camera character. Preserve that actual scene. Make only the small hazard detail edit below. Do not regenerate an idealized scene, change building geometry, invent extra machinery, add people, make repeated objects identical, sharpen excessively, add cinematic lighting, or add text/watermarks. Natural local documentary-style scenario illustration. The scenario is a scorched electrical panel accessible in a commercial property. Crop toward the existing side plaster wall to show a small old grey metal distribution panel mounted on it, hinged cover open, six ordinary breakers, localized realistic dark scorch staining around two adjacent breaker slots and a limited number of correctly connected insulated wires. Retain part of the actual desk/computer shop background. No arcs or fire.",
+    "tool": "built-in image_gen",
+    "originalGeneratedPath": "C:\\Users\\Russell Matthew\\.codex\\generated_images\\01a21753-b501-7c52-a419-5030859907b0\\exec-d1c1e990-cbb6-4ac9-bd04-19fd24bd8a4f.png",
+    "status": "visually reviewed and installed",
+    "imageSha256": "dde1c20008934faf8e2d5bb8eba8e09ff6f83599e1d5a78809d2bc97b03c516e",
+    "sourceSha256": "0ba430276b69f5b83c644383861cfbb55a792c9d2e8b4035bbe3a0441e8cb77f",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0009.png"
+    ]
+  },
+  {
+    "reference": "HZ-0010",
+    "photo_url": "/uploads/seed/supplied-dry_grass_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dry_grass_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "imageSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0010.png"
+    ]
+  },
+  {
+    "reference": "HZ-0011",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_poste_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_poste_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "imageSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0011.png"
+    ]
+  },
+  {
+    "reference": "HZ-0012",
+    "photo_url": "/uploads/seed/supplied-lpg_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "lpg_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "0657c7f6153819d019d7369ec629ff70ffe89fcd7b166381c341e8b1577d6cd1",
+    "imageSha256": "0657c7f6153819d019d7369ec629ff70ffe89fcd7b166381c341e8b1577d6cd1",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0012.png"
+    ]
+  },
+  {
+    "reference": "HZ-0013",
+    "photo_url": "/uploads/seed/zip-edit-HZ-0013.png",
+    "userProvided": true,
+    "aiEdited": true,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "lpg_storage_heavy.jpg",
+    "location": "Unverified; user-supplied shop/eatery background",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original rights and location not independently verified",
+    "changes": "User-supplied background with localized AI-edited hazard details",
+    "prompt": "Use case: precise-object-edit. Edit target is the attached user-supplied photo, which defines the background, construction, lighting, materials and casual camera character. Preserve that actual scene. Make only the small hazard detail edit below. Do not regenerate an idealized scene, change building geometry, invent extra machinery, add people, make repeated objects identical, sharpen excessively, add cinematic lighting, or add text/watermarks. Natural local documentary-style scenario illustration. The scenario is unsafe cooking beside combustible supplies. Make a closer crop of the EXISTING left-hand cooking counter with pots, shelving and soot-stained surfaces. Add only several ordinary cardboard food cartons and a paper packaging bag too close to the existing cooking pot/burner; one modest blue gas flame under that pot. Retain the existing kitchen structure, walls, cookware, ground and nearby LPG cylinders; do not invent a new kitchen. The result should read as an everyday small eatery kitchen.",
+    "tool": "built-in image_gen",
+    "originalGeneratedPath": "C:\\Users\\Russell Matthew\\.codex\\generated_images\\01a21753-b501-7c52-a419-5030859907b0\\exec-755ebea1-b4f0-41e6-ad7c-f093847a798e.png",
+    "status": "visually reviewed and installed",
+    "imageSha256": "e4634c2963bc80aa371cfbe0fcf62078ab9d88c4f573e7086bb542cc33b56bcf",
+    "sourceSha256": "0657c7f6153819d019d7369ec629ff70ffe89fcd7b166381c341e8b1577d6cd1",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0013.png"
+    ]
+  },
+  {
+    "reference": "HZ-0014",
+    "sourceId": 20,
+    "prompt": "Use case: precise-object-edit. Create one realistic educational hazard illustration by editing the supplied REAL Batangas City photograph. The photograph is the EDIT TARGET, not loose inspiration. Preserve the actual photographed background buildings, terrain, sky, road and perspective. You may crop closer to the relevant existing foreground surface; do not invent a replacement background or relocate the scene. Add/change ONLY the hazard objects specified below, in a local foreground area; retain the real source scene visibly. Respect physical scale, contact shadows, material wear, original lighting, grain and focus. No cinematic grading, no decorative text, no watermark, no collages, no extra people or impossible geometry. This is a fictional illustrative composite, not evidence about the photographed property. \nHazard scenario HZ-0014: Add stored paint cans, sealed solvent drums and lubricant containers on wooden pallets close to the existing warehouse wall, some boxes blocking existing ventilation openings. Retain actual warehouse shell, roof, floor, lighting and perspective. No fire, no invented labels.",
+    "tool": "built-in image_gen",
+    "photo_url": "/uploads/seed/illustration-HZ-0014.png",
+    "originalGeneratedPath": "C:\\Users\\Russell Matthew\\.codex\\generated_images\\01a21753-b501-7c52-a419-5030859907b0\\exec-e2b3049a-c512-4470-8478-c7748b97e551.png",
+    "status": "visually reviewed and installed",
+    "location": "Warehouse interior advertised in Barangay 16, Batangas City",
+    "sourcePage": "https://listd.ph/property/1000-sqm-warehouse-for-rent-in-batangas-city-barangay-16-8a0f7096-d2ff-4520-b6e8-d01d80913462",
+    "sourceImage": "https://d2jgo463u0sl5s.cloudfront.net/images/dp/0191d9b9-d652-7dd5-8746-c377feff9231/image_000_06b215c58132.webp",
+    "author": "Listing photograph / Listd",
+    "license": "Third-party photograph; no open license verified; local illustrative adaptation only",
+    "licenseUrl": "",
+    "userProvided": false,
+    "changes": "AI-added hazard objects and possible reframing of the source photograph; fictional illustrative adaptation",
+    "sourceSha256": "06b215c5813237bc23fe75e8e531e44720e3251bf086a960f31c9d8abb9fd652",
+    "imageSha256": "01705dc92978644c806f3f072488549cb64a251cbdfa44509af2faf490ee0c5c"
+  },
+  {
+    "reference": "HZ-0015",
+    "photo_url": "/uploads/seed/supplied-live_fire_residential_dense.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "live_fire_residential_dense.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "5d7d31409019d9663edd1a450ab570f3a09b0e08b8f60ed2f11f713291edc84d",
+    "imageSha256": "5d7d31409019d9663edd1a450ab570f3a09b0e08b8f60ed2f11f713291edc84d",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0015-v2.png"
+    ]
+  },
+  {
+    "reference": "HZ-0016",
+    "photo_url": "/uploads/seed/supplied-dense_structures_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dense_structures_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "imageSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0016.png"
+    ]
+  },
+  {
+    "reference": "HZ-0017",
+    "photo_url": "/uploads/seed/supplied-unsafe_burning_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "unsafe_burning_moderate..jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "e6fc7005fc8755989698c39c487644148de708ae84974bf3854d1e34bec61298",
+    "imageSha256": "e6fc7005fc8755989698c39c487644148de708ae84974bf3854d1e34bec61298",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0017.png"
+    ]
+  },
+  {
+    "reference": "HZ-0018",
+    "photo_url": "/uploads/seed/supplied-lpg_storage_retail_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "lpg_storage_retail_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "322c24cf0b799cbfc0030c4c4e2da7ce11fa9dd40bfcd6846161f060c7ca3906",
+    "imageSha256": "322c24cf0b799cbfc0030c4c4e2da7ce11fa9dd40bfcd6846161f060c7ca3906",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0018.png"
+    ]
+  },
+  {
+    "reference": "HZ-0019",
+    "photo_url": "/uploads/seed/supplied-blocked_exit_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "blocked_exit_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "f52fc1acb16567a1eb6a6e347871cb81f9cfe0172fe7abbd42792b3eed41155e",
+    "imageSha256": "f52fc1acb16567a1eb6a6e347871cb81f9cfe0172fe7abbd42792b3eed41155e",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0019.png"
+    ]
+  },
+  {
+    "reference": "HZ-0020",
+    "photo_url": "/uploads/seed/supplied-flammable_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "flammable_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "imageSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0020.png"
+    ]
+  },
+  {
+    "reference": "HZ-0021",
+    "sourceId": 16,
+    "prompt": "Use case: precise-object-edit. Create one realistic educational hazard illustration by editing the supplied REAL Batangas City photograph. The photograph is the EDIT TARGET, not loose inspiration. Preserve the actual photographed background buildings, terrain, sky, road and perspective. You may crop closer to the relevant existing foreground surface; do not invent a replacement background or relocate the scene. Add/change ONLY the hazard objects specified below, in a local foreground area; retain the real source scene visibly. Respect physical scale, contact shadows, material wear, original lighting, grain and focus. No cinematic grading, no decorative text, no watermark, no collages, no extra people or impossible geometry. This is a fictional illustrative composite, not evidence about the photographed property. \nHazard scenario HZ-0021: Add a short well-maintained industrial fuel pipe run on low concrete supports along the existing lot edge, behind a simple chain-link access barrier. Keep a clear service path and no leaks. This is a mitigated follow-up scenario: sound containment, controlled access, no visible damage, no fire. Preserve all real background.",
+    "tool": "built-in image_gen",
+    "photo_url": "/uploads/seed/illustration-HZ-0021.png",
+    "originalGeneratedPath": "C:\\Users\\Russell Matthew\\.codex\\generated_images\\01a21753-b501-7c52-a419-5030859907b0\\exec-e8117e27-e5ac-4d5c-b2ff-460e384c76aa.png",
+    "status": "visually reviewed and installed",
+    "location": "Batangas Port terminal parking area, Batangas City",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:BatangasTerminal,Portjf9716_05.JPG",
+    "sourceImage": "https://upload.wikimedia.org/wikipedia/commons/8/8a/BatangasTerminal%2CPortjf9716_05.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "author": "Ramon FVelasquez",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "userProvided": false,
+    "changes": "AI-added hazard objects and possible reframing of the source photograph; fictional illustrative adaptation",
+    "sourceSha256": "6bd7f1332f146634c4896780bd147bbe9e0269a0c3d800692424b955ff960d32",
+    "imageSha256": "51c9d02d858833382df5464b21966f56cbe51246c6429079d02c29dd624d2643"
+  },
+  {
+    "reference": "HZ-0022",
+    "photo_url": "/uploads/seed/supplied-dense_structures_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dense_structures_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "imageSha256": "7ea6f72fd7f99b11ff049f8b51d3c7c3e05399fa15f90c20c62832d6a7c197c0",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0022-v2.png"
+    ]
+  },
+  {
+    "reference": "HZ-0023",
+    "photo_url": "/uploads/seed/supplied-flammable_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "flammable_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "imageSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0023.png"
+    ]
+  },
+  {
+    "reference": "HZ-0024",
+    "photo_url": "/uploads/seed/supplied-dry_grass_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dry_grass_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "imageSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0024.png"
+    ]
+  },
+  {
+    "reference": "HZ-0025",
+    "photo_url": "/uploads/seed/supplied-unsafe_burning_vacantlot_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "unsafe_burning_vacantlot_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "7cfb5d951933a5d36e2d6ef60e9164971ccb13eac670a6aeec63942fc5cdc806",
+    "imageSha256": "7cfb5d951933a5d36e2d6ef60e9164971ccb13eac670a6aeec63942fc5cdc806",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0025.png"
+    ]
+  },
+  {
+    "reference": "HZ-0026",
+    "photo_url": "/uploads/seed/supplied-dry_grass_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dry_grass_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "imageSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0026.png"
+    ]
+  },
+  {
+    "reference": "HZ-0028",
+    "photo_url": "/uploads/seed/supplied-dry_grass_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "dry_grass_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "imageSha256": "ff1e806666df12fae39aa55331a570fe624315220f2eb98e1024078e43049df7",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0028.png"
+    ]
+  },
+  {
+    "reference": "HZ-0029",
+    "photo_url": "/uploads/seed/supplied-flammable_storage_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "flammable_storage_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "imageSha256": "b06c873a37e64d67423ae8008c2fd97227a72311a5d33da81c73ff105932bc71",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0029.png"
+    ]
+  },
+  {
+    "reference": "HZ-0030",
+    "photo_url": "/uploads/seed/supplied-overloaded_outlets_moderate.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "overloaded_outlets_moderate.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "4cba93c8ba93c7d7cee4d76631480ed4db2e12f750cc3b8faab723a233890987",
+    "imageSha256": "4cba93c8ba93c7d7cee4d76631480ed4db2e12f750cc3b8faab723a233890987",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-HZ-0030.png"
+    ]
+  },
+  {
+    "reference": "ER-20261103-5A953E",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_heavy.jpg.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "imageSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-ER-20261103-5A953E.png"
+    ]
+  },
+  {
+    "reference": "ER-20261107-3E67A8",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_heavy.jpg.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "imageSha256": "fab4f75e8202b7c599359ed01346ecc72f2c374cd01dfcf8e61e0f9406dfc1c9",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-ER-20261107-3E67A8.png"
+    ]
+  },
+  {
+    "reference": "ER-20261107-4AF48A",
+    "photo_url": "/uploads/seed/supplied-faulty_wiring_poste_heavy.jpg",
+    "userProvided": true,
+    "aiEdited": false,
+    "sourceArchive": "drive-download-20261126T124542Z-1-001.zip",
+    "sourceFilename": "faulty_wiring_poste_heavy.jpg",
+    "location": "Unverified; user-supplied representative scenario",
+    "author": "Provided by the project owner",
+    "license": "User supplied; original provenance and rights not independently verified",
+    "changes": "Copied from the supplied ZIP without image changes",
+    "sourceSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "imageSha256": "14cd2b5ccc9d90a6b3a959f1f43102d33f010dd7d174ab708e0e9749532d42e3",
+    "status": "visually reviewed and installed",
+    "replaces": [
+      "/uploads/seed/illustration-ER-20261107-4AF48A.png"
+    ]
+  },
+  {
+    "reference": "HZ-0027",
+    "photo_url": "/uploads/seed/hazard-27.jpg",
+    "userProvided": true,
+    "location": "Unverified; user-supplied scenario image",
+    "author": "Provided by the project owner",
+    "license": "User supplied; rights and original provenance not independently verified",
+    "changes": "Copied without image changes",
+    "imageSha256": "7cfb5d951933a5d36e2d6ef60e9164971ccb13eac670a6aeec63942fc5cdc806"
+  }
+]

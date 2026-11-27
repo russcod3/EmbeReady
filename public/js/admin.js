@@ -2,6 +2,8 @@ import { escapeHtml as esc } from './utils.js';
 import { createEmberPuppet } from './ember-puppet.js';
 import { initTheme } from './theme.js';
 import { initWelcomeBackground } from './welcome-background.js';
+import { photoCaptionMarkup } from './hazard-photo-credits.js';
+import { openPhotoViewer } from './photo-viewer.js';
 
 const el = id => document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -107,9 +109,7 @@ function closeDialog(dialog) {
 function selected(id) { return state.review?.id===Number(id)?state.review:state.records.find(row=>row.id===Number(id)); }
 function showPhoto(id) {
     const row=selected(id),url=row&&photoUrl(row);if(!url)return;
-    el('photo-title').textContent=row.title;
-    el('full-photo').src=url;
-    el('photo-dialog').showModal();
+    openPhotoViewer({src:url,title:row.title,reference:row.ref_code,trigger:document.activeElement});
 }
 function scanMarkup(scan) {
     if(!scan)return '';
@@ -119,6 +119,7 @@ function renderReview(row) {
     const photo=photoUrl(row);
     el('review-content').innerHTML=`<header class="admin-review-heading"><div><p class="admin-eyebrow">${row.can_review?'SUBMITTED REPORT':'MAP HAZARD'} · ${esc(row.ref_number||row.ref_code)}</p><h2 id="review-title">${esc(row.title)}</h2></div><button type="button" data-close-dialog="review-dialog" class="admin-icon-button" aria-label="Close report details">×</button></header>
         <div class="admin-review-layout"><section class="admin-review-evidence"><div class="admin-card-badges" id="review-badges">${badges(row)}</div><dl class="admin-report-facts"><div><dt>Barangay</dt><dd>${esc(row.barangay)}</dd></div><div><dt>${row.can_review?'Submitted':'Added'}</dt><dd>${date(row.submitted_at||row.created_at)}</dd></div><div><dt>Reported level</dt><dd>${riskLabels[row.reported_level||risk(row)]||'Not assessed'}</dd></div><div><dt>Location</dt><dd>${Number(row.lat).toFixed(5)}, ${Number(row.lng).toFixed(5)}</dd></div></dl><h3 class="admin-section-label">Description</h3><p class="admin-evidence-description">${esc(row.description||'No description was provided.')}</p>${row.address?`<p class="admin-evidence-description">${esc(row.address)}</p>`:''}<h3 class="admin-section-label">Photo evidence</h3>${photo?`<button type="button" class="admin-evidence-photo" data-photo-id="${row.id}"><img src="${esc(photo)}" alt="Submitted evidence" decoding="async"><span>View full photo ↗</span></button>`:'<div class="admin-no-photo">No photo was submitted.</div>'}
+        ${photoCaptionMarkup(photo,row.ref_code)}
         ${row.history?.length?`<details class="admin-review-history"><summary>Review history</summary><ol>${row.history.map(item=>`<li><strong>${item.decision==='validated'?'Verified':item.decision==='dismissed'?'Marked as fake':'Needs review'} · ${date(item.reviewed_at)}</strong>${esc(item.notes||'No notes added.')}<br>${esc(item.reviewer==='Shared admin'?'Admin':item.reviewer)}</li>`).join('')}</ol></details>`:''}</section>
         <section class="admin-review-actions">${row.can_review?`<div class="admin-photo-check"><h3>Local photo check</h3><p>Photos stay on this server. The detector is a review signal, not proof of authenticity.</p><button type="button" id="scan-photo" class="admin-secondary" data-scan="${row.id}" ${!photo?'disabled':''}>${row.photo_scan?'Check photo again':'Scan for AI-generated content'}</button><div id="scan-result" role="status">${scanMarkup(row.photo_scan)}</div><p id="scan-message" class="admin-message" role="alert" hidden></p></div><div class="admin-verification"><label for="review-notes">Verification notes</label><textarea id="review-notes" rows="4" maxlength="2000" placeholder="What did you confirm with residents, observation, or other sources?">${esc(row.notes||'')}</textarea><div class="admin-decision-buttons"><button type="button" class="admin-primary" data-decision="validated">✓ Mark as verified</button><button type="button" class="admin-secondary admin-fake-button" data-decision="dismissed">Mark as fake</button></div><p class="admin-review-note">Verified reports receive a badge on the public map. Reports marked as fake are hidden from it.</p><p id="review-message" class="admin-message" role="alert" hidden></p></div>`:'<div class="admin-photo-check"><h3>Example hazard</h3><p>This is an example already on the map. Community reports are reviewed in the Reports inbox.</p></div>'}<button type="button" class="admin-remove-link" data-delete-id="${row.id}">Delete ${row.can_review?'report and hazard':'hazard'} from the website</button></section></div>`;
 }

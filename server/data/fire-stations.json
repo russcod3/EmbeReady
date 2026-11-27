@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fire-06",
+    "name": "Batangas Filipino Chinese Volunteer Fire Brigade, Inc.",
+    "shortName": "Fil-Chinese Volunteer Fire Brigade",
+    "type": "Volunteer Fire Brigade",
+    "address": "D. Silang Street corner V. Luna Street, Brgy. 22 (Poblacion), Batangas City — beside the public market",
+    "lat": 13.75668,
+    "lng": 121.05587,
+    "coverage": "Batangas City",
+    "locationSource": "https://www.openstreetmap.org/way/813702444",
+    "contactSource": "Brigade page cover image supplied by the user, 2026-11-25",
+    "phoneNumbers": [
+      {
+        "label": "Landline",
+        "phone_display": "(043) 776-5911",
+        "phone_dialable": "+63437765911"
+      },
+      {
+        "label": "Mobile",
+        "phone_display": "0920 741-8888",
+        "phone_dialable": "+639207418888"
+      }
+    ]
+  }
+]

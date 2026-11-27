@@ -76,6 +76,10 @@ export async function localGeocode(query) {
 }
 
 // ── Contacts ──────────────────────────────────────────────────────────────────
+export async function fetchFireStations() {
+    return (await apiFetch('/api/contacts/fire-stations')).data;
+}
+
 export async function fetchContacts(barangay = '') {
     const path = barangay
         ? `/api/contacts/${encodeURIComponent(barangay)}`

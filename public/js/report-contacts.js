@@ -1,14 +1,21 @@
-// Deliberately non-operational sample numbers for the prototype contact panel.
+// Use saved demo numbers for mock contacts; prefer supplied operational hotlines.
 export function responderContacts(contacts = [], barangayName = 'the pinned area') {
     const targets = [
-        {type:'bfp',name:'BFP · Batangas City',sample:'043 000 0000'},
-        {type:'barangay',name:`Barangay desk · ${barangayName}`,sample:'043 000 0100'},
-        {type:'municipality',name:'City / municipal response desk',sample:'043 000 0200'}
+        {type:'bfp',name:'BFP · Batangas City'},
+        {type:'barangay',name:`Barangay desk · ${barangayName}`},
+        {type:'municipality',name:'City / municipal response desk'}
     ];
     return targets.map(target => {
-        const contact = contacts.find(c => String(c.agency_type).toLowerCase() === target.type && (target.type !== 'barangay' || c.jurisdiction === barangayName) && !c.is_placeholder && /^\+?[\d ()-]{3,}$/.test(c.phone_dialable || ''));
-        return contact
-            ? {agency:target.type,name:contact.facility_name,number:contact.phone_display || contact.phone_dialable,mock:false,jurisdiction:contact.jurisdiction}
-            : {agency:target.type,name:target.name,number:target.sample,mock:true,jurisdiction:target.type === 'barangay' ? barangayName : 'Batangas City'};
+        const matching = contacts.filter(c => String(c.agency_type).toLowerCase() === target.type && (target.type !== 'barangay' || c.jurisdiction === barangayName));
+        const contact = matching.find(c => !c.is_placeholder && /^\+?[\d ()-]{3,}$/.test(c.phone_dialable || ''))
+            || matching.find(c => c.is_placeholder && /^\+?\d{7,15}$/.test(String(c.phone_display || '').replace(/[()\s-]/g, '')));
+        return {
+            agency:target.type,
+            name:contact?.facility_name || matching[0]?.facility_name || target.name,
+            number:contact ? contact.phone_display || contact.phone_dialable : '',
+            mock:Boolean(contact?.is_placeholder),
+            unavailable:!contact,
+            jurisdiction:contact?.jurisdiction || (target.type === 'barangay' ? barangayName : 'Batangas City')
+        };
     });
 }

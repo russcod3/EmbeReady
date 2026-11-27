@@ -140,6 +140,21 @@ CREATE INDEX IF NOT EXISTS idx_history_hazard     ON fire_history(hazard_id);
 CREATE INDEX IF NOT EXISTS idx_history_barangay   ON fire_history(barangay_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_jurisdiction ON emergency_contacts(jurisdiction);
 
+-- Additional fire stations with their own location and separately dialable lines.
+CREATE TABLE IF NOT EXISTS fire_stations (
+    id                  TEXT PRIMARY KEY,
+    name                TEXT NOT NULL,
+    short_name          TEXT NOT NULL,
+    type                TEXT NOT NULL,
+    address             TEXT NOT NULL,
+    lat                 REAL NOT NULL CHECK (lat BETWEEN -90 AND 90),
+    lng                 REAL NOT NULL CHECK (lng BETWEEN -180 AND 180),
+    coverage            TEXT NOT NULL,
+    phone_numbers_json  TEXT NOT NULL CHECK (json_valid(phone_numbers_json)),
+    location_source     TEXT,
+    contact_source      TEXT
+);
+
 -- Evidence and versioned Gemini results. Legacy assessments remain archived.
 CREATE TABLE IF NOT EXISTS hazard_observations (
     hazard_id INTEGER PRIMARY KEY REFERENCES hazards(id) ON DELETE CASCADE,

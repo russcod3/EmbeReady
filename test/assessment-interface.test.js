@@ -74,3 +74,49 @@ test('success effect never starts before a confirmed, visible saved report',()=>
     effect.playReportSuccess({...dialog,open:false},{ref_number:'sample'});
     assert.equal(creates,0);
 });
+
+test('responder contacts use the selected barangay hotline and skip legacy placeholders',()=>{
+    const {exports:{responderContacts}}=loadFrontend('public/js/report-contacts.js',['responderContacts']);
+    const contacts=[
+        {agency_type:'Barangay',jurisdiction:'Bucal',facility_name:'Old barangay entry',phone_display:'REPLACE-ME',is_placeholder:1},
+        {agency_type:'Barangay',jurisdiction:'Bucal',facility_name:'Demo barangay desk',phone_display:'(043) 965 1496',phone_dialable:null,is_placeholder:1},
+        {agency_type:'Barangay',jurisdiction:'Bucal',facility_name:'Barangay Hall / Tanod — Bucal',phone_display:'0927 777 0253',phone_dialable:'09277770253',is_placeholder:0},
+        {agency_type:'Barangay',jurisdiction:'Gulod Labac',facility_name:'Another barangay',phone_display:'(043) 783 4617',phone_dialable:'0437834617',is_placeholder:0}
+    ];
+    const barangay=responderContacts(contacts,'Bucal').find(contact=>contact.agency==='barangay');
+    assert.equal(barangay.number,'0927 777 0253');
+    assert.equal(barangay.jurisdiction,'Bucal');
+    assert.equal(barangay.unavailable,false);
+    assert.equal(barangay.mock,false);
+});
+
+test('the report panel displays all 105 saved barangay numbers, including 52 mock hotlines',()=>{
+    const {exports:{responderContacts}}=loadFrontend('public/js/report-contacts.js',['responderContacts']);
+    const catalogue=require('../server/contacts.json');
+    const barangays=catalogue.filter(contact=>contact.agency_type==='Barangay');
+    assert.equal(barangays.length,105);
+    assert.equal(barangays.filter(contact=>contact.is_placeholder).length,52);
+    for(const saved of barangays){
+        const displayed=responderContacts(catalogue,saved.jurisdiction).find(contact=>contact.agency==='barangay');
+        assert.equal(displayed.number,saved.phone_display,saved.jurisdiction);
+        assert.equal(displayed.unavailable,false,saved.jurisdiction);
+        assert.equal(displayed.mock,saved.is_placeholder,saved.jurisdiction);
+        if(displayed.mock){
+            assert.match(displayed.number,/^\(043\) [7-9]\d{2} \d{4}$/);
+            assert.equal(saved.phone_dialable,null);
+        }
+    }
+});
+
+test('unavailable hotlines never receive invented fallback numbers',()=>{
+    const {exports:{responderContacts}}=loadFrontend('public/js/report-contacts.js',['responderContacts']);
+    for(const contacts of [[],[
+        {agency_type:'Barangay',jurisdiction:'Conde Labac',facility_name:'Barangay Hall / Tanod — Conde Labac',phone_display:'N/A',phone_dialable:null,is_placeholder:1},
+        {agency_type:'Barangay',jurisdiction:'Cuta',facility_name:'Other barangay',phone_display:'(043) 723 3470',phone_dialable:'0437233470',is_placeholder:0}
+    ]]){
+        for(const contact of responderContacts(contacts,'Conde Labac')){
+            assert.equal(contact.unavailable,true);
+            assert.equal(contact.number,'');
+        }
+    }
+});

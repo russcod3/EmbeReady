@@ -18,6 +18,8 @@ import { fetchHazardDetail } from './api.js';
 import { riskCardsMarkup, initRiskCards } from './risk-cards.js';
 import { assessmentText, isPreparedAssessment } from './assessment-copy.js';
 import { initPlanNavigation } from './plan-navigation.js';
+import { photoCaptionMarkup } from './hazard-photo-credits.js';
+import { expandPhotoButton, openPhotoViewer } from './photo-viewer.js';
 
 let _drawerEl = null;
 let _closeBtn = null;
@@ -237,9 +239,10 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
             const ctype = String(c.contact_type || c.agency_type || '').toLowerCase();
 
             const is911 = phone === '911' || ctype === 'national';
-            const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX') || c.is_placeholder === 1;
+            const isPlaceholder = !phone || phone.includes('REPLACE-ME') || phone.startsWith('09XX') || Boolean(c.is_placeholder);
+            const isMock = isPlaceholder && /^\+?\d{7,15}$/.test(phone.replace(/[()\s-]/g, ''));
             const callHref = isPlaceholder ? '#' : `tel:${phone.replace(/[^0-9+]/g, '')}`;
-            const warnAttr = isPlaceholder ? `title="${S.drawer.placeholderWarn}"` : '';
+            const warnAttr = isPlaceholder ? `title="${escapeHtml(isMock ? S.flow.sampleNote : S.drawer.placeholderWarn)}"` : '';
             const extraClass = is911 ? 'contact-item-911' : '';
             const btnClass = isPlaceholder ? 'contact-call-btn is-placeholder' : 'contact-call-btn';
 
@@ -250,9 +253,9 @@ function renderHazardContent({ hazard, assessment, plan, history, contacts },car
                                 <div class="contact-type">${escapeHtml(c.jurisdiction || ctype || '')}</div>
                                 <div class="contact-phone">${escapeHtml(phone || 'Not configured')}</div>
                             </div>
-                            <a href="${callHref}" class="${btnClass}" ${warnAttr}>
-                                ${isPlaceholder ? S.drawer.unconfigured : S.drawer.call}
-                            </a>
+                            ${isPlaceholder
+                                ? `<span class="${btnClass}" ${warnAttr} aria-disabled="true">${isMock ? S.flow.sampleContact : S.drawer.unconfigured}</span>`
+                                : `<a href="${callHref}" class="${btnClass}">${S.drawer.call}</a>`}
                         </div>
                     `;
         }).join('')}
@@ -290,7 +293,10 @@ ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-d
                     <span>${S.drawer.photoHint}</span>
                 </div>
             </div>
+            ${photoSrc ? expandPhotoButton(hazard.title) : ''}
         </div>` : ''}
+
+        ${!isLive ? photoCaptionMarkup(photoSrc,hazard.ref_code) : ''}
 
         <!-- DETAILS / LOCATION -->
         <div class="drawer-section">
@@ -397,8 +403,12 @@ ${!assessment?.assessed_level&&hazard.reported_level?`<span class="badge badge-d
     `;
 
     const photo = _contentEl.querySelector('.hazard-photo');
-    const fallback = () => { photo.style.display = 'none'; photo.nextElementSibling.style.display = 'flex'; };
+    const expand = _contentEl.querySelector('.hazard-photo-expand');
+    const fallback = () => { photo.style.display = 'none'; photo.nextElementSibling.style.display = 'flex'; if(expand) expand.hidden=true; };
     if (photo) {
+        const open = () => openPhotoViewer({src:photoSrc,title:hazard.title,reference:hazard.ref_code,trigger:expand});
+        photo.addEventListener('click',open);
+        expand?.addEventListener('click',open);
         photo.addEventListener('error', fallback);
         if (photo.complete && !photo.naturalWidth) fallback();
     }
